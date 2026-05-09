@@ -1,8 +1,11 @@
 const rawDomain = process.env.SHOPIFY_STORE_DOMAIN || process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || 'your-store.myshopify.com';
 const domain = rawDomain.replace(/^https?:\/\//, '').replace(/\/+$/, '');
-const storefrontAccessToken = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN || '';
+const storefrontAccessToken = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN || process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN || '';
 
-export async function shopifyFetch({ query, variables }: { query: string; variables?: any }) {
+export const SHOPIFY_ACCOUNT_URL = `https://${domain}/account`;
+export const SHOPIFY_DOMAIN = domain;
+
+export async function shopifyFetch({ query, variables }: { query: string; variables?: Record<string, unknown> }) {
   const endpoint = `https://${domain}/api/2024-01/graphql.json`;
 
   // Skip fetch during build if credentials not configured
@@ -19,17 +22,38 @@ export async function shopifyFetch({ query, variables }: { query: string; variab
         'X-Shopify-Storefront-Access-Token': storefrontAccessToken,
       },
       body: JSON.stringify({ query, variables }),
-      next: { revalidate: 60 }
+      next: { revalidate: 60 },
     });
 
     return await result.json();
   } catch (error) {
     console.error('Shopify fetch error:', error);
-    // Return empty data instead of throwing to prevent build failure
     return { data: null, errors: [{ message: 'Fetch failed' }] };
   }
 }
 
+// ─── CLIENT-SAFE FETCH (no next.revalidate) ────────────────────────────────
+export async function shopifyClientFetch({ query, variables }: { query: string; variables?: Record<string, unknown> }) {
+  const endpoint = `https://${domain}/api/2024-01/graphql.json`;
+  const token = storefrontAccessToken;
+
+  if (!token || domain.includes('your-store')) {
+    throw new Error('Shopify not configured');
+  }
+
+  const result = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Shopify-Storefront-Access-Token': token,
+    },
+    body: JSON.stringify({ query, variables }),
+  });
+
+  return await result.json();
+}
+
+// ─── PRODUCT QUERIES ───────────────────────────────────────────────────────
 export async function getProducts() {
   const query = `
     query getProducts {
@@ -116,15 +140,15 @@ export async function getProductsByCollection(handle: string) {
   `;
 
   const response = await shopifyFetch({ query, variables: { handle } });
-  
+
   if (response.errors) {
     console.error('Shopify collection error:', response.errors);
   }
-  
+
   if (!response.data?.collection) {
     console.log(`Collection "${handle}" not found or empty`);
   }
-  
+
   return response.data?.collection?.products?.edges || [];
 }
 
@@ -171,13 +195,190 @@ export async function getProduct(handle: string) {
   return response.data?.product;
 }
 
-// Cart helper functions
+// ─── CART MUTATIONS ────────────────────────────────────────────────────────
+export interface CartLine {
+  id: string;
+  quantity: number;
+  merchandise: {
+    id: string;
+    title: string;
+    product: {
+      title: string;
+      handle: string;
+    };
+    image?: {
+      url: string;
+      altText: string | null;
+    };
+  };
+  cost: {
+    totalAmount: {
+      amount: string;
+      currencyCode: string;
+    };
+  };
+}
+
+export interface Cart {
+  id: string;
+  checkoutUrl: string;
+  totalQuantity: number;
+  cost: {
+    totalAmount: {
+      amount: string;
+      currencyCode: string;
+    };
+    subtotalAmount: {
+      amount: string;
+      currencyCode: string;
+    };
+  };
+  lines: {
+    edges: Array<{ node: CartLine }>;
+  };
+}
+
+const CART_FRAGMENT = `
+  fragment CartFields on Cart {
+    id
+    checkoutUrl
+    totalQuantity
+    cost {
+      totalAmount { amount currencyCode }
+      subtotalAmount { amount currencyCode }
+    }
+    lines(first: 100) {
+      edges {
+        node {
+          id
+          quantity
+          cost {
+            totalAmount { amount currencyCode }
+          }
+          merchandise {
+            ... on ProductVariant {
+              id
+              title
+              product {
+                title
+                handle
+              }
+              image {
+                url
+                altText
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export async function createCart(
+  lines: { merchandiseId: string; quantity: number }[]
+): Promise<Cart | null> {
+  const query = `
+    mutation cartCreate($input: CartInput!) {
+      cartCreate(input: $input) {
+        cart { ...CartFields }
+        userErrors { field message }
+      }
+    }
+    ${CART_FRAGMENT}
+  `;
+
+  const response = await shopifyClientFetch({
+    query,
+    variables: { input: { lines } },
+  });
+
+  if (response.errors || response.data?.cartCreate?.userErrors?.length) {
+    console.error('Cart create errors:', response.errors || response.data?.cartCreate?.userErrors);
+    return null;
+  }
+
+  return response.data?.cartCreate?.cart ?? null;
+}
+
+export async function addCartLines(
+  cartId: string,
+  lines: { merchandiseId: string; quantity: number }[]
+): Promise<Cart | null> {
+  const query = `
+    mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
+      cartLinesAdd(cartId: $cartId, lines: $lines) {
+        cart { ...CartFields }
+        userErrors { field message }
+      }
+    }
+    ${CART_FRAGMENT}
+  `;
+
+  const response = await shopifyClientFetch({
+    query,
+    variables: { cartId, lines },
+  });
+
+  if (response.errors || response.data?.cartLinesAdd?.userErrors?.length) {
+    console.error('Cart add errors:', response.errors || response.data?.cartLinesAdd?.userErrors);
+    return null;
+  }
+
+  return response.data?.cartLinesAdd?.cart ?? null;
+}
+
+export async function updateCartLines(
+  cartId: string,
+  lines: { id: string; quantity: number }[]
+): Promise<Cart | null> {
+  const query = `
+    mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
+      cartLinesUpdate(cartId: $cartId, lines: $lines) {
+        cart { ...CartFields }
+        userErrors { field message }
+      }
+    }
+    ${CART_FRAGMENT}
+  `;
+
+  const response = await shopifyClientFetch({
+    query,
+    variables: { cartId, lines },
+  });
+
+  return response.data?.cartLinesUpdate?.cart ?? null;
+}
+
+export async function removeCartLines(
+  cartId: string,
+  lineIds: string[]
+): Promise<Cart | null> {
+  const query = `
+    mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
+      cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
+        cart { ...CartFields }
+        userErrors { field message }
+      }
+    }
+    ${CART_FRAGMENT}
+  `;
+
+  const response = await shopifyClientFetch({
+    query,
+    variables: { cartId, lineIds },
+  });
+
+  return response.data?.cartLinesRemove?.cart ?? null;
+}
+
+// ─── LEGACY HELPERS (kept as fallback) ────────────────────────────────────
 export function getShopifyDomain(): string {
   return domain;
 }
 
 export function createCartUrl(items: { variantId: string; quantity: number }[]): string {
-  const cartItems = items.map(item => {
+  const cartItems = items.map((item) => {
     const id = item.variantId.includes('/') ? item.variantId.split('/').pop() : item.variantId;
     return `${id}:${item.quantity}`;
   });

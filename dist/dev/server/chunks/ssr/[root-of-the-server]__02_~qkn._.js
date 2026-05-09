@@ -63,8 +63,16 @@ __turbopack_context__.n(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$a
 "use strict";
 
 __turbopack_context__.s([
+    "SHOPIFY_ACCOUNT_URL",
+    ()=>SHOPIFY_ACCOUNT_URL,
+    "SHOPIFY_DOMAIN",
+    ()=>SHOPIFY_DOMAIN,
+    "addCartLines",
+    ()=>addCartLines,
     "addToCartUrl",
     ()=>addToCartUrl,
+    "createCart",
+    ()=>createCart,
     "createCartUrl",
     ()=>createCartUrl,
     "getProduct",
@@ -75,12 +83,20 @@ __turbopack_context__.s([
     ()=>getProductsByCollection,
     "getShopifyDomain",
     ()=>getShopifyDomain,
+    "removeCartLines",
+    ()=>removeCartLines,
+    "shopifyClientFetch",
+    ()=>shopifyClientFetch,
     "shopifyFetch",
-    ()=>shopifyFetch
+    ()=>shopifyFetch,
+    "updateCartLines",
+    ()=>updateCartLines
 ]);
 const rawDomain = process.env.SHOPIFY_STORE_DOMAIN || ("TURBOPACK compile-time value", "dr-white-5537.myshopify.com") || 'your-store.myshopify.com';
 const domain = rawDomain.replace(/^https?:\/\//, '').replace(/\/+$/, '');
-const storefrontAccessToken = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN || '';
+const storefrontAccessToken = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN || ("TURBOPACK compile-time value", "65f8939cb5139fcae960e9aa8dbc4371") || '';
+const SHOPIFY_ACCOUNT_URL = `https://${domain}/account`;
+const SHOPIFY_DOMAIN = domain;
 async function shopifyFetch({ query, variables }) {
     const endpoint = `https://${domain}/api/2024-01/graphql.json`;
     // Skip fetch during build if credentials not configured
@@ -108,7 +124,6 @@ async function shopifyFetch({ query, variables }) {
         return await result.json();
     } catch (error) {
         console.error('Shopify fetch error:', error);
-        // Return empty data instead of throwing to prevent build failure
         return {
             data: null,
             errors: [
@@ -118,6 +133,25 @@ async function shopifyFetch({ query, variables }) {
             ]
         };
     }
+}
+async function shopifyClientFetch({ query, variables }) {
+    const endpoint = `https://${domain}/api/2024-01/graphql.json`;
+    const token = storefrontAccessToken;
+    if (!token || domain.includes('your-store')) {
+        throw new Error('Shopify not configured');
+    }
+    const result = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Shopify-Storefront-Access-Token': token
+        },
+        body: JSON.stringify({
+            query,
+            variables
+        })
+    });
+    return await result.json();
 }
 async function getProducts() {
     const query = `
@@ -262,6 +296,127 @@ async function getProduct(handle) {
         }
     });
     return response.data?.product;
+}
+const CART_FRAGMENT = `
+  fragment CartFields on Cart {
+    id
+    checkoutUrl
+    totalQuantity
+    cost {
+      totalAmount { amount currencyCode }
+      subtotalAmount { amount currencyCode }
+    }
+    lines(first: 100) {
+      edges {
+        node {
+          id
+          quantity
+          cost {
+            totalAmount { amount currencyCode }
+          }
+          merchandise {
+            ... on ProductVariant {
+              id
+              title
+              product {
+                title
+                handle
+              }
+              image {
+                url
+                altText
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+async function createCart(lines) {
+    const query = `
+    mutation cartCreate($input: CartInput!) {
+      cartCreate(input: $input) {
+        cart { ...CartFields }
+        userErrors { field message }
+      }
+    }
+    ${CART_FRAGMENT}
+  `;
+    const response = await shopifyClientFetch({
+        query,
+        variables: {
+            input: {
+                lines
+            }
+        }
+    });
+    if (response.errors || response.data?.cartCreate?.userErrors?.length) {
+        console.error('Cart create errors:', response.errors || response.data?.cartCreate?.userErrors);
+        return null;
+    }
+    return response.data?.cartCreate?.cart ?? null;
+}
+async function addCartLines(cartId, lines) {
+    const query = `
+    mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
+      cartLinesAdd(cartId: $cartId, lines: $lines) {
+        cart { ...CartFields }
+        userErrors { field message }
+      }
+    }
+    ${CART_FRAGMENT}
+  `;
+    const response = await shopifyClientFetch({
+        query,
+        variables: {
+            cartId,
+            lines
+        }
+    });
+    if (response.errors || response.data?.cartLinesAdd?.userErrors?.length) {
+        console.error('Cart add errors:', response.errors || response.data?.cartLinesAdd?.userErrors);
+        return null;
+    }
+    return response.data?.cartLinesAdd?.cart ?? null;
+}
+async function updateCartLines(cartId, lines) {
+    const query = `
+    mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
+      cartLinesUpdate(cartId: $cartId, lines: $lines) {
+        cart { ...CartFields }
+        userErrors { field message }
+      }
+    }
+    ${CART_FRAGMENT}
+  `;
+    const response = await shopifyClientFetch({
+        query,
+        variables: {
+            cartId,
+            lines
+        }
+    });
+    return response.data?.cartLinesUpdate?.cart ?? null;
+}
+async function removeCartLines(cartId, lineIds) {
+    const query = `
+    mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
+      cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
+        cart { ...CartFields }
+        userErrors { field message }
+      }
+    }
+    ${CART_FRAGMENT}
+  `;
+    const response = await shopifyClientFetch({
+        query,
+        variables: {
+            cartId,
+            lineIds
+        }
+    });
+    return response.data?.cartLinesRemove?.cart ?? null;
 }
 function getShopifyDomain() {
     return domain;

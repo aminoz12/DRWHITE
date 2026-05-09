@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { ShoppingCart, Star, Shield, Truck, RotateCcw } from 'lucide-react';
-import { addToCartUrl } from '@/lib/shopify';
+import { Star, Shield, Truck, RotateCcw, Loader2, ShoppingBag } from 'lucide-react';
+import { useCartStore } from '@/lib/cartStore';
 
 interface ProductDetailsProps {
   product: {
@@ -46,18 +46,22 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     product.variants.edges[0]?.node
   );
   const [quantity, setQuantity] = useState(1);
+  const [activeImage, setActiveImage] = useState(0);
+  const [added, setAdded] = useState(false);
+
+  const { addItem, isLoading } = useCartStore();
 
   const price = selectedVariant?.price || product.priceRange.minVariantPrice;
-  const formattedPrice = new Intl.NumberFormat('en-US', {
+  const formattedPrice = new Intl.NumberFormat('en-GB', {
     style: 'currency',
     currency: price.currencyCode,
   }).format(parseFloat(price.amount));
 
-  const handleAddToCart = () => {
-    if (selectedVariant?.id) {
-      const checkoutUrl = addToCartUrl(selectedVariant.id, quantity);
-      window.location.href = checkoutUrl;
-    }
+  const handleAddToCart = async () => {
+    if (!selectedVariant?.id || !selectedVariant.availableForSale) return;
+    await addItem(selectedVariant.id, quantity);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2000);
   };
 
   return (
@@ -66,13 +70,14 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         {/* Product Images */}
         <div className="space-y-4">
           <div className="relative aspect-square rounded-2xl bg-gray-100 overflow-hidden">
-            {product.images.edges[0] ? (
+            {product.images.edges[activeImage] ? (
               <Image
-                src={product.images.edges[0].node.url}
-                alt={product.images.edges[0].node.altText || product.title}
+                src={product.images.edges[activeImage].node.url}
+                alt={product.images.edges[activeImage].node.altText || product.title}
                 fill
-                className="object-cover"
+                className="object-cover transition-opacity duration-300"
                 priority
+                sizes="(max-width: 1024px) 100vw, 50vw"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -80,21 +85,25 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
               </div>
             )}
           </div>
-          
+
           {product.images.edges.length > 1 && (
             <div className="flex gap-2 overflow-x-auto">
               {product.images.edges.map((image, index) => (
-                <div
+                <button
                   key={index}
-                  className="relative w-20 h-20 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0"
+                  onClick={() => setActiveImage(index)}
+                  className={`relative w-20 h-20 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 border-2 transition-colors ${
+                    activeImage === index ? 'border-purple-700' : 'border-transparent hover:border-gray-300'
+                  }`}
                 >
                   <Image
                     src={image.node.url}
                     alt={image.node.altText || `${product.title} ${index + 1}`}
                     fill
                     className="object-cover"
+                    sizes="80px"
                   />
-                </div>
+                </button>
               ))}
             </div>
           )}
@@ -113,13 +122,13 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
           </div>
 
           <h1 className="text-3xl font-bold text-gray-900">{product.title}</h1>
-          
+
           <div className="flex items-center gap-3">
-            <span className="text-3xl font-bold text-purple-600">{formattedPrice}</span>
+            <span className="text-3xl font-bold text-purple-700">{formattedPrice}</span>
           </div>
 
           {/* Description */}
-          <div 
+          <div
             className="prose prose-sm text-gray-600"
             dangerouslySetInnerHTML={{ __html: product.description }}
           />
@@ -135,7 +144,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                     onClick={() => setSelectedVariant(variant)}
                     className={`px-4 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
                       selectedVariant?.id === variant.id
-                        ? 'border-purple-600 bg-purple-50 text-purple-600'
+                        ? 'border-purple-700 bg-purple-50 text-purple-700'
                         : 'border-gray-200 text-gray-700 hover:border-purple-300'
                     }`}
                     disabled={!variant.availableForSale}
@@ -154,14 +163,14 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="w-10 h-10 rounded-lg border border-gray-300 flex items-center justify-center hover:bg-gray-50"
+                className="w-10 h-10 rounded-lg border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
               >
                 -
               </button>
               <span className="w-12 text-center font-medium">{quantity}</span>
               <button
                 onClick={() => setQuantity(quantity + 1)}
-                className="w-10 h-10 rounded-lg border border-gray-300 flex items-center justify-center hover:bg-gray-50"
+                className="w-10 h-10 rounded-lg border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
               >
                 +
               </button>
@@ -171,24 +180,38 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
           {/* Add to Cart Button */}
           <button
             onClick={handleAddToCart}
-            className="w-full py-4 bg-purple-600 text-white font-bold rounded-full hover:bg-purple-700 transition-colors flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+            disabled={isLoading || !selectedVariant?.availableForSale}
+            className={`w-full py-4 font-black text-sm tracking-wider rounded-full flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95 ${
+              added
+                ? 'bg-green-600 text-white shadow-green-600/30'
+                : 'bg-purple-700 text-white hover:bg-purple-800 shadow-purple-700/30'
+            } disabled:opacity-50`}
+            style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
           >
-            <ShoppingCart className="w-5 h-5" />
-            Add to Cart - {formattedPrice}
+            {isLoading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : added ? (
+              <>✓ ADDED TO CART</>
+            ) : (
+              <>
+                <ShoppingBag className="w-5 h-5" />
+                ADD TO CART — {formattedPrice}
+              </>
+            )}
           </button>
 
           {/* Trust Indicators */}
           <div className="grid grid-cols-3 gap-4 py-6 border-t border-b border-gray-100">
             <div className="text-center">
-              <Shield className="w-6 h-6 mx-auto mb-2 text-purple-600" />
+              <Shield className="w-6 h-6 mx-auto mb-2 text-purple-700" />
               <p className="text-xs text-gray-600">Secure Payment</p>
             </div>
             <div className="text-center">
-              <Truck className="w-6 h-6 mx-auto mb-2 text-purple-600" />
+              <Truck className="w-6 h-6 mx-auto mb-2 text-purple-700" />
               <p className="text-xs text-gray-600">Free Shipping</p>
             </div>
             <div className="text-center">
-              <RotateCcw className="w-6 h-6 mx-auto mb-2 text-purple-600" />
+              <RotateCcw className="w-6 h-6 mx-auto mb-2 text-purple-700" />
               <p className="text-xs text-gray-600">30-Day Returns</p>
             </div>
           </div>
