@@ -86,7 +86,7 @@ export default function PromoPopup() {
           
           <div className="relative z-0 w-3/4 h-3/4">
             <Image
-              src="/product.png"
+              src="/promo.png"
               alt="CLINI WHITE Product"
               fill
               className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
