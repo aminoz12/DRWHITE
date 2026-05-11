@@ -70,7 +70,7 @@ export default function Footer() {
         <div className="grid md:grid-cols-3 gap-8 mb-8">
           {/* Brand */}
           <div>
-            <h3 className="text-2xl font-bold mb-4">DR.WHITE</h3>
+            <h3 className="text-2xl font-bold mb-4">CLINI WHITE</h3>
             <p className="text-white/80 text-sm mb-4">
               UK&apos;s #1 Professional At-Home Teeth Whitening Brand
             </p>
@@ -110,7 +110,7 @@ export default function Footer() {
               <a href="https://tiktok.com" className="text-white/70 hover:text-white transition-colors" aria-label="TikTok">
                 <TikTokIcon />
               </a>
-              <a href="mailto:contact@drwhite.com" className="text-white/70 hover:text-white transition-colors" aria-label="Email">
+              <a href="mailto:contact@cliniwhite.com" className="text-white/70 hover:text-white transition-colors" aria-label="Email">
                 <Mail className="w-5 h-5" />
               </a>
             </div>
@@ -118,7 +118,7 @@ export default function Footer() {
         </div>
         
         <div className="border-t border-white/20 pt-8 text-center text-sm text-white/60">
-          <p>&copy; 2024 DR.WHITE. All rights reserved.</p>
+          <p>&copy; 2024 CLINI WHITE. All rights reserved.</p>
         </div>
       </div>
     </footer>

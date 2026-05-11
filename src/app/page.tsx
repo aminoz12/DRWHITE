@@ -1,6 +1,6 @@
 import Hero from "./components/Hero";
 import BestSellers from "./components/BestSellers";
-import WhyDrDent from "./components/WhyDrDent";
+import WhyCliniWhite from "./components/WhyCliniWhite";
 import HowItWorks from "./components/HowItWorks";
 import Bundles from "./components/Bundles";
 import WhyItWorks from "./components/WhyItWorks";
@@ -16,8 +16,8 @@ export default async function Home() {
       <main>
         <Hero />
         <BestSellers />
-        <WhyDrDent />
         <HowItWorks />
+        <WhyCliniWhite />
         <Bundles />
         <WhyItWorks />
         <Reviews />

@@ -4,8 +4,8 @@ import Footer from '@/app/components/Footer';
 import BundlesGrid from './BundlesGrid';
 
 export const metadata = {
-  title: 'Bundle & Save | DR.WHITE — Professional Teeth Whitening',
-  description: 'Save more when you bundle DR.WHITE professional whitening products. Stack your routine and get the best value on strips, kits, and accessories.',
+  title: 'Bundle & Save | CLINI WHITE — Professional Teeth Whitening',
+  description: 'Save more when you bundle CLINI WHITE professional whitening products. Stack your routine and get the best value on strips, kits, and accessories.',
 };
 
 export default async function BundlesPage() {

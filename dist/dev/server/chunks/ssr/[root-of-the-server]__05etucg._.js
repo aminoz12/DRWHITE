@@ -72,7 +72,7 @@ var __TURBOPACK__imported__module__$5b$next$5d2f$internal$2f$font$2f$google$2f$g
 ;
 ;
 const metadata = {
-    title: "DR.WHITE | UK's #1 Professional At-Home Teeth Whitening Brand",
+    title: "CLINI WHITE | UK's #1 Professional At-Home Teeth Whitening Brand",
     description: "Achieve up to 8 shades whiter with our peroxide-free formula"
 };
 function RootLayout({ children }) {

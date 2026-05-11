@@ -19,15 +19,20 @@ export default async function Bundles() {
   return (
     <section className="py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 
-          className="text-3xl md:text-4xl font-bold text-center text-[#1A1A1A] mb-4 tracking-tight"
-          style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif' }}
-        >
-          HUGE SAVINGS
-        </h2>
-        <p className="text-[#0d4a8c] font-bold tracking-[0.15em] text-sm uppercase text-center mb-12 max-w-2xl mx-auto">
-          Bundle your favorite products and save more
-        </p>
+        <div className="text-center mb-16">
+          <p className="text-[#0047AB] text-xs font-black tracking-[0.3em] uppercase mb-4">
+            EXCLUSIVE OFFERS
+          </p>
+          <h2 
+            className="text-4xl md:text-5xl font-black text-black leading-none uppercase tracking-tighter"
+            style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+          >
+            HUGE <span className="text-[#0047AB]">SAVINGS</span>
+          </h2>
+          <p className="text-gray-500 text-sm font-medium mt-4 max-w-lg mx-auto">
+            Bundle your favorite products and unlock professional whitening for less.
+          </p>
+        </div>
         
         {products.length === 0 ? (
           <p className="text-center text-gray-500">

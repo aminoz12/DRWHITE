@@ -6,7 +6,7 @@ import ShopGrid from './ShopGrid';
 
 
 export const metadata: Metadata = {
-  title: 'Shop All Products | DR.WHITE',
+  title: 'Shop All Products | CLINI WHITE',
   description: 'Explore our full range of professional-grade teeth whitening kits, strips, and accessories.',
 };
 
@@ -28,7 +28,7 @@ export default async function ShopPage() {
               GET STARTED WITH <br className="hidden md:block" /> TEETH WHITENING
             </h1>
             <p className="text-sm md:text-base font-medium text-gray-600 max-w-2xl mx-auto">
-              The best DrDent products to kickstart your whitening journey!
+              The best CLINI WHITE products to kickstart your whitening journey!
             </p>
           </div>
         </section>

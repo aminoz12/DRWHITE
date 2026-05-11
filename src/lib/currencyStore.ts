@@ -30,7 +30,7 @@ export const useCurrencyStore = create<CurrencyState>()(
       },
     }),
     {
-      name: 'drwhite-currency',
+      name: 'cliniwhite-currency',
     }
   )
 );

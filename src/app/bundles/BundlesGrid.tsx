@@ -70,7 +70,7 @@ const FALLBACK_BUNDLES = [
   },
   {
     title: 'ULTIMATE SMILE',
-    subtitle: 'The full DR.WHITE experience',
+    subtitle: 'The full CLINI WHITE experience',
     includes: ['Whitening Strips (8 week supply)', 'Whitening Toothpaste', 'Whitening Mouthwash', 'LED Accelerator Light'],
     price: '£79.99',
     comparePrice: '£129.99',

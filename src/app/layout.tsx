@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DR.WHITE | UK's #1 Professional At-Home Teeth Whitening Brand",
+  title: "CLINI WHITE | UK's #1 Professional At-Home Teeth Whitening Brand",
   description: "Achieve up to 8 shades whiter with our peroxide-free formula",
 };
 

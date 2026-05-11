@@ -1,11 +1,1 @@
-{
-  "version": 4,
-  "routes": {},
-  "dynamicRoutes": {},
-  "notFoundRoutes": [],
-  "preview": {
-    "previewModeId": "bcaa554e6f2a2b376ad9d0e61aa7fb16",
-    "previewModeSigningKey": "2c3bc7171dd9589f542533b1a4d0d557244bbfcce42b4e1ef26da6f9886ac55c",
-    "previewModeEncryptionKey": "1359c9713c7f917195aa28510fb3311f2c62f3022ca15a886871d990c3b67ba5"
-  }
-}
+{"version":4,"routes":{"/product/v34-withe-teething":{},"/product/pack-duo-1":{},"/product/v34-whitening-strips":{}},"dynamicRoutes":{"/product/[handle]":{"dataRoute":null,"dataRouteRegex":null,"fallback":null,"fallbackRevalidate":false,"fallbackSourceRoute":"/product/[handle]","routeRegex":"^\\/product\\/([^/]+?)(?:\\/)?$","allowHeader":[]}},"notFoundRoutes":[],"preview":{"previewModeId":"1af8aca8fbf3a66235c98ceab0a7b84b","previewModeSigningKey":"5868e347922b50bdef259f858f6094ea0116c57922f186cf3a77a7a783b6a522","previewModeEncryptionKey":"51e12884f2a34c4f7fbd4613356244fa69f8f56ba3437db6af635bad0cde0842"}}

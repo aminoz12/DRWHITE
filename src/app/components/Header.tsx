@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Search, ShoppingBag, Menu, X, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { useCartStore } from '@/lib/cartStore';
-import CartDrawer from './CartDrawer';
 import { SHOPIFY_ACCOUNT_URL } from '@/lib/shopify';
 
 import { useCurrencyStore, type CurrencyCode } from '@/lib/currencyStore';
@@ -25,7 +24,6 @@ export default function Header() {
 
   return (
     <>
-      <CartDrawer />
 
       <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -33,8 +31,8 @@ export default function Header() {
             {/* Logo */}
             <Link href="/" className="flex items-center">
               <span className="text-lg font-black tracking-tight" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-                <span className="text-blue-700">DR</span>
-                <span className="text-blue-700">.</span>
+                <span className="text-blue-700">CLINI</span>
+                <span className="text-blue-700"> </span>
                 <span className="text-blue-700">WHITE</span>
               </span>
             </Link>
@@ -120,9 +118,9 @@ export default function Header() {
                 </svg>
               </a>
 
-              {/* Cart — opens drawer */}
-              <button
-                onClick={openCart}
+              {/* Cart — opens as page */}
+              <Link
+                href="/cart"
                 className="p-1.5 text-gray-900 hover:text-blue-700 relative"
                 aria-label="Open cart"
               >
@@ -132,7 +130,7 @@ export default function Header() {
                     {totalQuantity > 9 ? '9+' : totalQuantity}
                   </span>
                 )}
-              </button>
+              </Link>
 
               {/* Mobile Menu Button */}
               <button

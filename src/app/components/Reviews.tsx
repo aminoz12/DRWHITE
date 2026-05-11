@@ -51,7 +51,7 @@ export default function Reviews() {
             WHAT 5,600+ CUSTOMERS ARE SAYING
           </h2>
           <p className="text-[#0d4a8c] font-bold tracking-[0.15em] text-sm uppercase text-center mb-10 max-w-2xl mx-auto">
-            Real reviews. Real photos. See what DR.WHITE customers have to say about their experience.
+            Real reviews. Real photos. See what CLINI WHITE customers have to say about their experience.
           </p>
 
           <div className="flex justify-center items-center gap-16">

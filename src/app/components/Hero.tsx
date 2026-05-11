@@ -7,17 +7,6 @@ import { Star, ShieldCheck } from 'lucide-react';
 export default function Hero() {
   return (
     <section className="relative overflow-hidden flex flex-col justify-center" style={{ minHeight: '500px', background: 'linear-gradient(135deg, #8B5CF6 0%, #A78BFA 50%, #C4B5FD 100%)' }}>
-      {/* Hero Background Image */}
-      <Image
-        src="/hero.png"
-        alt="DR.WHITE Products"
-        fill
-        priority
-        quality={100}
-        className="object-cover object-right md:object-[90%_center] lg:object-right"
-        style={{ zIndex: 0 }}
-      />
-
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-12 w-full">
         <div className="max-w-lg text-white">
           {/* Star Rating */}
@@ -29,19 +18,19 @@ export default function Hero() {
             </div>
             <span className="text-xs font-medium tracking-wide">5,642+ Reviews</span>
           </div>
-          
+
           {/* Headline */}
           <h1 className="font-black leading-none mb-4" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontSize: '48px', letterSpacing: '-0.02em' }}>
             YOUR BRIGHTER<br />
             SMILE<br />
             STARTS HERE
           </h1>
-          
+
           {/* Subtitle */}
           <p className="text-sm text-white/95 mb-6 max-w-sm leading-relaxed">
-            Whitening and daily care. See why everyone's talking about DR.WHITE
+            Whitening and daily care. See why everyone's talking about CLINI WHITE
           </p>
-          
+
           {/* CTA Button */}
           <Link
             href="/shop"
@@ -52,7 +41,7 @@ export default function Hero() {
           >
             SHOP BEST SELLERS
           </Link>
-          
+
           {/* Guarantee */}
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-white" />

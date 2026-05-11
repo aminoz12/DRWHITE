@@ -158,7 +158,7 @@ export const useCartStore = create<CartState>()(
         }),
     }),
     {
-      name: 'drwhite-cart',
+      name: 'cliniwhite-cart',
       // Only persist cartId + checkoutUrl + items so we can restore state on refresh
       partialize: (state) => ({
         cartId: state.cartId,

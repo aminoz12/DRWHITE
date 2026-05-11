@@ -25,12 +25,17 @@ export default function WhyItWorks() {
   return (
     <section className="py-16 bg-[#F0F4F8]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 
-          className="text-3xl md:text-4xl font-bold text-center text-[#1A1A1A] mb-12 tracking-tight"
-          style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif' }}
-        >
-          WHY IT WORKS
-        </h2>
+        <div className="text-center mb-16">
+          <p className="text-[#1A1A1A] text-xs font-black tracking-[0.3em] uppercase mb-4">
+            SCIENCE & RESULTS
+          </p>
+          <h2 
+            className="text-4xl md:text-5xl font-black text-[#1A1A1A] leading-none uppercase tracking-tighter"
+            style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+          >
+            WHY IT <span className="text-[#0047AB]">WORKS</span>
+          </h2>
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
           {features.map((feature) => (

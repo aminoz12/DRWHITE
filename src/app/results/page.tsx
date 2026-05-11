@@ -3,8 +3,8 @@ import Footer from '@/app/components/Footer';
 import ResultsGallery from './ResultsGallery';
 
 export const metadata = {
-  title: 'Real Results | DR.WHITE — See Before & After Transformations',
-  description: 'See real customer before and after results from DR.WHITE professional teeth whitening. Over 5,600 verified reviews and transformations.',
+  title: 'Real Results | CLINI WHITE — See Before & After Transformations',
+  description: 'See real customer before and after results from CLINI WHITE professional teeth whitening. Over 5,600 verified reviews and transformations.',
 };
 
 const STATS = [
@@ -49,7 +49,7 @@ export default function ResultsPage() {
               <span className="text-[#DDD6FE]">RESULTS</span>
             </h1>
             <p className="text-white/80 text-base max-w-md mx-auto mb-8">
-              No filters. No editing. Just real customers sharing their genuine DR.WHITE transformations.
+              No filters. No editing. Just real customers sharing their genuine CLINI WHITE transformations.
             </p>
 
             {/* Stats Row */}
@@ -125,7 +125,7 @@ export default function ResultsPage() {
                   verified: true,
                   rating: 5,
                   time: '2 weeks ago',
-                  text: '"I\'ve tried everything. DR.WHITE is genuinely the first whitening product that worked for me without any sensitivity. My teeth are visibly brighter after just 10 days."',
+                  text: '"I\'ve tried everything. CLINI WHITE is genuinely the first whitening product that worked for me without any sensitivity. My teeth are visibly brighter after just 10 days."',
                   product: 'Whitening Strips',
                 },
                 {
@@ -133,7 +133,7 @@ export default function ResultsPage() {
                   verified: true,
                   rating: 5,
                   time: '1 week ago',
-                  text: '"Coffee drinker for 15 years. The staining was bad. After 2 weeks of DR.WHITE strips I genuinely can\'t believe the difference. 100% recommend."',
+                  text: '"Coffee drinker for 15 years. The staining was bad. After 2 weeks of CLINI WHITE strips I genuinely can\'t believe the difference. 100% recommend."',
                   product: 'Ultimate Bundle',
                 },
                 {

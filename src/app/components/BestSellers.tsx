@@ -16,12 +16,17 @@ export default async function BestSellers() {
         </div>
 
         {/* Heading */}
-        <h2
-          className="text-3xl font-black text-black text-center mb-10"
-          style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
-        >
-          BEST SELLERS
-        </h2>
+        <div className="text-center mb-16">
+          <p className="text-[#0047AB] text-xs font-black tracking-[0.3em] uppercase mb-4">
+            SHOP THE RANGE
+          </p>
+          <h2
+            className="text-4xl md:text-5xl font-black text-black leading-none uppercase tracking-tighter"
+            style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+          >
+            OUR BEST <span className="text-[#0047AB]">SELLERS</span>
+          </h2>
+        </div>
 
         {/* Products Grid */}
         {products.length === 0 ? (

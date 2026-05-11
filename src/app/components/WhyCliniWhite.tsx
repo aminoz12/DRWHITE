@@ -17,7 +17,7 @@ const benefits = [
   },
 ];
 
-export default function WhyDrDent() {
+export default function WhyCliniWhite() {
   return (
     <section>
       {/* Scrolling Banner */}
@@ -42,11 +42,11 @@ export default function WhyDrDent() {
               </p>
 
               <h2 className="text-4xl font-black text-black mb-4" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-                WHY DR.WHITE?
+                WHY CLINI WHITE?
               </h2>
 
               <p className="text-sm text-gray-800 mb-8 max-w-md leading-relaxed">
-                DR.WHITE&apos;s strips are powered by PAP, a next-generation whitening ingredient that targets surface stains. 30 minutes a day. That&apos;s the whole commitment.
+                CLINI WHITE&apos;s strips are powered by PAP, a next-generation whitening ingredient that targets surface stains. 30 minutes a day. That&apos;s the whole commitment.
               </p>
 
               <div className="space-y-5 mb-8">
