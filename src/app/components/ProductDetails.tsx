@@ -187,7 +187,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
                     {(index === 1 || index === 2) && (
                       <div className="absolute -top-[10px] right-2 bg-[#f44336] text-white text-[9px] font-black px-2 py-1 rounded-sm uppercase italic">
-                        BOGO DEAL
+                        LIMITED OFFER
                       </div>
                     )}
                   </label>

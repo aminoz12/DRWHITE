@@ -17,6 +17,8 @@ export const metadata: Metadata = {
   description: "Achieve up to 8 shades whiter with our peroxide-free formula",
 };
 
+import PromoPopup from "./components/PromoPopup";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,7 +29,10 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <PromoPopup />
+      </body>
     </html>
   );
 }
