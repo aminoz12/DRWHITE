@@ -8,7 +8,7 @@ export default function Hero() {
   return (
     <section className="hero-section-bg relative overflow-hidden">
       <div className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-8 px-4 py-16 sm:px-6 lg:min-h-[700px] lg:grid-cols-[0.88fr_1.12fr] lg:gap-12 lg:px-8 lg:py-20">
-        <div className="max-w-xl text-[#2d0a4e]">
+        <div className="order-2 max-w-xl text-[#2d0a4e] lg:order-1">
           <div className="mb-6 flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-1.5 rounded-full border border-[#d4b8ed] bg-[#f8f0ff] px-3 py-1.5 shadow-sm">
               {[...Array(5)].map((_, i) => (
@@ -62,7 +62,7 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="relative lg:-mr-8 lg:-mt-4">
+        <div className="relative order-1 lg:order-2 lg:-mr-8 lg:-mt-4">
           <HeroVideo />
         </div>
       </div>
