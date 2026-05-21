@@ -4,13 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ShoppingBag, Loader2, Tag, Star } from 'lucide-react';
 import { useCartStore } from '@/lib/cartStore';
-
-function formatPrice(amount: string, currency: string) {
-  return new Intl.NumberFormat('en-GB', {
-    style: 'currency',
-    currency: currency || 'GBP',
-  }).format(parseFloat(amount));
-}
+import { formatMoney } from '@/lib/money';
 
 function calculateDiscount(price: number, comparePrice: number): number {
   if (!comparePrice || comparePrice <= price) return 0;
@@ -40,14 +34,14 @@ interface BundleProduct {
   };
 }
 
-// Static fallback bundles when Shopify collection is empty
 const FALLBACK_BUNDLES = [
   {
     title: 'STARTER KIT',
     subtitle: 'Perfect for first-timers',
     includes: ['Whitening Strips (2 week supply)', 'Whitening Toothpaste', 'Bamboo Toothbrush'],
-    price: '£29.99',
-    comparePrice: '£49.99',
+    price: '29.99',
+    comparePrice: '49.99',
+    currencyCode: 'USD',
     discount: 40,
     badge: 'BEST VALUE',
     badgeColor: '#0047AB',
@@ -59,8 +53,9 @@ const FALLBACK_BUNDLES = [
     title: 'GLOW BUNDLE',
     subtitle: 'For the dedicated whitener',
     includes: ['Whitening Strips (4 week supply)', 'Whitening Toothpaste', 'Whitening Mouthwash'],
-    price: '£44.99',
-    comparePrice: '£69.99',
+    price: '44.99',
+    comparePrice: '69.99',
+    currencyCode: 'USD',
     discount: 36,
     badge: 'MOST POPULAR',
     badgeColor: '#7C3AED',
@@ -72,8 +67,9 @@ const FALLBACK_BUNDLES = [
     title: 'ULTIMATE SMILE',
     subtitle: 'The full CLINI WHITE experience',
     includes: ['Whitening Strips (8 week supply)', 'Whitening Toothpaste', 'Whitening Mouthwash', 'LED Accelerator Light'],
-    price: '£79.99',
-    comparePrice: '£129.99',
+    price: '79.99',
+    comparePrice: '129.99',
+    currencyCode: 'USD',
     discount: 38,
     badge: 'PRO PICK',
     badgeColor: '#059669',
@@ -99,7 +95,6 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
     }, 2000);
   };
 
-  // Use real Shopify products if available
   if (products.length > 0) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -110,7 +105,7 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
             : null;
           const discount = comparePrice ? calculateDiscount(price, comparePrice) : 0;
           const image = node.images.edges[0]?.node;
-          const variantId = node.variants?.edges[0]?.node.id;
+          const variant = node.variants?.edges[0]?.node;
           const currency = node.priceRange.minVariantPrice.currencyCode;
 
           return (
@@ -152,21 +147,24 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
 
                 <div className="flex items-baseline gap-3 mb-5 mt-auto">
                   <span className="text-2xl font-black text-[#0047AB]">
-                    {formatPrice(node.priceRange.minVariantPrice.amount, currency)}
+                    {formatMoney(node.priceRange.minVariantPrice.amount, currency)}
                   </span>
                   {comparePrice && comparePrice > price && (
                     <span className="text-sm text-gray-400 line-through">
-                      {formatPrice(comparePrice.toString(), currency)}
+                      {formatMoney(
+                        comparePrice.toString(),
+                        node.compareAtPriceRange?.minVariantPrice?.currencyCode || currency
+                      )}
                     </span>
                   )}
                 </div>
 
-                {variantId ? (
+                {variant?.id ? (
                   <button
-                    onClick={() => handleAdd(variantId)}
-                    disabled={isLoading}
-                    className={`w-full py-3 rounded-full text-xs font-black tracking-wider flex items-center justify-center gap-2 transition-all active:scale-95 ${
-                      addedIds.has(variantId)
+                    onClick={() => handleAdd(variant.id)}
+                    disabled={isLoading || !variant.availableForSale}
+                    className={`w-full py-3 rounded-full text-xs font-black tracking-wider flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-60 ${
+                      addedIds.has(variant.id)
                         ? 'bg-green-600 text-white'
                         : 'bg-[#0047AB] text-white hover:bg-[#003a8c]'
                     }`}
@@ -174,12 +172,14 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
                   >
                     {isLoading ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : addedIds.has(variantId) ? (
-                      '✓ ADDED TO CART'
-                    ) : (
+                    ) : addedIds.has(variant.id) ? (
+                      'ADDED TO CART'
+                    ) : variant.availableForSale ? (
                       <>
                         <ShoppingBag className="w-4 h-4" /> ADD TO CART
                       </>
+                    ) : (
+                      'SOLD OUT'
                     )}
                   </button>
                 ) : (
@@ -199,7 +199,6 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
     );
   }
 
-  // Fallback static bundles
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
       {FALLBACK_BUNDLES.map((bundle) => (
@@ -207,7 +206,6 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
           key={bundle.title}
           className="relative bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col"
         >
-          {/* Badge */}
           <div
             className="absolute top-4 right-4 z-10 text-white text-[10px] font-black px-3 py-1.5 rounded-full tracking-widest"
             style={{ backgroundColor: bundle.badgeColor }}
@@ -215,7 +213,6 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
             {bundle.badge}
           </div>
 
-          {/* Header */}
           <div className="bg-[#EBF2FA] p-8 text-center">
             <div className="w-20 h-20 mx-auto mb-4 bg-white rounded-full flex items-center justify-center shadow-sm">
               <ShoppingBag className="w-9 h-9 text-[#0047AB]" />
@@ -230,19 +227,17 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
           </div>
 
           <div className="p-6 flex flex-col flex-1">
-            {/* Includes */}
             <ul className="space-y-2 mb-6">
               {bundle.includes.map((item) => (
                 <li key={item} className="flex items-center gap-2 text-xs text-gray-700">
                   <span className="w-4 h-4 rounded-full bg-[#EBF2FA] flex items-center justify-center flex-shrink-0">
-                    <span className="text-[#0047AB] font-black text-[10px]">✓</span>
+                    <span className="text-[#0047AB] font-black text-[10px]">&#10003;</span>
                   </span>
                   {item}
                 </li>
               ))}
             </ul>
 
-            {/* Reviews */}
             <div className="flex items-center gap-2 mb-5">
               <div className="flex">
                 {[...Array(5)].map((_, i) => (
@@ -254,10 +249,13 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
               </span>
             </div>
 
-            {/* Price */}
             <div className="flex items-baseline gap-3 mb-5 mt-auto">
-              <span className="text-3xl font-black text-[#0047AB]">{bundle.price}</span>
-              <span className="text-sm text-gray-400 line-through">{bundle.comparePrice}</span>
+              <span className="text-3xl font-black text-[#0047AB]">
+                {formatMoney(bundle.price, bundle.currencyCode)}
+              </span>
+              <span className="text-sm text-gray-400 line-through">
+                {formatMoney(bundle.comparePrice, bundle.currencyCode)}
+              </span>
               <span className="text-xs font-black text-green-600">SAVE {bundle.discount}%</span>
             </div>
 

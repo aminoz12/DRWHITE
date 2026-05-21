@@ -18,6 +18,7 @@ export const metadata: Metadata = {
 };
 
 import PromoPopup from "./components/PromoPopup";
+import CartDrawer from "./components/CartDrawer";
 
 export default function RootLayout({
   children,
@@ -31,6 +32,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         {children}
+        <CartDrawer />
         <PromoPopup />
       </body>
     </html>

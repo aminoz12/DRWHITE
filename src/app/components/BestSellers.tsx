@@ -1,8 +1,10 @@
 import Link from 'next/link';
 import { getProducts } from '@/lib/shopify';
+import type { ShopifyProductEdge } from '@/lib/shopify';
+import { formatMoney } from '@/lib/money';
 
 export default async function BestSellers() {
-  const products = await getProducts();
+  const products = (await getProducts()) as ShopifyProductEdge[];
 
   return (
     <section className="py-12 bg-[#EBF2FA]">
@@ -36,7 +38,7 @@ export default async function BestSellers() {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {products.slice(0, 5).map((product: any) => {
+            {products.slice(0, 5).map((product) => {
               const node = product.node;
               const image = node.images?.edges[0]?.node;
               const price = node.priceRange?.minVariantPrice;
@@ -65,10 +67,7 @@ export default async function BestSellers() {
                     </h3>
 
                     <span className="font-black text-black text-sm">
-                      {new Intl.NumberFormat('en-GB', {
-                        style: 'currency',
-                        currency: price?.currencyCode || 'MAD',
-                      }).format(parseFloat(price?.amount || '0'))}
+                      {formatMoney(price?.amount, price?.currencyCode)}
                     </span>
                   </div>
                 </Link>

@@ -9,6 +9,8 @@ import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
 import PaymentIcons from '@/app/components/PaymentIcons';
 import { getProducts } from '@/lib/shopify';
+import type { ShopifyProductEdge, ShopifyProductNode } from '@/lib/shopify';
+import { formatMoney } from '@/lib/money';
 
 const OFFERS = [
   { discount: 30, text: 'EXTRA 30% OFF' },
@@ -19,15 +21,16 @@ const OFFERS = [
 ];
 
 export default function CartPage() {
-  const { items, subtotal, totalQuantity, removeItem, updateQuantity, addItem, isLoading } = useCartStore();
-  const [upsellProducts, setUpsellProducts] = useState<any[]>([]);
+  const { items, subtotal, subtotalCurrency, totalQuantity, checkoutUrl, removeItem, updateQuantity, addItem, isLoading } = useCartStore();
+  const [upsellProducts, setUpsellProducts] = useState<ShopifyProductEdge[]>([]);
   const [offerIndex, setOfferIndex] = useState(0);
-  const [currentOfferProduct, setCurrentOfferProduct] = useState<any>(null);
+  const [currentOfferProduct, setCurrentOfferProduct] = useState<ShopifyProductNode | null>(null);
   const [isOfferLoading, setIsOfferLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState('');
 
   useEffect(() => {
     async function fetchUpsells() {
-      const products = await getProducts();
+      const products = (await getProducts()) as ShopifyProductEdge[];
       setUpsellProducts(products);
       if (products.length > 0) {
         // Pick a random product for the first offer that isn't already in the cart (ideally)
@@ -40,8 +43,10 @@ export default function CartPage() {
 
   const handleAddOffer = async () => {
     if (!currentOfferProduct) return;
+    const variantId = currentOfferProduct.variants?.edges[0]?.node.id;
+    if (!variantId) return;
+
     setIsOfferLoading(true);
-    const variantId = currentOfferProduct.variants.edges[0].node.id;
     await addItem(variantId, 1);
     
     // Move to next offer
@@ -49,15 +54,28 @@ export default function CartPage() {
     setOfferIndex(nextIndex);
     
     // Pick a new random product
-    if (upsellProducts.length > 1) {
-        let nextProduct;
-        do {
-            nextProduct = upsellProducts[Math.floor(Math.random() * upsellProducts.length)].node;
-        } while (nextProduct.id === currentOfferProduct.id);
-        setCurrentOfferProduct(nextProduct);
+    const otherProducts = upsellProducts
+      .map((product) => product.node)
+      .filter((product) => product.id !== currentOfferProduct.id);
+
+    if (otherProducts.length > 0) {
+      const nextProduct = otherProducts[Math.floor(Math.random() * otherProducts.length)];
+      setCurrentOfferProduct(nextProduct);
     }
     
     setIsOfferLoading(false);
+  };
+
+  const handleCheckout = () => {
+    if (items.length === 0 || isLoading) return;
+
+    if (!checkoutUrl) {
+      setCheckoutError('Cart is still syncing. Please add the item again or refresh the page.');
+      return;
+    }
+
+    setCheckoutError('');
+    window.location.href = checkoutUrl;
   };
 
   const currentOffer = OFFERS[offerIndex];
@@ -143,7 +161,7 @@ export default function CartPage() {
                           
                           <div className="text-right">
                             <p className="font-black text-lg text-black">
-                              {new Intl.NumberFormat('en-GB', { style: 'currency', currency: item.currencyCode }).format(parseFloat(item.price))}
+                              {formatMoney(item.price, item.currencyCode)}
                             </p>
                           </div>
                         </div>
@@ -162,16 +180,22 @@ export default function CartPage() {
               <div className="flex justify-between items-baseline mb-6">
                 <span className="text-sm font-bold text-gray-500 uppercase tracking-widest">Total</span>
                 <span className="text-2xl font-black text-[#0047AB]">
-                  {new Intl.NumberFormat('en-GB', { style: 'currency', currency: items[0]?.currencyCode || 'GBP' }).format(parseFloat(subtotal))}
+                  {formatMoney(subtotal, subtotalCurrency)}
                 </span>
               </div>
               
               <button 
-                disabled={items.length === 0}
-                className="w-full bg-[#0047AB] text-white py-5 rounded-xl font-black text-sm uppercase tracking-widest hover:bg-[#003c8f] shadow-xl shadow-blue-900/20 transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
+                onClick={handleCheckout}
+                disabled={items.length === 0 || isLoading}
+                className="w-full bg-[#0047AB] text-white py-5 rounded-xl font-black text-sm uppercase tracking-widest hover:bg-[#003c8f] shadow-xl shadow-blue-900/20 transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2"
               >
-                Checkout
+                {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Checkout <ArrowRight className="w-4 h-4" /></>}
               </button>
+              {checkoutError && (
+                <p className="mt-3 text-xs font-bold text-red-600 text-center">
+                  {checkoutError}
+                </p>
+              )}
               
               <PaymentIcons className="mt-6 justify-center" />
             </div>
@@ -228,38 +252,43 @@ export default function CartPage() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {upsellProducts.slice(0, 4).map(({ node }) => (
-              <div key={node.id} className="bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100 flex flex-col group">
-                <div className="relative aspect-square mb-6 bg-gray-50 rounded-xl overflow-hidden">
-                  <Image 
-                    src={node.images.edges[0]?.node.url} 
-                    alt={node.title} 
-                    fill 
-                    className="object-contain p-4 group-hover:scale-110 transition-transform duration-500" 
-                  />
-                  <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-[9px] font-black px-2 py-1 rounded uppercase shadow-sm">
-                    Best Seller
+            {upsellProducts.slice(0, 4).map(({ node }) => {
+              const variant = node.variants?.edges[0]?.node;
+
+              return (
+                <div key={node.id} className="bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100 flex flex-col group">
+                  <div className="relative aspect-square mb-6 bg-gray-50 rounded-xl overflow-hidden">
+                    <Image
+                      src={node.images.edges[0]?.node.url}
+                      alt={node.title}
+                      fill
+                      className="object-contain p-4 group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-[9px] font-black px-2 py-1 rounded uppercase shadow-sm">
+                      Best Seller
+                    </div>
+                  </div>
+
+                  <h3 className="font-black text-black uppercase text-xs md:text-sm mb-2 line-clamp-1">{node.title}</h3>
+                  <div className="flex items-center gap-1 mb-4">
+                    {[...Array(5)].map((_, i) => <Star key={i} className="w-2.5 h-2.5 fill-blue-600 text-blue-600" />)}
+                  </div>
+
+                  <div className="mt-auto flex items-center justify-between">
+                    <span className="font-black text-black">
+                      {formatMoney(node.priceRange.minVariantPrice.amount, node.priceRange.minVariantPrice.currencyCode)}
+                    </span>
+                    <button
+                      onClick={() => variant?.id && addItem(variant.id, 1)}
+                      disabled={!variant?.id || !variant.availableForSale || isLoading}
+                      className="bg-black text-white px-4 py-2 rounded-lg font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all active:scale-95 disabled:opacity-50"
+                    >
+                      {variant?.availableForSale ? 'Add' : 'Sold out'}
+                    </button>
                   </div>
                 </div>
-                
-                <h3 className="font-black text-black uppercase text-xs md:text-sm mb-2 line-clamp-1">{node.title}</h3>
-                <div className="flex items-center gap-1 mb-4">
-                  {[...Array(5)].map((_, i) => <Star key={i} className="w-2.5 h-2.5 fill-blue-600 text-blue-600" />)}
-                </div>
-                
-                <div className="mt-auto flex items-center justify-between">
-                  <span className="font-black text-black">
-                    {new Intl.NumberFormat('en-GB', { style: 'currency', currency: node.priceRange.minVariantPrice.currencyCode }).format(parseFloat(node.priceRange.minVariantPrice.amount))}
-                  </span>
-                  <button 
-                    onClick={() => addItem(node.variants.edges[0].node.id, 1)}
-                    className="bg-black text-white px-4 py-2 rounded-lg font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all active:scale-95"
-                  >
-                    Add
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </main>

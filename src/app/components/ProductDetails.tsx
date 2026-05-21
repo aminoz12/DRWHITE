@@ -9,11 +9,11 @@ import {
   RotateCcw,
   ChevronDown,
   Clock,
-  ArrowRight
 } from 'lucide-react';
 import { useCartStore } from '@/lib/cartStore';
 import { useRouter } from 'next/navigation';
 import PaymentIcons from './PaymentIcons';
+import { formatMoney, getDiscountPercent } from '@/lib/money';
 
 interface ProductDetailsProps {
   product: {
@@ -78,19 +78,13 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
   };
 
   const price = selectedVariant?.price || product.priceRange.minVariantPrice;
-  const comparePrice = selectedVariant?.compareAtPrice?.amount || (parseFloat(price.amount) * 1.1).toFixed(2);
-
-  const formattedPrice = new Intl.NumberFormat('en-GB', {
-    style: 'currency',
-    currency: 'GBP',
-  }).format(parseFloat(price.amount));
-
-  const formattedComparePrice = new Intl.NumberFormat('en-GB', {
-    style: 'currency',
-    currency: 'GBP',
-  }).format(parseFloat(comparePrice as string));
-
-  const savings = Math.round(((parseFloat(comparePrice as string) - parseFloat(price.amount)) / parseFloat(comparePrice as string)) * 100);
+  const comparePrice = selectedVariant?.compareAtPrice;
+  const formattedPrice = formatMoney(price.amount, price.currencyCode);
+  const formattedComparePrice = formatMoney(
+    comparePrice?.amount,
+    comparePrice?.currencyCode || price.currencyCode
+  );
+  const savings = getDiscountPercent(price.amount, comparePrice?.amount);
 
   return (
     <section className="bg-white py-8 lg:py-12 font-sans antialiased">
@@ -131,9 +125,13 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
               </h1>
 
               <div className="flex items-center gap-3 pt-1">
-                <span className="text-sm font-bold text-red-500 line-through opacity-70">{formattedComparePrice}</span>
+                {savings > 0 && (
+                  <span className="text-sm font-bold text-red-500 line-through opacity-70">{formattedComparePrice}</span>
+                )}
                 <span className="text-3xl font-black text-black tracking-tight">{formattedPrice}</span>
-                <span className="bg-[#21bc64] text-white text-[10px] font-black px-2 py-0.5 rounded-sm uppercase">SAVE {savings}%</span>
+                {savings > 0 && (
+                  <span className="bg-[#21bc64] text-white text-[10px] font-black px-2 py-0.5 rounded-sm uppercase">SAVE {savings}%</span>
+                )}
               </div>
 
               <div className="flex items-center gap-2 pt-0.5">
@@ -176,11 +174,11 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                     </div>
                     <div className="text-right">
                       <p className="font-black text-black text-lg leading-none">
-                        {new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(parseFloat(node.price.amount))}
+                        {formatMoney(node.price.amount, node.price.currencyCode)}
                       </p>
                       {node.compareAtPrice && (
                         <p className="text-[11px] font-bold text-[#f44336] line-through mt-0.5 opacity-60">
-                          {new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(parseFloat(node.compareAtPrice.amount))}
+                          {formatMoney(node.compareAtPrice.amount, node.compareAtPrice.currencyCode)}
                         </p>
                       )}
                     </div>
@@ -312,7 +310,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
               </Accordion>
               <Accordion title="Guarantee & Support" id="guarantee" activeId={activeAccordion} onToggle={setActiveAccordion}>
                 <div className="pb-6 text-sm leading-relaxed text-[#4a4a4a]">
-                  We offer a 30-day money back guarantee. If you're not satisfied with your results, contact our support team.
+                  We offer a 30-day money back guarantee. If you&apos;re not satisfied with your results, contact our support team.
                 </div>
               </Accordion>
             </div>
@@ -325,7 +323,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
       <div className="mt-12 lg:mt-20 border-t border-gray-100 pt-12 pb-16">
         <div className="max-w-[1200px] mx-auto px-4 mb-10">
           <h2 className="text-3xl lg:text-4xl font-black uppercase tracking-tighter text-center">
-            Can't STOP SMILING WITH CLINI WHITE
+            Can&apos;t STOP SMILING WITH CLINI WHITE
           </h2>
         </div>
 

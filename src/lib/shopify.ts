@@ -5,6 +5,47 @@ const storefrontAccessToken = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN || pro
 export const SHOPIFY_ACCOUNT_URL = `https://${domain}/account`;
 export const SHOPIFY_DOMAIN = domain;
 
+export interface ShopifyMoney {
+  amount: string;
+  currencyCode: string;
+}
+
+export interface ShopifyProductImage {
+  url: string;
+  altText: string | null;
+}
+
+export interface ShopifyProductVariant {
+  id: string;
+  title?: string;
+  availableForSale: boolean;
+  price: ShopifyMoney;
+  compareAtPrice?: ShopifyMoney | null;
+}
+
+export interface ShopifyProductNode {
+  id: string;
+  title: string;
+  handle: string;
+  description: string;
+  priceRange: {
+    minVariantPrice: ShopifyMoney;
+  };
+  compareAtPriceRange?: {
+    minVariantPrice: ShopifyMoney;
+  };
+  images: {
+    edges: Array<{ node: ShopifyProductImage }>;
+  };
+  variants?: {
+    edges: Array<{ node: ShopifyProductVariant }>;
+  };
+}
+
+export interface ShopifyProductEdge {
+  node: ShopifyProductNode;
+}
+
 export async function shopifyFetch({ query, variables }: { query: string; variables?: Record<string, unknown> }) {
   const endpoint = `https://${domain}/api/2024-01/graphql.json`;
 
@@ -70,6 +111,12 @@ export async function getProducts() {
                 currencyCode
               }
             }
+            compareAtPriceRange {
+              minVariantPrice {
+                amount
+                currencyCode
+              }
+            }
             images(first: 2) {
               edges {
                 node {
@@ -82,6 +129,7 @@ export async function getProducts() {
               edges {
                 node {
                   id
+                  availableForSale
                   price {
                     amount
                     currencyCode
@@ -129,6 +177,18 @@ export async function getProductsByCollection(handle: string) {
                   node {
                     url
                     altText
+                  }
+                }
+              }
+              variants(first: 1) {
+                edges {
+                  node {
+                    id
+                    availableForSale
+                    price {
+                      amount
+                      currencyCode
+                    }
                   }
                 }
               }
@@ -180,6 +240,10 @@ export async function getProduct(handle: string) {
               id
               title
               price {
+                amount
+                currencyCode
+              }
+              compareAtPrice {
                 amount
                 currencyCode
               }

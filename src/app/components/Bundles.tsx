@@ -1,12 +1,7 @@
 import Link from 'next/link';
 import { getProductsByCollection } from '@/lib/shopify';
-
-function formatPrice(amount: string, currency: string) {
-  return new Intl.NumberFormat('en-GB', {
-    style: 'currency',
-    currency: currency,
-  }).format(parseFloat(amount));
-}
+import type { ShopifyProductEdge } from '@/lib/shopify';
+import { formatMoney } from '@/lib/money';
 
 function calculateDiscount(price: number, comparePrice: number): number {
   if (!comparePrice || comparePrice <= price) return 0;
@@ -14,7 +9,7 @@ function calculateDiscount(price: number, comparePrice: number): number {
 }
 
 export default async function Bundles() {
-  const products = await getProductsByCollection('huge-savings');
+  const products = (await getProductsByCollection('huge-savings')) as ShopifyProductEdge[];
 
   return (
     <section className="py-16 bg-gray-50">
@@ -40,13 +35,17 @@ export default async function Bundles() {
           </p>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {products.map(({ node }: { node: any }) => {
+            {products.map(({ node }) => {
               const price = parseFloat(node.priceRange.minVariantPrice.amount);
               const comparePrice = node.compareAtPriceRange?.minVariantPrice?.amount 
                 ? parseFloat(node.compareAtPriceRange.minVariantPrice.amount)
                 : null;
               const discount = comparePrice ? calculateDiscount(price, comparePrice) : 0;
               const imageUrl = node.images.edges[0]?.node.url || '/product-1.jpg';
+              const currency = node.priceRange.minVariantPrice.currencyCode;
+              const compareCurrency =
+                node.compareAtPriceRange?.minVariantPrice?.currencyCode || currency;
+
               return (
                 <Link
                   key={node.id}
@@ -70,11 +69,11 @@ export default async function Bundles() {
                     
                     <div className="flex items-center justify-center gap-2 flex-wrap">
                       <span className="font-black text-black text-sm">
-                        {formatPrice(node.priceRange.minVariantPrice.amount, 'MAD')}
+                        {formatMoney(node.priceRange.minVariantPrice.amount, currency)}
                       </span>
                       {comparePrice && comparePrice > price && (
                         <span className="text-xs text-gray-500 line-through">
-                          {formatPrice(comparePrice.toString(), 'MAD')}
+                          {formatMoney(comparePrice.toString(), compareCurrency)}
                         </span>
                       )}
                     </div>

@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { X, ShoppingBag, Plus, Minus, Trash2, ArrowRight, Loader2 } from 'lucide-react';
 import { useCartStore } from '@/lib/cartStore';
-import { useCurrencyStore } from '@/lib/currencyStore';
+import { formatMoney } from '@/lib/money';
 
 export default function CartDrawer() {
   const {
@@ -13,45 +13,38 @@ export default function CartDrawer() {
     items,
     totalQuantity,
     subtotal,
+    subtotalCurrency,
     checkoutUrl,
     isLoading,
     removeItem,
     updateQuantity,
   } = useCartStore();
 
-  const { currency, rate } = useCurrencyStore();
-
-  const formatPriceLocal = (amount: string) => {
-    const numericAmount = parseFloat(amount) * rate;
-    if (currency === 'USD') return `US$${numericAmount.toFixed(2)}`;
-    if (currency === 'EUR') return `€${numericAmount.toFixed(2)}`;
-    return `£${numericAmount.toFixed(2)}`;
-  };
-
   const drawerRef = useRef<HTMLDivElement>(null);
 
-  // Close on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (drawerRef.current && !drawerRef.current.contains(e.target as Node)) {
         closeCart();
       }
     }
+
     if (isOpen) {
       document.addEventListener('mousedown', handleClick);
       document.body.style.overflow = 'hidden';
     }
+
     return () => {
       document.removeEventListener('mousedown', handleClick);
       document.body.style.overflow = '';
     };
   }, [isOpen, closeCart]);
 
-  // Close on Escape
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
       if (e.key === 'Escape') closeCart();
     }
+
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
   }, [closeCart]);
@@ -64,21 +57,18 @@ export default function CartDrawer() {
 
   return (
     <>
-      {/* Backdrop */}
       <div
         className={`fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${
           isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
       />
 
-      {/* Drawer */}
       <div
         ref={drawerRef}
         className={`fixed top-0 right-0 z-50 h-full w-full max-w-md bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-out ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
           <div className="flex items-center gap-3">
             <ShoppingBag className="w-5 h-5 text-purple-700" />
@@ -100,17 +90,14 @@ export default function CartDrawer() {
           </button>
         </div>
 
-        {/* Loading overlay */}
         {isLoading && (
           <div className="absolute inset-0 z-10 bg-white/70 flex items-center justify-center">
             <Loader2 className="w-8 h-8 text-purple-700 animate-spin" />
           </div>
         )}
 
-        {/* Content */}
         <div className="flex-1 overflow-y-auto">
           {items.length === 0 ? (
-            /* Empty state */
             <div className="flex flex-col items-center justify-center h-full gap-6 px-8 text-center">
               <div className="w-20 h-20 rounded-full bg-purple-50 flex items-center justify-center">
                 <ShoppingBag className="w-9 h-9 text-purple-700" />
@@ -135,7 +122,6 @@ export default function CartDrawer() {
             <ul className="divide-y divide-gray-100 px-6">
               {items.map((item) => (
                 <li key={item.lineId} className="py-5 flex gap-4">
-                  {/* Image */}
                   <div className="relative w-20 h-20 rounded-xl bg-gray-100 overflow-hidden flex-shrink-0">
                     {item.imageUrl ? (
                       <Image
@@ -152,7 +138,6 @@ export default function CartDrawer() {
                     )}
                   </div>
 
-                  {/* Details */}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-black text-gray-900 truncate uppercase tracking-wide" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
                       {item.title}
@@ -161,10 +146,9 @@ export default function CartDrawer() {
                       <p className="text-xs text-gray-500 mt-0.5">{item.variantTitle}</p>
                     )}
                     <p className="text-sm font-bold text-purple-700 mt-1">
-                      {formatPriceLocal(item.price)}
+                      {formatMoney(item.price, item.currencyCode)}
                     </p>
 
-                    {/* Qty controls */}
                     <div className="flex items-center gap-2 mt-3">
                       <button
                         onClick={() => updateQuantity(item.lineId, item.quantity - 1)}
@@ -202,21 +186,18 @@ export default function CartDrawer() {
           )}
         </div>
 
-        {/* Footer — only shown when cart has items */}
         {items.length > 0 && (
           <div className="border-t border-gray-100 px-6 py-6 space-y-4 bg-white">
-            {/* Subtotal */}
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-500">Subtotal</span>
               <span className="text-xl font-black text-gray-900">
-                {formatPriceLocal(subtotal)}
+                {formatMoney(subtotal, subtotalCurrency)}
               </span>
             </div>
             <p className="text-xs text-gray-400">
-              Shipping & taxes calculated at checkout
+              Shipping and taxes calculated at checkout
             </p>
 
-            {/* Checkout CTA */}
             <button
               onClick={handleCheckout}
               disabled={!checkoutUrl || isLoading}
@@ -232,15 +213,13 @@ export default function CartDrawer() {
               )}
             </button>
 
-            {/* Continue shopping */}
             <button
               onClick={closeCart}
               className="w-full py-2 text-sm text-gray-500 hover:text-purple-700 transition-colors font-medium"
             >
-              ← Continue Shopping
+              Continue Shopping
             </button>
 
-            {/* Trust badges */}
             <div className="flex items-center justify-center gap-4 pt-2 border-t border-gray-100">
               <span className="text-[10px] text-gray-400 flex items-center gap-1">
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>

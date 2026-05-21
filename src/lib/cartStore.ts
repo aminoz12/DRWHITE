@@ -66,7 +66,7 @@ export const useCartStore = create<CartState>()(
       items: [],
       totalQuantity: 0,
       subtotal: '0',
-      subtotalCurrency: 'GBP',
+      subtotalCurrency: 'USD',
       isOpen: false,
       isLoading: false,
 
@@ -115,6 +115,7 @@ export const useCartStore = create<CartState>()(
               items: cartToItems(cart),
               totalQuantity: cart.totalQuantity,
               subtotal: cart.cost.subtotalAmount.amount,
+              subtotalCurrency: cart.cost.subtotalAmount.currencyCode,
             });
           }
         } catch (err) {
@@ -138,6 +139,7 @@ export const useCartStore = create<CartState>()(
               items: cartToItems(cart),
               totalQuantity: cart.totalQuantity,
               subtotal: cart.cost.subtotalAmount.amount,
+              subtotalCurrency: cart.cost.subtotalAmount.currencyCode,
             });
           }
         } catch (err) {
@@ -154,6 +156,7 @@ export const useCartStore = create<CartState>()(
           items: [],
           totalQuantity: 0,
           subtotal: '0',
+          subtotalCurrency: 'USD',
           isOpen: false,
         }),
     }),

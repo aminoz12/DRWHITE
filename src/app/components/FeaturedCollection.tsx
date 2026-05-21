@@ -4,15 +4,17 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getProductsByCollection } from '@/lib/shopify';
+import type { ShopifyProductEdge } from '@/lib/shopify';
+import { formatMoney } from '@/lib/money';
 
 export default function FeaturedCollection() {
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<ShopifyProductEdge[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const data = await getProductsByCollection('featured');
+        const data = (await getProductsByCollection('featured')) as ShopifyProductEdge[];
         setProducts(data.slice(0, 4)); // Show 4 products
       } catch (error) {
         console.error('Failed to fetch featured products:', error);
@@ -39,13 +41,10 @@ export default function FeaturedCollection() {
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-          {products.map((product: any) => {
+          {products.map((product) => {
             const node = product.node;
             const price = node.priceRange.minVariantPrice;
-            const formattedPrice = new Intl.NumberFormat('en-US', {
-              style: 'currency',
-              currency: price.currencyCode,
-            }).format(parseFloat(price.amount));
+            const formattedPrice = formatMoney(price.amount, price.currencyCode);
 
             return (
               <Link

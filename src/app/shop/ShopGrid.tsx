@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Search, ChevronDown, SlidersHorizontal, LayoutGrid, List } from 'lucide-react';
+import { Search, ChevronDown } from 'lucide-react';
 import ProductCard from '@/app/components/ProductCard';
 
 interface Product {
@@ -40,8 +40,6 @@ export default function ShopGrid({ products }: { products: Product[] }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('featured');
   const [inStockOnly, setInStockOnly] = useState(false);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-
   const filteredProducts = useMemo(() => {
     let result = products.filter((p) =>
       p.node.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -70,7 +68,7 @@ export default function ShopGrid({ products }: { products: Product[] }) {
     }
 
     return result;
-  }, [products, searchQuery, sortBy]);
+  }, [products, searchQuery, sortBy, inStockOnly]);
 
   return (
     <div className="space-y-8">
@@ -123,10 +121,7 @@ export default function ShopGrid({ products }: { products: Product[] }) {
           </button>
         </div>
       ) : (
-        <div className={viewMode === 'grid' 
-          ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-3 gap-y-8"
-          : "flex flex-col gap-6"
-        }>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-3 gap-y-8">
           {filteredProducts.map((product) => (
             <ProductCard key={product.node.id} product={product.node} />
           ))}
