@@ -1,28 +1,34 @@
 'use client';
 
 import Link from 'next/link';
-import { Mail } from 'lucide-react';
-
-// TikTok Icon SVG
-const TikTokIcon = () => (
-  <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg">
-    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1 .05A6.33 6.33 0 0 0 5 20.1a6.33 6.33 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/>
-  </svg>
-);
 
 // Facebook Icon SVG
 const FacebookIcon = () => (
   <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg">
-    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+  </svg>
+);
+
+// Twitter Icon SVG
+const TwitterIcon = () => (
+  <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg">
+    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
   </svg>
 );
 
 // Instagram Icon SVG
 const InstagramIcon = () => (
-  <svg viewBox="0 0 24 24" className="w-5 h-5 fill-none stroke-current" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+  <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="currentColor" strokeWidth="2"/>
+    <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" strokeWidth="2"/>
+    <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor"/>
+  </svg>
+);
+
+// Pinterest Icon SVG
+const PinterestIcon = () => (
+  <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm6.6 8.8c0 .2 0 .4 0 .6 0 5.8-4.4 12.4-12.4 12.4-2.5 0-4.8-.7-6.7-2 .3 0 .7.1 1 .1 2 0 3.9-.7 5.4-1.8-1.9 0-3.5-1.3-4-3 .3 0 .6.1.9.1.4 0 .8 0 1.2-.1-2-.4-3.5-2.2-3.5-4.3v0c.6.3 1.2.5 1.9.5-1.2-.8-1.9-2.1-1.9-3.6 0-.8.2-1.5.6-2.2 2.1 2.6 5.3 4.3 8.9 4.5-.1-.3-.1-.7-.1-1 0-2.5 2-4.5 4.5-4.5 1.3 0 2.5.5 3.3 1.4 1-.2 2-.6 2.9-1.1-.3 1-1 1.8-1.9 2.3.9-.1 1.7-.3 2.5-.7-.6.9-1.3 1.7-2.1 2.4z"/>
   </svg>
 );
 
@@ -101,17 +107,17 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold mb-4 text-white/90">Follow Us</h4>
             <div className="flex space-x-4">
-              <a href="https://instagram.com" className="text-white/70 hover:text-white transition-colors" aria-label="Instagram">
-                <InstagramIcon />
-              </a>
               <a href="https://facebook.com" className="text-white/70 hover:text-white transition-colors" aria-label="Facebook">
                 <FacebookIcon />
               </a>
-              <a href="https://tiktok.com" className="text-white/70 hover:text-white transition-colors" aria-label="TikTok">
-                <TikTokIcon />
+              <a href="https://twitter.com" className="text-white/70 hover:text-white transition-colors" aria-label="Twitter">
+                <TwitterIcon />
               </a>
-              <a href="mailto:contact@cliniwhite.com" className="text-white/70 hover:text-white transition-colors" aria-label="Email">
-                <Mail className="w-5 h-5" />
+              <a href="https://instagram.com" className="text-white/70 hover:text-white transition-colors" aria-label="Instagram">
+                <InstagramIcon />
+              </a>
+              <a href="https://pinterest.com" className="text-white/70 hover:text-white transition-colors" aria-label="Pinterest">
+                <PinterestIcon />
               </a>
             </div>
           </div>

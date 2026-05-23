@@ -3,11 +3,47 @@ import { getProducts } from '@/lib/shopify';
 import type { ShopifyProductEdge } from '@/lib/shopify';
 import { formatMoney } from '@/lib/money';
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://cliniwhite.com';
+
 export default async function BestSellers() {
   const products = (await getProducts()) as ShopifyProductEdge[];
 
+  const productListSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: products.slice(0, 5).map((p, i) => {
+      const node = p.node;
+      const image = node.images?.edges[0]?.node;
+      const price = node.priceRange?.minVariantPrice;
+      return {
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'Product',
+          name: node.title,
+          url: `${SITE_URL}/product/${node.handle}`,
+          image: image?.url,
+          brand: { '@type': 'Brand', name: 'CLINI WHITE' },
+          offers: {
+            '@type': 'Offer',
+            price: price?.amount,
+            priceCurrency: price?.currencyCode || 'GBP',
+            availability: 'https://schema.org/InStock',
+            url: `${SITE_URL}/product/${node.handle}`,
+          },
+        },
+      };
+    }),
+  };
+
   return (
-    <section className="py-12 bg-[#EBF2FA]">
+    <section className="py-12 bg-[#EBF2FA]" aria-labelledby="bestsellers-heading">
+      {products.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(productListSchema) }}
+        />
+      )}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Trustpilot */}
         <div className="flex items-center justify-center gap-2 mb-6">
@@ -23,6 +59,7 @@ export default async function BestSellers() {
             SHOP THE RANGE
           </p>
           <h2
+            id="bestsellers-heading"
             className="text-4xl md:text-5xl font-black text-black leading-none uppercase tracking-tighter"
             style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
           >

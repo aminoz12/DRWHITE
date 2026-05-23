@@ -29,14 +29,29 @@ export default function FAQ() {
     setOpenIndex(openIndex === index ? null : index);
   };
 
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: { '@type': 'Answer', text: f.answer },
+    })),
+  };
+
   return (
-    <section className="py-24 bg-[#F8FAFC]">
+    <section className="py-24 bg-[#F8FAFC]" aria-labelledby="faq-heading">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <p className="text-[#0047AB] text-xs font-black tracking-[0.3em] uppercase mb-4">
             FREQUENTLY ASKED
           </p>
           <h2 
+            id="faq-heading"
             className="text-4xl md:text-5xl font-black text-black leading-none uppercase tracking-tighter"
             style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
           >
