@@ -11,7 +11,7 @@ const SHOPIFY_ACCOUNT = SHOPIFY_ACCOUNT_URL || 'https://dr-white-5537.myshopify.
 const leftNav = [
   { label: 'SHOP ALL', href: '/shop' },
   { label: 'BESTSELLERS', href: '/shop' },
-  { label: 'ACCESSORIES', href: '/shop' },
+  { label: 'RESULTS', href: '/results' },
   { label: 'ABOUT', href: '/about' },
   { label: 'SALE', href: '/shop' },
 ];
