@@ -26,13 +26,13 @@ const sampleMarkers: GlobeMarker[] = [
 
 export default function Worldwide() {
   return (
-    <section className="py-20 bg-[#0047AB]">
+    <section className="py-20 bg-[#F3F6F9]">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-4 uppercase">
-            We Are Worldwide
+          <h2 className="text-4xl md:text-5xl font-extrabold text-[#1A1A1A] tracking-tight mb-4 uppercase">
+            We Are <span className="text-[#0047AB]">Worldwide</span>
           </h2>
-          <p className="text-white/80 font-bold tracking-[0.15em] text-sm uppercase text-center max-w-2xl mx-auto">
+          <p className="text-[#4A4A4A] font-bold tracking-[0.15em] text-sm uppercase text-center max-w-2xl mx-auto">
             Trusted by customers across 50+ countries. Experience CLINI WHITE wherever you are.
           </p>
         </div>
