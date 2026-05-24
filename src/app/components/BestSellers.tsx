@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { getProducts } from '@/lib/shopify';
 import type { ShopifyProductEdge } from '@/lib/shopify';
-import { formatMoney } from '@/lib/money';
+import ProductCard from './ProductCard';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://cliniwhite.com';
 
@@ -74,42 +74,10 @@ export default async function BestSellers() {
             <p className="text-sm mt-2">SHOPIFY_STORE_DOMAIN and SHOPIFY_STOREFRONT_ACCESS_TOKEN</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {products.slice(0, 5).map((product) => {
-              const node = product.node;
-              const image = node.images?.edges[0]?.node;
-              const price = node.priceRange?.minVariantPrice;
-
-              return (
-                <Link key={node.id} href={`/product/${node.handle}`} className="group block">
-                  {/* Image - No Card Frame */}
-                  <div className="relative aspect-square mb-4">
-                    {image ? (
-                      <img
-                        src={image.url}
-                        alt={image.altText || node.title}
-                        className="w-full h-full object-contain"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-400">
-                        No Image
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Product Info */}
-                  <div className="text-center">
-                    <h3 className="font-black text-black text-xs leading-tight mb-2 uppercase tracking-wide">
-                      {node.title}
-                    </h3>
-
-                    <span className="font-black text-black text-sm">
-                      {formatMoney(price?.amount, price?.currencyCode)}
-                    </span>
-                  </div>
-                </Link>
-              );
-            })}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {products.slice(0, 5).map((product) => (
+              <ProductCard key={product.node.id} product={product.node} />
+            ))}
           </div>
         )}
       </div>

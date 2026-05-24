@@ -4,7 +4,7 @@ import WhyCliniWhite from "./components/WhyCliniWhite";
 import HowItWorks from "./components/HowItWorks";
 import Bundles from "./components/Bundles";
 import WhyItWorks from "./components/WhyItWorks";
-import Reviews from "./components/Reviews";
+import Worldwide from "./components/Worldwide";
 import FAQ from "./components/FAQ";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -20,7 +20,7 @@ export default async function Home() {
         <WhyCliniWhite />
         <Bundles />
         <WhyItWorks />
-        <Reviews />
+        <Worldwide />
         <FAQ />
       </main>
       <Footer />

@@ -28,6 +28,7 @@ export interface ShopifyProductNode {
   title: string;
   handle: string;
   description: string;
+  tags?: string[];
   priceRange: {
     minVariantPrice: ShopifyMoney;
   };
@@ -37,6 +38,10 @@ export interface ShopifyProductNode {
   images: {
     edges: Array<{ node: ShopifyProductImage }>;
   };
+  options?: Array<{
+    name: string;
+    values: string[];
+  }>;
   variants?: {
     edges: Array<{ node: ShopifyProductVariant }>;
   };
@@ -117,6 +122,11 @@ export async function getProducts() {
                 currencyCode
               }
             }
+            tags
+            options {
+              name
+              values
+            }
             images(first: 2) {
               edges {
                 node {
@@ -171,6 +181,11 @@ export async function getProductsByCollection(handle: string) {
                   amount
                   currencyCode
                 }
+              }
+              tags
+              options {
+                name
+                values
               }
               images(first: 1) {
                 edges {

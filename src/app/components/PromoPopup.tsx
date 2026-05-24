@@ -1,166 +1,251 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { X, Check, Loader2 } from 'lucide-react';
-import Image from 'next/image';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { X, Check, Loader2, Sparkles } from 'lucide-react';
 
 export default function PromoPopup() {
   const [isVisible, setIsVisible] = useState(false);
+  const [shouldRender, setShouldRender] = useState(false);
+  const [isScratched, setIsScratched] = useState(false);
+  const [scratchedPercent, setScratchedPercent] = useState(0);
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [shouldRender, setShouldRender] = useState(false);
+
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isDrawing = useRef(false);
 
   useEffect(() => {
-    // Check if user has already dismissed or claimed the offer
     const hasSeenPromo = localStorage.getItem('clini_white_promo_dismissed');
-    
     if (!hasSeenPromo) {
       const timer = setTimeout(() => {
         setShouldRender(true);
-        // Small delay for entrance animation
         setTimeout(() => setIsVisible(true), 50);
-      }, 5000);
-
+      }, 2500);
       return () => clearTimeout(timer);
     }
   }, []);
 
-  const handleDismiss = () => {
+  // Initialize scratch canvas
+  useEffect(() => {
+    if (!shouldRender || !canvasRef.current) return;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+
+    // Fill with gold gradient
+    const gradient = ctx.createLinearGradient(0, 0, rect.width, rect.height);
+    gradient.addColorStop(0, '#D4AF37');
+    gradient.addColorStop(0.3, '#FFD700');
+    gradient.addColorStop(0.5, '#F0E68C');
+    gradient.addColorStop(0.7, '#FFD700');
+    gradient.addColorStop(1, '#B8860B');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, rect.width, rect.height);
+
+    // Add noise/grain texture
+    for (let i = 0; i < 5000; i++) {
+      const x = Math.random() * rect.width;
+      const y = Math.random() * rect.height;
+      ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.15})`;
+      ctx.fillRect(x, y, 1, 1);
+    }
+
+    // Add diagonal shine lines
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    ctx.lineWidth = 20;
+    for (let i = -rect.height; i < rect.width + rect.height; i += 60) {
+      ctx.beginPath();
+      ctx.moveTo(i, 0);
+      ctx.lineTo(i + rect.height * 0.5, rect.height);
+      ctx.stroke();
+    }
+
+    // "SCRATCH HERE" text
+    ctx.font = 'bold 28px system-ui, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('SCRATCH HERE', rect.width / 2, rect.height / 2);
+
+    // Track scratched area
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const totalPixels = imageData.data.length / 4;
+
+    const checkScratched = () => {
+      const current = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      let transparent = 0;
+      for (let i = 3; i < current.data.length; i += 4) {
+        if (current.data[i] === 0) transparent++;
+      }
+      const percent = (transparent / totalPixels) * 100;
+      setScratchedPercent(percent);
+      if (percent > 35 && !isScratched) {
+        setIsScratched(true);
+        // Fade out remaining scratch layer
+        ctx.clearRect(0, 0, rect.width, rect.height);
+      }
+    };
+
+    const handleMove = (clientX: number, clientY: number) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.beginPath();
+      ctx.arc(x, y, 30, 0, Math.PI * 2);
+      ctx.fill();
+      checkScratched();
+    };
+
+    const onMouseDown = () => { isDrawing.current = true; };
+    const onMouseUp = () => { isDrawing.current = false; };
+    const onMouseMove = (e: MouseEvent) => {
+      if (!isDrawing.current) return;
+      handleMove(e.clientX, e.clientY);
+    };
+    const onTouchStart = (e: TouchEvent) => {
+      isDrawing.current = true;
+      const touch = e.touches[0];
+      handleMove(touch.clientX, touch.clientY);
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      if (!isDrawing.current) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      handleMove(touch.clientX, touch.clientY);
+    };
+    const onTouchEnd = () => { isDrawing.current = false; };
+
+    canvas.addEventListener('mousedown', onMouseDown);
+    canvas.addEventListener('mouseup', onMouseUp);
+    canvas.addEventListener('mouseleave', onMouseUp);
+    canvas.addEventListener('mousemove', onMouseMove);
+    canvas.addEventListener('touchstart', onTouchStart, { passive: false });
+    canvas.addEventListener('touchmove', onTouchMove, { passive: false });
+    canvas.addEventListener('touchend', onTouchEnd);
+
+    return () => {
+      canvas.removeEventListener('mousedown', onMouseDown);
+      canvas.removeEventListener('mouseup', onMouseUp);
+      canvas.removeEventListener('mouseleave', onMouseUp);
+      canvas.removeEventListener('mousemove', onMouseMove);
+      canvas.removeEventListener('touchstart', onTouchStart);
+      canvas.removeEventListener('touchmove', onTouchMove);
+      canvas.removeEventListener('touchend', onTouchEnd);
+    };
+  }, [shouldRender, isScratched]);
+
+  const handleDismiss = useCallback(() => {
     setIsVisible(false);
-    // Wait for animation to finish before unmounting
     setTimeout(() => {
       setShouldRender(false);
       localStorage.setItem('clini_white_promo_dismissed', 'true');
     }, 300);
-  };
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleClaim = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
-
     setIsSubmitting(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
+    await new Promise(r => setTimeout(r, 1500));
     setIsSubmitting(false);
     setIsSubmitted(true);
     localStorage.setItem('clini_white_promo_dismissed', 'true');
-
-    // Auto-close after success message
-    setTimeout(() => {
-      setIsVisible(false);
-      setTimeout(() => setShouldRender(false), 300);
-    }, 3000);
+    setTimeout(() => handleDismiss(), 2500);
   };
 
   if (!shouldRender) return null;
 
   return (
     <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
-      {/* Overlay */}
-      <div 
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={handleDismiss}
-      />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={handleDismiss} />
 
-      {/* Modal Container */}
-      <div className={`relative w-full max-w-4xl bg-white rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row transition-transform duration-500 ease-out ${isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-8'}`}>
-        
-        {/* Close Button */}
-        <button 
-          onClick={handleDismiss}
-          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/80 hover:bg-white text-gray-800 transition-colors shadow-sm"
-          aria-label="Close popup"
-        >
+      <div className={`relative w-full max-w-xl bg-white rounded-2xl overflow-hidden shadow-2xl transition-transform duration-500 ease-out ${isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-8'}`}>
+        {/* Close */}
+        <button onClick={handleDismiss} className="absolute top-3 left-3 z-20 p-1.5 text-black hover:opacity-60 transition-opacity" aria-label="Close">
           <X className="w-5 h-5" />
         </button>
 
-        {/* Left Side: Image */}
-        <div className="relative w-full md:w-1/2 aspect-square md:aspect-auto bg-gradient-to-br from-[#003c8f] to-[#001f4d] flex items-center justify-center overflow-hidden">
-          <div className="absolute inset-0 opacity-20">
-             {/* Decorative pattern or glow */}
-             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-[radial-gradient(circle,rgba(255,255,255,0.2)_0%,transparent_70%)]" />
-          </div>
-          
-          <div className="relative z-0 w-3/4 h-3/4">
-            <Image
-              src="/promo.png"
-              alt="CLINI WHITE Product"
-              fill
-              className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
-            />
-          </div>
+        <div className="pt-10 pb-8 px-8 flex flex-col items-center text-center">
+          {/* Brand */}
+          <h3 className="text-black font-black text-xl tracking-tighter italic mb-2" style={{ fontFamily: 'Georgia, serif' }}>
+            CLINI WHITE
+          </h3>
 
-          {/* Offer Badge */}
-          <div className="absolute top-6 left-6 bg-white text-[#003c8f] font-black px-4 py-2 rounded-full text-sm uppercase tracking-wider shadow-lg transform -rotate-6">
-            LIMITED OFFER
-          </div>
-        </div>
+          {!isScratched ? (
+            <>
+              <h2 className="text-4xl font-black text-black leading-tight mb-1">
+                Try your luck
+              </h2>
+              <p className="text-base text-gray-500 mb-8">Scratch below to see what you win</p>
 
-        {/* Right Side: Content */}
-        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center text-center">
-          <div className="mb-6">
-            <h3 className="text-[#003c8f] font-black text-xl tracking-tighter mb-2">CLINI WHITE</h3>
-            <h2 className="text-4xl md:text-5xl font-black text-gray-900 leading-none mb-4 tracking-tighter">
-              BUY 1 GET 1 <br />
-              <span className="text-[#003c8f]">FOR FREE</span>
-            </h2>
-            <p className="text-gray-600 font-medium">
-              Join our list and we'll send your exclusive <br className="hidden md:block" /> limited offer straight to your email.
-            </p>
-          </div>
-
-          {isSubmitted ? (
-            <div className="bg-green-50 text-green-700 p-6 rounded-xl border border-green-100 animate-in fade-in zoom-in duration-300">
-              <div className="flex justify-center mb-3">
-                <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
-                  <Check className="w-6 h-6 text-white" strokeWidth={3} />
+              {/* Scratch card area */}
+              <div ref={containerRef} className="relative w-full max-w-[360px] aspect-[3/2] mx-auto rounded-xl overflow-hidden select-none">
+                {/* Hidden prize */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-red-500 to-pink-600">
+                  <div className="text-white font-black text-5xl leading-none drop-shadow-lg">
+                    -60%
+                  </div>
+                  <div className="text-white/90 font-bold text-sm uppercase tracking-wider mt-1">
+                    OFFERED
+                  </div>
                 </div>
-              </div>
-              <h4 className="font-black text-lg uppercase tracking-tight">Offer Sent!</h4>
-              <p className="text-sm font-medium">Check your inbox for the discount code.</p>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="relative">
-                <input
-                  type="email"
-                  placeholder="Your email address"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-6 py-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-[#003c8f] focus:bg-white outline-none transition-all text-gray-900 font-medium"
+                {/* Scratch canvas layer */}
+                <canvas
+                  ref={canvasRef}
+                  className="absolute inset-0 w-full h-full cursor-crosshair touch-none"
+                  style={{ touchAction: 'none' }}
                 />
               </div>
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full py-4 bg-[#003c8f] text-white font-black uppercase tracking-widest rounded-xl shadow-xl shadow-blue-900/20 hover:bg-[#002b66] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-              >
-                {isSubmitting ? (
-                  <Loader2 className="w-6 h-6 animate-spin" />
-                ) : (
-                  'CLAIM OFFER'
-                )}
-              </button>
+              <p className="text-xs text-gray-400 mt-5">Scratch the golden area to reveal your prize</p>
+            </>
+          ) : !isSubmitted ? (
+            <div className="animate-in fade-in zoom-in duration-500 w-full">
+              <h2 className="text-3xl font-black text-black leading-tight mb-1">
+                Congratulations!!
+              </h2>
+              <div className="flex items-center justify-center gap-1 mb-4">
+                <span className="text-red-500 font-black text-2xl">-60%</span>
+                <span className="text-gray-600 font-bold text-sm uppercase tracking-wider">OFF</span>
+              </div>
+              <p className="text-xs text-gray-500 mb-5">Enter your email to claim your exclusive discount</p>
 
-              <button
-                type="button"
-                onClick={handleDismiss}
-                className="text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-gray-600 transition-colors pt-2"
-              >
-                NO THANKS, I'LL PAY FULL PRICE
-              </button>
-            </form>
+              <form onSubmit={handleClaim} className="space-y-3 w-full max-w-xs mx-auto">
+                <input
+                  type="email"
+                  placeholder="Your email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:border-black focus:bg-white outline-none transition-all text-sm font-medium text-center"
+                />
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full py-3.5 bg-black text-white font-black uppercase tracking-widest text-xs rounded-lg hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                >
+                  {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Claim'}
+                </button>
+              </form>
+            </div>
+          ) : (
+            <div className="animate-in fade-in zoom-in duration-500 py-8">
+              <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Check className="w-8 h-8 text-white" strokeWidth={3} />
+              </div>
+              <h3 className="text-xl font-black text-black mb-1">Offer Claimed!</h3>
+              <p className="text-sm text-gray-500">Check your inbox for the -60% discount code.</p>
+            </div>
           )}
-
-          <p className="mt-8 text-[10px] text-gray-400 font-medium leading-relaxed">
-            By continuing, you agree to receive marketing emails from CLINI WHITE. <br />
-            You can unsubscribe at any time.
-          </p>
         </div>
       </div>
     </div>
