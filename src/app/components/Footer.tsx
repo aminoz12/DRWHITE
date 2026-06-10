@@ -105,10 +105,9 @@ export default function Footer() {
               CLINI WHITE is a solutions-oriented beauty brand, creating a world where everybody feels confident.
             </p>
             <div className="text-xs text-gray-600 leading-relaxed mb-1">
-              <p className="font-semibold text-gray-800">CLINI WHITE Ltd</p>
-              <p>8605 Santa Monica Boulevard, PMB 44698 West</p>
-              <p>Hollywood, CA 90069</p>
-              <p>United States</p>
+              <p className="font-semibold text-gray-800">CLINI WHITE by VIBZY LTD</p>
+              <p>82a James Carter Road, Mildenhall</p>
+              <p>United Kingdom, IP28 7DE</p>
             </div>
             <a href="mailto:vibzyltd@gmail.com" className="text-xs text-gray-600 hover:text-black underline mt-2 inline-block">
               vibzyltd@gmail.com
