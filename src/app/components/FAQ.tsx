@@ -40,13 +40,13 @@ export default function FAQ() {
   };
 
   return (
-    <section className="py-24 bg-[#F8FAFC]" aria-labelledby="faq-heading">
+    <section className="py-16 bg-[#F8FAFC]" aria-labelledby="faq-heading">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <div className="text-center mb-10">
           <p className="text-[#0047AB] text-xs font-black tracking-[0.3em] uppercase mb-4">
             FREQUENTLY ASKED
           </p>
@@ -109,7 +109,7 @@ export default function FAQ() {
             STILL HAVE QUESTIONS?
           </p>
           <a 
-            href="mailto:contact@cliniwhite.com"
+            href="mailto:vibzyltd@gmail.com"
             className="inline-flex items-center gap-2 text-[#0047AB] font-black text-sm uppercase tracking-wider hover:gap-3 transition-all"
           >
             Contact our support team <Plus className="w-4 h-4" />

@@ -94,7 +94,7 @@ const KlarnaIcon = () => (
 
 export default function Footer() {
   return (
-    <footer className="bg-[#f0eeeb] text-black pt-16 pb-8">
+    <footer className="bg-[#f0eeeb] text-black pt-10 pb-6">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top section - 4 columns */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-16">
@@ -110,8 +110,8 @@ export default function Footer() {
               <p>Hollywood, CA 90069</p>
               <p>United States</p>
             </div>
-            <a href="mailto:hey@cliniwhite.com" className="text-xs text-gray-600 hover:text-black underline mt-2 inline-block">
-              hey@cliniwhite.com
+            <a href="mailto:vibzyltd@gmail.com" className="text-xs text-gray-600 hover:text-black underline mt-2 inline-block">
+              vibzyltd@gmail.com
             </a>
 
             {/* Social Icons */}

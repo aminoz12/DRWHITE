@@ -26,7 +26,7 @@ const sampleMarkers: GlobeMarker[] = [
 
 export default function Worldwide() {
   return (
-    <section className="py-20 bg-[#F3F6F9]">
+    <section className="py-12 bg-[#F3F6F9]">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-extrabold text-[#1A1A1A] tracking-tight mb-4 uppercase">

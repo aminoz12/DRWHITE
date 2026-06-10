@@ -23,9 +23,9 @@ const features = [
 
 export default function WhyItWorks() {
   return (
-    <section className="py-16 bg-[#F0F4F8]">
+    <section className="py-12 bg-[#F0F4F8]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <div className="text-center mb-10">
           <p className="text-[#1A1A1A] text-xs font-black tracking-[0.3em] uppercase mb-4">
             SCIENCE & RESULTS
           </p>

@@ -43,9 +43,9 @@ const testimonials = [
 
 export default function HowItWorks() {
   return (
-    <section className="py-16 bg-[#F3F6F9]">
+    <section className="py-12 bg-[#F3F6F9]">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <div className="text-center mb-10">
           <p className="text-[#0047AB] text-xs font-black tracking-[0.3em] uppercase mb-4">
             SOCIAL PROOF
           </p>

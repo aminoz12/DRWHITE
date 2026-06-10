@@ -37,7 +37,7 @@ export default async function BestSellers() {
   };
 
   return (
-    <section className="py-12 bg-[#EBF2FA]" aria-labelledby="bestsellers-heading">
+    <section className="py-10 bg-[#EBF2FA]" aria-labelledby="bestsellers-heading">
       {products.length > 0 && (
         <script
           type="application/ld+json"
@@ -54,7 +54,7 @@ export default async function BestSellers() {
         </div>
 
         {/* Heading */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-10">
           <p className="text-[#0047AB] text-xs font-black tracking-[0.3em] uppercase mb-4">
             SHOP THE RANGE
           </p>
