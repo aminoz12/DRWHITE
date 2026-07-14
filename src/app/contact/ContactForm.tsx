@@ -1,0 +1,245 @@
+'use client';
+
+import { useState } from 'react';
+import { Send, CheckCircle2, Loader2 } from 'lucide-react';
+
+const TOPICS = [
+  'Order & Shipping',
+  'Product Question',
+  'Returns & Refunds',
+  'Wholesale & Partnerships',
+  'Other',
+];
+
+const inputClass =
+  'w-full bg-[#F8FAFC] border border-gray-200 rounded-xl px-5 py-4 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#0047AB] focus:bg-white focus:ring-4 focus:ring-blue-50 transition-all';
+
+const labelClass =
+  'block text-[11px] font-black uppercase tracking-widest text-gray-900 mb-2';
+
+function encode(data: Record<string, string>) {
+  return Object.keys(data)
+    .map((key) => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
+    .join('&');
+}
+
+export default function ContactForm() {
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [fields, setFields] = useState({
+    name: '',
+    email: '',
+    order: '',
+    topic: TOPICS[0],
+    message: '',
+  });
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    setFields((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setStatus('sending');
+    try {
+      const res = await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: encode({ 'form-name': 'contact', ...fields }),
+      });
+      if (!res.ok) throw new Error(`Form submission failed: ${res.status}`);
+      setStatus('sent');
+    } catch {
+      setStatus('error');
+    }
+  };
+
+  if (status === 'sent') {
+    return (
+      <div className="text-center py-16 px-6">
+        <div className="w-20 h-20 rounded-full bg-[#0047AB] flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-blue-200">
+          <CheckCircle2 className="w-10 h-10 text-white" />
+        </div>
+        <h3
+          className="font-display text-2xl md:text-3xl font-extrabold text-black mb-4 uppercase tracking-tight"
+        >
+          Message sent!
+        </h3>
+        <p className="text-gray-600 text-sm leading-relaxed max-w-sm mx-auto mb-8">
+          Thanks for reaching out, {fields.name.split(' ')[0] || 'friend'}. Our team will get
+          back to you at <span className="font-bold text-[#0047AB]">{fields.email}</span> within
+          24 hours (Mon&ndash;Fri).
+        </p>
+        <button
+          type="button"
+          onClick={() => {
+            setFields({ name: '', email: '', order: '', topic: TOPICS[0], message: '' });
+            setStatus('idle');
+          }}
+          className="inline-flex items-center gap-2 text-[#0047AB] font-black text-xs uppercase tracking-widest hover:gap-3 transition-all"
+        >
+          Send another message
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <form
+      name="contact"
+      method="POST"
+      data-netlify="true"
+      netlify-honeypot="bot-field"
+      onSubmit={handleSubmit}
+      className="space-y-6"
+    >
+      {/* Netlify form detection */}
+      <input type="hidden" name="form-name" value="contact" />
+      <p className="hidden">
+        <label>
+          Don&apos;t fill this out: <input name="bot-field" />
+        </label>
+      </p>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <label htmlFor="contact-name" className={labelClass}>
+            Full name <span className="text-[#0047AB]">*</span>
+          </label>
+          <input
+            id="contact-name"
+            type="text"
+            name="name"
+            required
+            value={fields.name}
+            onChange={handleChange}
+            placeholder="Jane Smith"
+            className={inputClass}
+          />
+        </div>
+        <div>
+          <label htmlFor="contact-email" className={labelClass}>
+            Email address <span className="text-[#0047AB]">*</span>
+          </label>
+          <input
+            id="contact-email"
+            type="email"
+            name="email"
+            required
+            value={fields.email}
+            onChange={handleChange}
+            placeholder="jane@example.com"
+            className={inputClass}
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <label htmlFor="contact-order" className={labelClass}>
+            Order number <span className="text-gray-400 normal-case font-bold">(optional)</span>
+          </label>
+          <input
+            id="contact-order"
+            type="text"
+            name="order"
+            value={fields.order}
+            onChange={handleChange}
+            placeholder="#CW-12345"
+            className={inputClass}
+          />
+        </div>
+        <div>
+          <label htmlFor="contact-topic" className={labelClass}>
+            Topic <span className="text-[#0047AB]">*</span>
+          </label>
+          <div className="relative">
+            <select
+              id="contact-topic"
+              name="topic"
+              required
+              value={fields.topic}
+              onChange={handleChange}
+              className={`${inputClass} appearance-none pr-12 cursor-pointer`}
+            >
+              {TOPICS.map((topic) => (
+                <option key={topic} value={topic}>
+                  {topic}
+                </option>
+              ))}
+            </select>
+            <svg
+              className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label htmlFor="contact-message" className={labelClass}>
+          Your message <span className="text-[#0047AB]">*</span>
+        </label>
+        <textarea
+          id="contact-message"
+          name="message"
+          required
+          rows={6}
+          value={fields.message}
+          onChange={handleChange}
+          placeholder="Tell us how we can help..."
+          className={`${inputClass} resize-none`}
+        />
+      </div>
+
+      {status === 'error' && (
+        <div className="bg-red-50 border border-red-100 rounded-xl px-5 py-4">
+          <p className="text-xs text-red-600 font-bold leading-relaxed">
+            Something went wrong sending your message. Please try again, or email us directly
+            at{' '}
+            <a
+              href={`mailto:vibzyltd@gmail.com?subject=${encodeURIComponent(`[${fields.topic}] Contact from ${fields.name}`)}&body=${encodeURIComponent(fields.message)}`}
+              className="underline text-[#0047AB]"
+            >
+              vibzyltd@gmail.com
+            </a>
+            .
+          </p>
+        </div>
+      )}
+
+      <button
+        type="submit"
+        disabled={status === 'sending'}
+        className="w-full inline-flex items-center justify-center gap-3 px-10 py-5 bg-[#0047AB] text-white text-sm font-black tracking-widest uppercase rounded-full hover:bg-[#003a8c] transition-all hover:scale-[1.02] shadow-2xl shadow-blue-200 disabled:opacity-60 disabled:hover:scale-100 disabled:cursor-not-allowed"
+        style={{ fontFamily: 'var(--font-geist-sans), system-ui' }}
+      >
+        {status === 'sending' ? (
+          <>
+            <Loader2 className="w-5 h-5 animate-spin" />
+            Sending...
+          </>
+        ) : (
+          <>
+            Send message
+            <Send className="w-4 h-4" />
+          </>
+        )}
+      </button>
+
+      <p className="text-[11px] text-gray-400 text-center leading-relaxed">
+        We typically reply within 24 hours, Monday to Friday. By submitting this form you agree
+        to our privacy policy.
+      </p>
+    </form>
+  );
+}
