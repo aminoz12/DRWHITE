@@ -28,8 +28,7 @@ export default async function BundlesPage() {
               LIMITED TIME
             </span>
             <h1
-              className="text-5xl md:text-7xl font-black text-white mb-6 leading-none"
-              style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}
+              className="font-display text-4xl md:text-6xl font-extrabold text-white mb-6 leading-none tracking-tight"
             >
               BUNDLE<br />
               <span className="text-[#A5C8FF]">&amp; SAVE</span>
@@ -97,8 +96,7 @@ export default async function BundlesPage() {
                 CURATED COMBINATIONS
               </p>
               <h2
-                className="text-4xl md:text-5xl font-black text-black"
-                style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}
+                className="font-display text-3xl md:text-4xl font-extrabold text-black tracking-tight"
               >
                 SHOP BUNDLES
               </h2>

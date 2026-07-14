@@ -120,7 +120,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
           {/* RIGHT: PRODUCT INFO */}
           <div className="flex flex-col space-y-6">
             <div className="space-y-5">
-              <h1 className="text-4xl lg:text-[42px] font-black uppercase tracking-tighter text-[#1a1a1a] leading-none">
+              <h1 className="font-display text-3xl lg:text-4xl font-extrabold uppercase tracking-tight text-[#1a1a1a] leading-none">
                 {product.title}
               </h1>
 
@@ -322,7 +322,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
       {/* REELS SECTION */}
       <div className="mt-12 lg:mt-20 border-t border-gray-100 pt-12 pb-16">
         <div className="max-w-[1200px] mx-auto px-4 mb-10">
-          <h2 className="text-3xl lg:text-4xl font-black uppercase tracking-tighter text-center">
+          <h2 className="font-display text-2xl lg:text-3xl font-extrabold uppercase tracking-tight text-center">
             Can&apos;t STOP SMILING WITH CLINI WHITE
           </h2>
         </div>

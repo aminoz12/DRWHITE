@@ -52,11 +52,10 @@ export default function FAQ() {
           </p>
           <h2 
             id="faq-heading"
-            className="text-4xl md:text-5xl font-black text-black leading-none uppercase tracking-tighter"
-            style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+            className="font-display text-3xl md:text-4xl font-extrabold text-black leading-tight uppercase tracking-tight"
           >
             GOT QUESTIONS?<br />
-            <span className="text-[#0047AB]">WE&apos;VE GOT ANSWERS</span>
+            <span className="text-[#231b50]">WE&apos;VE GOT ANSWERS</span>
           </h2>
         </div>
         

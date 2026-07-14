@@ -50,10 +50,9 @@ export default function HowItWorks() {
             SOCIAL PROOF
           </p>
           <h2 
-            className="text-4xl md:text-5xl font-black text-center text-[#1A1A1A] leading-none uppercase tracking-tighter"
-            style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+            className="font-display text-3xl md:text-4xl font-extrabold text-center text-[#1A1A1A] leading-tight uppercase tracking-tight"
           >
-            PEOPLE CAN&apos;T STOP <span className="text-[#0047AB]">SHARING</span><br />
+            PEOPLE CAN&apos;T STOP <span className="text-[#231b50]">SHARING</span><br />
             THEIR SMILE JOURNEY
           </h2>
         </div>

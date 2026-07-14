@@ -60,10 +60,9 @@ export default async function BestSellers() {
           </p>
           <h2
             id="bestsellers-heading"
-            className="text-4xl md:text-5xl font-black text-black leading-none uppercase tracking-tighter"
-            style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+            className="font-display text-3xl md:text-4xl font-extrabold text-black leading-none uppercase tracking-tight"
           >
-            OUR BEST <span className="text-[#0047AB]">SELLERS</span>
+            OUR BEST <span className="text-[#231b50]">SELLERS</span>
           </h2>
         </div>
 

@@ -41,7 +41,7 @@ export default function WhyCliniWhite() {
                 ADVANCED TECHNOLOGY
               </p>
 
-              <h2 className="text-4xl font-black text-black mb-4" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+              <h2 className="font-display text-3xl font-extrabold text-black mb-4 uppercase tracking-tight">
                 WHY CLINI WHITE?
               </h2>
 

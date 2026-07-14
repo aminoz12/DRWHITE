@@ -21,9 +21,8 @@ export default async function ShopPage() {
         {/* Reference Image Style Hero Section */}
         <section className="pt-24 pb-12 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 
-              className="text-5xl md:text-7xl font-[900] text-black mb-6 leading-[0.9] tracking-tight uppercase"
-              style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+            <h1
+              className="font-display text-4xl md:text-6xl font-extrabold text-black mb-6 leading-[0.95] tracking-tight uppercase"
             >
               GET STARTED WITH <br className="hidden md:block" /> TEETH WHITENING
             </h1>

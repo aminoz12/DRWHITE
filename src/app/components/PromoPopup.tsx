@@ -182,7 +182,7 @@ export default function PromoPopup() {
 
           {!isScratched ? (
             <>
-              <h2 className="text-4xl font-black text-black leading-tight mb-1">
+              <h2 className="font-display text-3xl font-extrabold text-black leading-tight mb-1">
                 Try your luck
               </h2>
               <p className="text-base text-gray-500 mb-8">Scratch below to see what you win</p>

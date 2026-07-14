@@ -42,8 +42,7 @@ export default function ResultsPage() {
               Verified Customer Photos
             </span>
             <h1
-              className="text-4xl md:text-5xl font-black text-white mb-4 leading-none"
-              style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}
+              className="font-display text-3xl md:text-4xl font-extrabold text-white mb-4 leading-none tracking-tight"
             >
               REAL<br />
               <span className="text-[#DDD6FE]">RESULTS</span>
@@ -96,8 +95,7 @@ export default function ResultsPage() {
                 UNFILTERED &amp; UNEDITED
               </p>
               <h2
-                className="text-4xl md:text-5xl font-black text-black"
-                style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}
+                className="font-display text-3xl md:text-4xl font-extrabold text-black tracking-tight"
               >
                 CUSTOMER TRANSFORMATIONS
               </h2>
@@ -113,8 +111,7 @@ export default function ResultsPage() {
               WHAT THEY&apos;RE SAYING
             </p>
             <h2
-              className="text-3xl md:text-4xl font-black text-black mb-12"
-              style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}
+              className="font-display text-2xl md:text-3xl font-extrabold text-black mb-12 tracking-tight"
             >
               FEATURED REVIEWS
             </h2>
@@ -173,8 +170,7 @@ export default function ResultsPage() {
         <section className="bg-white py-24 px-4 text-center border-t border-gray-100">
           <div className="max-w-2xl mx-auto">
             <h2
-              className="text-4xl font-black text-black mb-4"
-              style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}
+              className="font-display text-3xl font-extrabold text-black mb-4 tracking-tight"
             >
               READY FOR YOUR TRANSFORMATION?
             </h2>

@@ -30,10 +30,9 @@ export default function WhyItWorks() {
             SCIENCE & RESULTS
           </p>
           <h2 
-            className="text-4xl md:text-5xl font-black text-[#1A1A1A] leading-none uppercase tracking-tighter"
-            style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+            className="font-display text-3xl md:text-4xl font-extrabold text-[#1A1A1A] leading-none uppercase tracking-tight"
           >
-            WHY IT <span className="text-[#0047AB]">WORKS</span>
+            WHY IT <span className="text-[#231b50]">WORKS</span>
           </h2>
         </div>
         

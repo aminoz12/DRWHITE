@@ -13,10 +13,9 @@ export default async function Bundles() {
             EXCLUSIVE OFFERS
           </p>
           <h2 
-            className="text-4xl md:text-5xl font-black text-black leading-none uppercase tracking-tighter"
-            style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+            className="font-display text-3xl md:text-4xl font-extrabold text-black leading-none uppercase tracking-tight"
           >
-            HUGE <span className="text-[#0047AB]">SAVINGS</span>
+            HUGE <span className="text-[#231b50]">SAVINGS</span>
           </h2>
           <p className="text-gray-500 text-sm font-medium mt-4 max-w-lg mx-auto">
             Bundle your favorite products and unlock professional whitening for less.

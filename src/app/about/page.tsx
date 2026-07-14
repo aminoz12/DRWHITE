@@ -60,8 +60,7 @@ export default function AboutPage() {
               Our Story
             </span>
             <h1
-              className="text-5xl md:text-7xl font-black text-white mb-6 leading-none"
-              style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}
+              className="font-display text-4xl md:text-6xl font-extrabold text-white mb-6 leading-none tracking-tight"
             >
               WE BELIEVE EVERYONE DESERVES A<br />
               <span className="text-[#A5C8FF]">BRILLIANT SMILE</span>
@@ -80,8 +79,7 @@ export default function AboutPage() {
                 OUR MISSION
               </p>
               <h2
-                className="text-5xl md:text-6xl font-black text-black mb-14 leading-[1.1]"
-                style={{ fontFamily: 'var(--font-geist-sans), system-ui', letterSpacing: '-0.05em' }}
+                className="font-display text-4xl md:text-5xl font-extrabold text-black mb-14 leading-[1.1] tracking-tight"
               >
                 PROFESSIONAL RESULTS,<br />
                 WITHOUT THE PAIN
@@ -156,8 +154,7 @@ export default function AboutPage() {
                 WHAT WE STAND FOR
               </p>
               <h2
-                className="text-4xl md:text-5xl font-black text-black"
-                style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}
+                className="font-display text-3xl md:text-4xl font-extrabold text-black tracking-tight"
               >
                 OUR VALUES
               </h2>
@@ -220,11 +217,10 @@ export default function AboutPage() {
                 OUR JOURNEY
               </p>
               <h2
-                className="text-5xl md:text-7xl font-black text-black mb-10 leading-[1.05]"
-                style={{ fontFamily: 'var(--font-geist-sans), system-ui', letterSpacing: '-0.05em' }}
+                className="font-display text-4xl md:text-6xl font-extrabold text-black mb-10 leading-[1.05] tracking-tight"
               >
                 MAKING HISTORY<br />
-                <span className="text-[#0047AB]">SINCE DAY ONE</span>
+                <span className="text-[#231b50]">SINCE DAY ONE</span>
               </h2>
               <div className="max-w-2xl mx-auto">
                 <p 
@@ -289,8 +285,7 @@ export default function AboutPage() {
               ))}
             </div>
             <p
-              className="text-4xl md:text-5xl font-black text-black mb-6 leading-tight"
-              style={{ fontFamily: 'var(--font-geist-sans), system-ui', letterSpacing: '-0.04em' }}
+              className="font-display text-3xl md:text-4xl font-extrabold text-black mb-6 leading-tight tracking-tight"
             >
               &ldquo;CLINI WHITE CHANGED MY SMILE AND MY CONFIDENCE&rdquo;
             </p>

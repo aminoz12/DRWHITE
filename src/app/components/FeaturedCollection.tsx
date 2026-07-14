@@ -35,8 +35,8 @@ export default function FeaturedCollection() {
           <p className="text-[#0070f3] text-xs font-black tracking-[0.3em] uppercase mb-4">
             CUSTOMER FAVORITES
           </p>
-          <h2 className="text-4xl md:text-5xl font-black text-gray-900 leading-none uppercase tracking-tighter">
-            PEOPLE ALSO <span className="text-[#0070f3]">LOVE</span>
+          <h2 className="font-display text-3xl md:text-4xl font-extrabold text-gray-900 leading-none uppercase tracking-tight">
+            PEOPLE ALSO <span className="text-[#231b50]">LOVE</span>
           </h2>
         </div>
 
