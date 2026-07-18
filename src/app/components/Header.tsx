@@ -13,7 +13,6 @@ const leftNav = [
   { label: 'BESTSELLERS', href: '/shop' },
   { label: 'RESULTS', href: '/results' },
   { label: 'ABOUT', href: '/about' },
-  { label: 'SALE', href: '/shop' },
 ];
 
 export default function Header() {

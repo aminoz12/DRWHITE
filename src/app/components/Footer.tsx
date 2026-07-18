@@ -131,9 +131,7 @@ export default function Footer() {
             <ul className="space-y-3 text-xs text-gray-600">
               <li><Link href="/shop" className="hover:text-black hover:underline transition-colors">Shop all</Link></li>
               <li><Link href="/shop" className="hover:text-black hover:underline transition-colors">Bestsellers</Link></li>
-              <li><Link href="/shop" className="hover:text-black hover:underline transition-colors">Accessories</Link></li>
               <li><Link href="/about" className="hover:text-black hover:underline transition-colors">About</Link></li>
-              <li><Link href="/shop" className="hover:text-black hover:underline transition-colors">SALE</Link></li>
             </ul>
           </div>
 
