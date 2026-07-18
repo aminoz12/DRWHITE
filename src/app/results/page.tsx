@@ -1,5 +1,6 @@
 import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
+import Image from 'next/image';
 import ResultsGallery from './ResultsGallery';
 
 export const metadata = {
@@ -21,21 +22,15 @@ export default function ResultsPage() {
       <main>
         {/* Hero */}
         <section className="relative bg-[#7C3AED] py-12 px-4 text-center overflow-hidden">
-          <div className="absolute inset-0 opacity-10">
-            {[...Array(20)].map((_, i) => (
-              <div
-                key={i}
-                className="absolute rounded-full bg-white"
-                style={{
-                  width: `${Math.random() * 80 + 20}px`,
-                  height: `${Math.random() * 80 + 20}px`,
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  opacity: Math.random() * 0.5,
-                }}
-              />
-            ))}
-          </div>
+          <Image
+            src="/hero3.png"
+            alt=""
+            aria-hidden
+            fill
+            priority
+            className="object-cover object-top"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#7C3AED]/90 via-[#7C3AED]/60 to-[#7C3AED]/90" />
 
           <div className="relative z-10 max-w-2xl mx-auto">
             <span className="inline-block bg-white/20 text-white text-[10px] font-black tracking-widest px-3 py-1 rounded-full mb-4 uppercase">
