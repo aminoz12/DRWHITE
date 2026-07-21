@@ -32,7 +32,7 @@ export default function FeaturedCollection() {
     <section className="py-24 bg-white border-t border-gray-100">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-12 text-center lg:text-left">
-          <p className="text-[#0070f3] text-xs font-black tracking-[0.3em] uppercase mb-4">
+          <p className="text-[#231b50] text-xs font-black tracking-[0.3em] uppercase mb-4">
             CUSTOMER FAVORITES
           </p>
           <h2 className="font-display text-3xl md:text-4xl font-extrabold text-gray-900 leading-none uppercase tracking-tight">
@@ -67,10 +67,10 @@ export default function FeaturedCollection() {
                 </div>
 
                 <div className="space-y-1">
-                  <h3 className="font-bold text-gray-900 group-hover:text-[#0070f3] transition-colors line-clamp-1">
+                  <h3 className="font-bold text-gray-900 group-hover:text-[#231b50] transition-colors line-clamp-1">
                     {node.title}
                   </h3>
-                  <p className="text-[#0070f3] font-black">{formattedPrice}</p>
+                  <p className="text-[#231b50] font-black">{formattedPrice}</p>
                 </div>
               </Link>
             );

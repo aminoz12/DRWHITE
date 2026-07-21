@@ -2,12 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowRight, Star } from 'lucide-react';
-import { Playfair_Display } from 'next/font/google';
-
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-});
+import { STATS } from '@/lib/siteConfig';
 
 export default function Hero() {
   return (
@@ -15,7 +10,7 @@ export default function Hero() {
       {/* hero.jpeg - full width, sharp quality */}
       <img
         src="/hero.jpeg"
-        alt="DR.WHITE Teeth Whitening"
+        alt="CLINI WHITE Teeth Whitening"
         className="absolute inset-0 h-full w-full object-cover object-center"
         loading="eager"
       />
@@ -34,20 +29,20 @@ export default function Hero() {
                   <Star key={i} className="h-3 w-3 fill-black text-black" />
                 ))}
               </div>
-              <span className="text-[9px] font-bold tracking-wider uppercase text-black/60">
-                Rated 4.9 by 50,000+ customers
+              <span className="text-[11px] font-bold tracking-wider uppercase text-black/70">
+                Rated {STATS.ratingLabel} by {STATS.customers} customers
               </span>
             </div>
 
             {/* Headline */}
-            <h1 className={playfair.className} style={{ color: '#231b50' }}>
-              <span className="block text-3xl font-semibold leading-[1.15] sm:text-4xl lg:text-[52px]">
+            <h1 className="font-display font-extrabold tracking-tight" style={{ color: '#231b50' }}>
+              <span className="block text-3xl leading-[1.1] sm:text-4xl lg:text-[52px]">
                 Teeth Whitening
               </span>
-              <span className="block text-3xl font-semibold leading-[1.15] sm:text-4xl lg:text-[52px]">
+              <span className="block text-3xl leading-[1.1] sm:text-4xl lg:text-[52px]">
                 that adapts
               </span>
-              <span className="block text-3xl font-semibold leading-[1.15] sm:text-4xl lg:text-[52px]">
+              <span className="block text-3xl leading-[1.1] sm:text-4xl lg:text-[52px]">
                 to you
               </span>
             </h1>

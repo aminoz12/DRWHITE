@@ -18,7 +18,7 @@ export default async function BundlesPage() {
       <Header />
       <main>
         {/* Hero Banner */}
-        <section className="bg-[#0047AB] text-white py-20 px-4 text-center relative overflow-hidden">
+        <section className="bg-[#231b50] text-white py-20 px-4 text-center relative overflow-hidden">
           {/* Decorative circles */}
           <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-white/5 -translate-y-1/2 translate-x-1/3" />
           <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-white/5 translate-y-1/2 -translate-x-1/3" />
@@ -31,7 +31,7 @@ export default async function BundlesPage() {
               className="font-display text-4xl md:text-6xl font-extrabold text-white mb-6 leading-none tracking-tight"
             >
               BUNDLE<br />
-              <span className="text-[#A5C8FF]">&amp; SAVE</span>
+              <span className="text-[#C4B5FD]">&amp; SAVE</span>
             </h1>
             <p className="text-white/80 text-lg max-w-xl mx-auto mb-8 leading-relaxed">
               Stack your whitening routine and unlock serious savings. The more you bundle, the more you save.
@@ -52,7 +52,7 @@ export default async function BundlesPage() {
         </section>
 
         {/* Why Bundle */}
-        <section className="bg-[#EBF2FA] py-12 px-4">
+        <section className="bg-[#F5F3FF] py-12 px-4">
           <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6">
             {[
               {
@@ -73,11 +73,11 @@ export default async function BundlesPage() {
             ].map((item) => (
               <div
                 key={item.title}
-                className="bg-white rounded-2xl p-6 text-center shadow-sm border border-blue-100"
+                className="bg-white rounded-2xl p-6 text-center shadow-sm border border-violet-100"
               >
                 <span className="text-3xl mb-4 block">{item.icon}</span>
                 <h3
-                  className="text-sm font-black text-[#0047AB] uppercase tracking-wider mb-2"
+                  className="text-sm font-black text-[#231b50] uppercase tracking-wider mb-2"
                   style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
                 >
                   {item.title}
@@ -92,7 +92,7 @@ export default async function BundlesPage() {
         <section className="py-16 bg-white px-4">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
-              <p className="text-[#0047AB] text-xs font-black tracking-widest uppercase mb-3">
+              <p className="text-[#231b50] text-xs font-black tracking-widest uppercase mb-3">
                 CURATED COMBINATIONS
               </p>
               <h2
@@ -107,7 +107,7 @@ export default async function BundlesPage() {
         </section>
 
         {/* Guarantee Strip */}
-        <section className="bg-[#0047AB] py-10 px-4">
+        <section className="bg-[#231b50] py-10 px-4">
           <div className="max-w-4xl mx-auto text-center">
             <p
               className="text-white text-xl font-black mb-2"

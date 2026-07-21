@@ -1,12 +1,14 @@
+import { CURRENCY } from './siteConfig';
+
 export function formatMoney(
   amount: string | number | null | undefined,
   currencyCode: string | null | undefined,
-  locale = 'en-US'
+  locale = CURRENCY.locale
 ) {
   const value =
     typeof amount === 'number' ? amount : Number.parseFloat(amount ?? '0');
   const safeValue = Number.isFinite(value) ? value : 0;
-  const safeCurrency = currencyCode || 'USD';
+  const safeCurrency = currencyCode || CURRENCY.code;
 
   try {
     return new Intl.NumberFormat(locale, {

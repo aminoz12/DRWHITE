@@ -3,6 +3,8 @@ import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
 import PromoPopup from "./components/PromoPopup";
 import CartDrawer from "./components/CartDrawer";
+import Analytics from "./components/Analytics";
+import { STATS, SOCIALS, CONTACT, COMPANY } from "@/lib/siteConfig";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,7 +28,7 @@ const poppins = Poppins({
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://cliniwhite.com";
 const SITE_NAME = "CLINI WHITE";
 const SITE_DESCRIPTION =
-  "CLINI WHITE — UK's #1 professional at-home teeth whitening brand. Peroxide-free, dentist-grade whitening that delivers up to 8 shades whiter in 7 days with zero sensitivity. Trusted by 50,000+ customers.";
+  `CLINI WHITE — UK's #1 professional at-home teeth whitening brand. Peroxide-free, dentist-grade whitening that delivers up to 8 shades whiter in 7 days with zero sensitivity. Trusted by ${STATS.customers} customers.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -120,7 +122,8 @@ export const viewport: Viewport = {
   themeColor: "#231b50",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 5,
+  // No maximumScale / userScalable restriction — pinch-to-zoom must stay
+  // available for accessibility (WCAG 1.4.4).
   colorScheme: "light",
 };
 
@@ -131,16 +134,19 @@ const organizationSchema = {
   url: SITE_URL,
   logo: `${SITE_URL}/favicon.ico`,
   description: SITE_DESCRIPTION,
-  sameAs: [
-    "https://www.facebook.com/cliniwhite",
-    "https://www.instagram.com/cliniwhite",
-    "https://twitter.com/cliniwhite",
-    "https://www.pinterest.com/cliniwhite",
-  ],
+  sameAs: [SOCIALS.facebook, SOCIALS.instagram, SOCIALS.tiktok],
   contactPoint: {
     "@type": "ContactPoint",
     contactType: "customer support",
+    email: CONTACT.email,
     availableLanguage: ["English"],
+  },
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: COMPANY.street,
+    addressLocality: COMPANY.city,
+    postalCode: COMPANY.postalCode,
+    addressCountry: COMPANY.country,
   },
 };
 
@@ -177,6 +183,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col">
+        <Analytics />
         {children}
         <CartDrawer />
         <PromoPopup />

@@ -150,7 +150,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 {product.variants.edges.map(({ node }, index) => (
                   <label
                     key={node.id}
-                    className={`group relative flex items-center justify-between p-5 rounded-md border-2 cursor-pointer transition-all ${selectedVariant?.id === node.id ? 'border-[#003c8f] bg-[#f0f4f8]' : 'border-[#eee] bg-white hover:border-gray-200'}`}
+                    className={`group relative flex items-center justify-between p-5 rounded-md border-2 cursor-pointer transition-all ${selectedVariant?.id === node.id ? 'border-[#231b50] bg-[#F5F3FF]' : 'border-[#eee] bg-white hover:border-gray-200'}`}
                   >
                     <input
                       type="radio"
@@ -160,14 +160,14 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                       onChange={() => setSelectedVariant(node)}
                     />
                     <div className="flex items-center gap-4">
-                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${selectedVariant?.id === node.id ? 'border-[#003c8f] bg-[#003c8f]' : 'border-[#ddd]'}`}>
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${selectedVariant?.id === node.id ? 'border-[#231b50] bg-[#231b50]' : 'border-[#ddd]'}`}>
                         {selectedVariant?.id === node.id && <div className="w-2.5 h-2.5 rounded-full bg-white shadow-sm" />}
                       </div>
                       <div>
                         <p className="font-black text-black text-lg leading-none">
                           {index === 0 ? 'BUY 1' : index === 1 ? 'BUY 1 GET 1' : 'BUY 2 GET 2'}
                         </p>
-                        <p className="text-[10px] font-black text-[#003c8f] mt-2 uppercase">
+                        <p className="text-[10px] font-black text-[#231b50] mt-2 uppercase">
                           {index === 0 ? '14 STRIPS IN TOTAL' : index === 1 ? '28 STRIPS IN TOTAL' : '56 STRIPS IN TOTAL'}
                         </p>
                       </div>
@@ -197,7 +197,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 <button
                   onClick={handleAddToCart}
                   disabled={isLoading || !selectedVariant?.availableForSale}
-                  className={`w-full h-16 bg-[#003c8f] text-white font-black text-sm tracking-[0.1em] uppercase rounded-sm shadow-xl shadow-blue-900/10 transition-all hover:bg-[#002b66] active:scale-[0.98] flex items-center justify-center gap-3 ${added ? 'bg-[#21bc64]' : ''
+                  className={`w-full h-16 bg-[#231b50] text-white font-black text-sm tracking-[0.1em] uppercase rounded-sm shadow-xl shadow-[#231b50]/10 transition-all hover:bg-[#1a1440] active:scale-[0.98] flex items-center justify-center gap-3 ${added ? 'bg-[#21bc64]' : ''
                     }`}
                 >
                   {isLoading ? (
@@ -215,7 +215,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 {/* Payment Icons */}
                 <div className="flex flex-col items-center gap-3 py-2">
                   <PaymentIcons className="justify-center" />
-                  <div className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Secure Checkout</div>
+                  <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Secure Checkout</div>
                 </div>
               </div>
             </div>
@@ -229,7 +229,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 '30-day money back guarantee'
               ].map((text, i) => (
                 <div key={i} className="flex items-center gap-4">
-                  <Check className="w-5 h-5 text-[#003c8f]" strokeWidth={4} />
+                  <Check className="w-5 h-5 text-[#231b50]" strokeWidth={4} />
                   <span className="text-[13px] font-black text-[#333] uppercase tracking-wider">{text}</span>
                 </div>
               ))}
@@ -243,7 +243,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 </div>
                 <div className="space-y-1">
                   <p className="text-[10px] font-black text-black uppercase leading-tight">30-60 Minute Sessions</p>
-                  <p className="text-[9px] text-[#999] leading-tight">Apply and go about your day</p>
+                  <p className="text-[11px] text-gray-500 leading-tight">Apply and go about your day</p>
                 </div>
               </div>
               <div className="flex flex-col items-center text-center space-y-4 border-x border-gray-100">
@@ -260,7 +260,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 </div>
                 <div className="space-y-1">
                   <p className="text-[10px] font-black text-black uppercase leading-tight">30 Day Returns</p>
-                  <p className="text-[9px] text-[#999] leading-tight">Risk-free satisfaction</p>
+                  <p className="text-[11px] text-gray-500 leading-tight">Risk-free satisfaction</p>
                 </div>
               </div>
             </div>
@@ -373,7 +373,7 @@ function Accordion({
         onClick={() => onToggle(isOpen ? null : id)}
         className="w-full py-6 flex items-center justify-between text-left group"
       >
-        <span className="text-[13px] font-black uppercase tracking-widest text-black group-hover:text-[#003c8f] transition-colors">{title}</span>
+        <span className="text-[13px] font-black uppercase tracking-widest text-black group-hover:text-[#231b50] transition-colors">{title}</span>
         <ChevronDown className={`w-4 h-4 text-black transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>

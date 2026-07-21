@@ -21,7 +21,7 @@ export default function WhyCliniWhite() {
   return (
     <section>
       {/* Scrolling Banner */}
-      <div className="bg-[#0047AB] text-white py-3 overflow-hidden">
+      <div className="bg-[#231b50] text-white py-3 overflow-hidden">
         <div className="flex animate-marquee whitespace-nowrap">
           {[...Array(10)].map((_, i) => (
             <span key={i} className="mx-8 text-sm font-bold tracking-wider">
@@ -32,12 +32,12 @@ export default function WhyCliniWhite() {
       </div>
 
       {/* Main Content */}
-      <div className="bg-[#C5D5F0] pt-0 pb-0">
+      <div className="bg-[#E5E1F5] pt-0 pb-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-8 items-center">
             {/* Left Content */}
             <div className="lg:pr-8">
-              <p className="text-[#0047AB] text-xs font-bold tracking-widest uppercase mb-3">
+              <p className="text-[#231b50] text-xs font-bold tracking-widest uppercase mb-3">
                 ADVANCED TECHNOLOGY
               </p>
 
@@ -67,7 +67,7 @@ export default function WhyCliniWhite() {
 
               <Link
                 href="/product/purple-whitening-strips"
-                className="inline-block w-full max-w-md bg-[#0047AB] text-white text-xs font-bold tracking-wider py-3 text-center hover:bg-[#003a8c] transition-colors"
+                className="inline-block w-full max-w-md bg-[#231b50] text-white text-xs font-bold tracking-wider py-3 text-center hover:bg-[#1a1440] transition-colors"
                 style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
               >
                 GET YOURS NOW

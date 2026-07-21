@@ -115,7 +115,7 @@ export default function ShopGrid({ products }: { products: Product[] }) {
           <p className="text-sm text-gray-500 mt-1">Try adjusting your search or filters</p>
           <button
             onClick={() => { setSearchQuery(''); setSortBy('featured'); }}
-            className="mt-6 text-sm font-bold text-purple-700 hover:underline"
+            className="mt-6 text-sm font-bold text-[#231b50] hover:underline"
           >
             Clear all filters
           </button>

@@ -46,7 +46,7 @@ export default function HowItWorks() {
     <section className="py-12 bg-[#F3F6F9]">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10">
-          <p className="text-[#0047AB] text-xs font-black tracking-[0.3em] uppercase mb-4">
+          <p className="text-[#231b50] text-xs font-black tracking-[0.3em] uppercase mb-4">
             SOCIAL PROOF
           </p>
           <h2 

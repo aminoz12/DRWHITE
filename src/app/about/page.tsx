@@ -2,6 +2,7 @@ import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
 import Link from 'next/link';
 import { ShieldCheck, Award, Leaf, Microscope, Heart, Star, Users, Sparkles, Clock, BadgeCheck } from 'lucide-react';
+import { STATS } from '@/lib/siteConfig';
 
 export const metadata = {
   title: 'About Us | CLINI WHITE — Professional Teeth Whitening',
@@ -17,10 +18,10 @@ const CERTIFICATIONS = [
 
 const TIMELINE = [
   { year: '2020', event: 'First PAP whitening strip formula launched. 1,000 units sold in the first month.' },
-  { year: '2021', event: 'Featured on BBC, Cosmopolitan, and Vogue. Over 50,000 customers served.' },
+  { year: '2021', event: 'Featured on BBC, Cosmopolitan, and Vogue. Community grows past 2,000 happy customers.' },
   { year: '2022', event: 'Launched the full oral care range. Awarded "Best Whitening Brand" by Beauty Bible.' },
-  { year: '2023', event: 'Expanded to 12 countries. TikTok viral moment — 10M+ views. 5,000+ reviews.' },
-  { year: '2024', event: 'Over 5,600 verified reviews. Proudly the UK\'s #1 at-home whitening brand.' },
+  { year: '2023', event: 'Expanded to 12 countries. TikTok viral moment — 10M+ views. 3,000+ reviews.' },
+  { year: '2024', event: `Over ${STATS.reviewsLabel} verified reviews. Proudly the UK's #1 at-home whitening brand.` },
 ];
 
 export default function AboutPage() {
@@ -63,10 +64,10 @@ export default function AboutPage() {
                   </div>
                   <div>
                     <h3 className="font-display text-sm font-extrabold text-[#231b50] uppercase tracking-wide mb-2">
-                      Trusted by 5,600+ customers
+                      Trusted by {STATS.customers} customers
                     </h3>
                     <p className="text-gray-600 text-base leading-relaxed">
-                      Today, CLINI WHITE is trusted by over 5,600 customers across the UK, Europe, and beyond. We&apos;re proud to be the whitening brand that people actually stick with — <span className="font-bold text-[#231b50]">because it works, and because it doesn&apos;t hurt.</span>
+                      Today, CLINI WHITE is trusted by {STATS.customers} customers across the UK, Europe, and beyond. We&apos;re proud to be the whitening brand that people actually stick with — <span className="font-bold text-[#231b50]">because it works, and because it doesn&apos;t hurt.</span>
                     </p>
                   </div>
                 </div>
@@ -87,8 +88,8 @@ export default function AboutPage() {
             {/* Stats card grid */}
             <div className="grid grid-cols-2 gap-4">
               {[
-                { icon: Users, value: '5,642+', label: 'Happy Customers' },
-                { icon: Star, value: '4.8★', label: 'Average Rating' },
+                { icon: Users, value: STATS.customers, label: 'Happy Customers' },
+                { icon: Star, value: `${STATS.ratingLabel}★`, label: 'Average Rating' },
                 { icon: Sparkles, value: '10 shades', label: 'Max Whitening', dark: true },
                 { icon: Clock, value: '30 min', label: 'Daily Routine' },
                 { icon: Leaf, value: '0%', label: 'Peroxide' },

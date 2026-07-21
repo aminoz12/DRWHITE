@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Send, CheckCircle2, Loader2 } from 'lucide-react';
+import { CONTACT } from '@/lib/siteConfig';
 
 const TOPICS = [
   'Order & Shipping',
@@ -12,7 +13,7 @@ const TOPICS = [
 ];
 
 const inputClass =
-  'w-full bg-[#F8FAFC] border border-gray-200 rounded-xl px-5 py-4 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#0047AB] focus:bg-white focus:ring-4 focus:ring-blue-50 transition-all';
+  'w-full bg-[#F8FAFC] border border-gray-200 rounded-xl px-5 py-4 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#231b50] focus:bg-white focus:ring-4 focus:ring-violet-100 transition-all';
 
 const labelClass =
   'block text-[11px] font-black uppercase tracking-widest text-gray-900 mb-2';
@@ -58,7 +59,7 @@ export default function ContactForm() {
   if (status === 'sent') {
     return (
       <div className="text-center py-16 px-6">
-        <div className="w-20 h-20 rounded-full bg-[#0047AB] flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-blue-200">
+        <div className="w-20 h-20 rounded-full bg-[#231b50] flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-violet-200">
           <CheckCircle2 className="w-10 h-10 text-white" />
         </div>
         <h3
@@ -68,7 +69,7 @@ export default function ContactForm() {
         </h3>
         <p className="text-gray-600 text-sm leading-relaxed max-w-sm mx-auto mb-8">
           Thanks for reaching out, {fields.name.split(' ')[0] || 'friend'}. Our team will get
-          back to you at <span className="font-bold text-[#0047AB]">{fields.email}</span> within
+          back to you at <span className="font-bold text-[#231b50]">{fields.email}</span> within
           24 hours (Mon&ndash;Fri).
         </p>
         <button
@@ -77,7 +78,7 @@ export default function ContactForm() {
             setFields({ name: '', email: '', order: '', topic: TOPICS[0], message: '' });
             setStatus('idle');
           }}
-          className="inline-flex items-center gap-2 text-[#0047AB] font-black text-xs uppercase tracking-widest hover:gap-3 transition-all"
+          className="inline-flex items-center gap-2 text-[#231b50] font-black text-xs uppercase tracking-widest hover:gap-3 transition-all"
         >
           Send another message
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -106,7 +107,7 @@ export default function ContactForm() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
           <label htmlFor="contact-name" className={labelClass}>
-            Full name <span className="text-[#0047AB]">*</span>
+            Full name <span className="text-[#231b50]">*</span>
           </label>
           <input
             id="contact-name"
@@ -121,7 +122,7 @@ export default function ContactForm() {
         </div>
         <div>
           <label htmlFor="contact-email" className={labelClass}>
-            Email address <span className="text-[#0047AB]">*</span>
+            Email address <span className="text-[#231b50]">*</span>
           </label>
           <input
             id="contact-email"
@@ -153,7 +154,7 @@ export default function ContactForm() {
         </div>
         <div>
           <label htmlFor="contact-topic" className={labelClass}>
-            Topic <span className="text-[#0047AB]">*</span>
+            Topic <span className="text-[#231b50]">*</span>
           </label>
           <div className="relative">
             <select
@@ -187,7 +188,7 @@ export default function ContactForm() {
 
       <div>
         <label htmlFor="contact-message" className={labelClass}>
-          Your message <span className="text-[#0047AB]">*</span>
+          Your message <span className="text-[#231b50]">*</span>
         </label>
         <textarea
           id="contact-message"
@@ -207,10 +208,10 @@ export default function ContactForm() {
             Something went wrong sending your message. Please try again, or email us directly
             at{' '}
             <a
-              href={`mailto:vibzyltd@gmail.com?subject=${encodeURIComponent(`[${fields.topic}] Contact from ${fields.name}`)}&body=${encodeURIComponent(fields.message)}`}
-              className="underline text-[#0047AB]"
+              href={`mailto:${CONTACT.email}?subject=${encodeURIComponent(`[${fields.topic}] Contact from ${fields.name}`)}&body=${encodeURIComponent(fields.message)}`}
+              className="underline text-[#231b50]"
             >
-              vibzyltd@gmail.com
+              {CONTACT.email}
             </a>
             .
           </p>
@@ -220,7 +221,7 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={status === 'sending'}
-        className="w-full inline-flex items-center justify-center gap-3 px-10 py-5 bg-[#0047AB] text-white text-sm font-black tracking-widest uppercase rounded-full hover:bg-[#003a8c] transition-all hover:scale-[1.02] shadow-2xl shadow-blue-200 disabled:opacity-60 disabled:hover:scale-100 disabled:cursor-not-allowed"
+        className="w-full inline-flex items-center justify-center gap-3 px-10 py-5 bg-[#231b50] text-white text-sm font-black tracking-widest uppercase rounded-full hover:bg-[#1a1440] transition-all hover:scale-[1.02] shadow-2xl shadow-violet-200 disabled:opacity-60 disabled:hover:scale-100 disabled:cursor-not-allowed"
         style={{ fontFamily: 'var(--font-geist-sans), system-ui' }}
       >
         {status === 'sending' ? (

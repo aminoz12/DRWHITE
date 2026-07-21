@@ -41,10 +41,10 @@ const FALLBACK_BUNDLES = [
     includes: ['Whitening Strips (2 week supply)', 'Whitening Toothpaste', 'Bamboo Toothbrush'],
     price: '29.99',
     comparePrice: '49.99',
-    currencyCode: 'USD',
+    currencyCode: 'GBP',
     discount: 40,
     badge: 'BEST VALUE',
-    badgeColor: '#0047AB',
+    badgeColor: '#231b50',
     stars: 4.9,
     reviews: 1284,
     handle: '/shop',
@@ -55,10 +55,10 @@ const FALLBACK_BUNDLES = [
     includes: ['Whitening Strips (4 week supply)', 'Whitening Toothpaste', 'Whitening Mouthwash'],
     price: '44.99',
     comparePrice: '69.99',
-    currencyCode: 'USD',
+    currencyCode: 'GBP',
     discount: 36,
     badge: 'MOST POPULAR',
-    badgeColor: '#7C3AED',
+    badgeColor: '#231b50',
     stars: 4.8,
     reviews: 892,
     handle: '/shop',
@@ -69,7 +69,7 @@ const FALLBACK_BUNDLES = [
     includes: ['Whitening Strips (8 week supply)', 'Whitening Toothpaste', 'Whitening Mouthwash', 'LED Accelerator Light'],
     price: '79.99',
     comparePrice: '129.99',
-    currencyCode: 'USD',
+    currencyCode: 'GBP',
     discount: 38,
     badge: 'PRO PICK',
     badgeColor: '#059669',
@@ -114,13 +114,13 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
               className="relative bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col"
             >
               {discount > 0 && (
-                <div className="absolute top-4 left-4 z-10 bg-[#0047AB] text-white text-xs font-black px-3 py-1.5 rounded-full flex items-center gap-1">
+                <div className="absolute top-4 left-4 z-10 bg-[#231b50] text-white text-xs font-black px-3 py-1.5 rounded-full flex items-center gap-1">
                   <Tag className="w-3 h-3" />
                   SAVE {discount}%
                 </div>
               )}
 
-              <div className="relative aspect-square bg-[#EBF2FA] overflow-hidden">
+              <div className="relative aspect-square bg-[#F5F3FF] overflow-hidden">
                 {image ? (
                   <img
                     src={image.url}
@@ -146,7 +146,7 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
                 )}
 
                 <div className="flex items-baseline gap-3 mb-5 mt-auto">
-                  <span className="text-2xl font-black text-[#0047AB]">
+                  <span className="text-2xl font-black text-[#231b50]">
                     {formatMoney(node.priceRange.minVariantPrice.amount, currency)}
                   </span>
                   {comparePrice && comparePrice > price && (
@@ -166,7 +166,7 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
                     className={`w-full py-3 rounded-full text-xs font-black tracking-wider flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-60 ${
                       addedIds.has(variant.id)
                         ? 'bg-green-600 text-white'
-                        : 'bg-[#0047AB] text-white hover:bg-[#003a8c]'
+                        : 'bg-[#231b50] text-white hover:bg-[#1a1440]'
                     }`}
                     style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
                   >
@@ -185,7 +185,7 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
                 ) : (
                   <Link
                     href={`/product/${node.handle}`}
-                    className="w-full py-3 rounded-full text-xs font-black tracking-wider text-center bg-[#0047AB] text-white hover:bg-[#003a8c] transition-colors block"
+                    className="w-full py-3 rounded-full text-xs font-black tracking-wider text-center bg-[#231b50] text-white hover:bg-[#1a1440] transition-colors block"
                     style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
                   >
                     VIEW BUNDLE
@@ -213,9 +213,9 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
             {bundle.badge}
           </div>
 
-          <div className="bg-[#EBF2FA] p-8 text-center">
+          <div className="bg-[#F5F3FF] p-8 text-center">
             <div className="w-20 h-20 mx-auto mb-4 bg-white rounded-full flex items-center justify-center shadow-sm">
-              <ShoppingBag className="w-9 h-9 text-[#0047AB]" />
+              <ShoppingBag className="w-9 h-9 text-[#231b50]" />
             </div>
             <h3
               className="text-xl font-black text-black uppercase tracking-wide mb-1"
@@ -230,8 +230,8 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
             <ul className="space-y-2 mb-6">
               {bundle.includes.map((item) => (
                 <li key={item} className="flex items-center gap-2 text-xs text-gray-700">
-                  <span className="w-4 h-4 rounded-full bg-[#EBF2FA] flex items-center justify-center flex-shrink-0">
-                    <span className="text-[#0047AB] font-black text-[10px]">&#10003;</span>
+                  <span className="w-4 h-4 rounded-full bg-[#F5F3FF] flex items-center justify-center flex-shrink-0">
+                    <span className="text-[#231b50] font-black text-[10px]">&#10003;</span>
                   </span>
                   {item}
                 </li>
@@ -241,7 +241,7 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
             <div className="flex items-center gap-2 mb-5">
               <div className="flex">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-3 h-3 text-[#0047AB] fill-current" />
+                  <Star key={i} className="w-3 h-3 text-[#231b50] fill-current" />
                 ))}
               </div>
               <span className="text-xs text-gray-500 font-medium">
@@ -250,7 +250,7 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
             </div>
 
             <div className="flex items-baseline gap-3 mb-5 mt-auto">
-              <span className="text-3xl font-black text-[#0047AB]">
+              <span className="text-3xl font-black text-[#231b50]">
                 {formatMoney(bundle.price, bundle.currencyCode)}
               </span>
               <span className="text-sm text-gray-400 line-through">
@@ -261,7 +261,7 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
 
             <Link
               href={bundle.handle}
-              className="w-full py-3 rounded-full text-xs font-black tracking-wider text-center bg-[#0047AB] text-white hover:bg-[#003a8c] transition-colors flex items-center justify-center gap-2 active:scale-95"
+              className="w-full py-3 rounded-full text-xs font-black tracking-wider text-center bg-[#231b50] text-white hover:bg-[#1a1440] transition-colors flex items-center justify-center gap-2 active:scale-95"
               style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
             >
               <ShoppingBag className="w-4 h-4" /> SHOP NOW

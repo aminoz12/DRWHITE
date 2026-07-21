@@ -9,7 +9,7 @@ export default async function Bundles() {
     <section className="py-12 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10">
-          <p className="text-[#0047AB] text-xs font-black tracking-[0.3em] uppercase mb-4">
+          <p className="text-[#231b50] text-xs font-black tracking-[0.3em] uppercase mb-4">
             EXCLUSIVE OFFERS
           </p>
           <h2 

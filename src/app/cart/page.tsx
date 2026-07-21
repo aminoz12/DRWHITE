@@ -8,7 +8,7 @@ import { useCartStore } from '@/lib/cartStore';
 import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
 import PaymentIcons from '@/app/components/PaymentIcons';
-import { getProducts } from '@/lib/shopify';
+import { getProducts, normalizeCheckoutUrl } from '@/lib/shopify';
 import type { ShopifyProductEdge, ShopifyProductNode } from '@/lib/shopify';
 import { formatMoney } from '@/lib/money';
 
@@ -69,13 +69,14 @@ export default function CartPage() {
   const handleCheckout = () => {
     if (items.length === 0 || isLoading) return;
 
-    if (!checkoutUrl) {
+    const url = normalizeCheckoutUrl(checkoutUrl);
+    if (!url) {
       setCheckoutError('Cart is still syncing. Please add the item again or refresh the page.');
       return;
     }
 
     setCheckoutError('');
-    window.location.href = checkoutUrl;
+    window.location.href = url;
   };
 
   const currentOffer = OFFERS[offerIndex];
@@ -102,7 +103,7 @@ export default function CartPage() {
                   <p className="text-gray-500 font-medium uppercase tracking-widest text-sm">Your cart is empty</p>
                   <Link 
                     href="/shop"
-                    className="inline-block bg-[#0047AB] text-white px-8 py-4 rounded-full font-black text-sm uppercase tracking-widest hover:bg-[#003c8f] transition-all"
+                    className="inline-block bg-[#231b50] text-white px-8 py-4 rounded-full font-black text-sm uppercase tracking-widest hover:bg-[#1a1440] transition-all"
                   >
                     Start Shopping
                   </Link>
@@ -179,7 +180,7 @@ export default function CartPage() {
             <div className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100">
               <div className="flex justify-between items-baseline mb-6">
                 <span className="text-sm font-bold text-gray-500 uppercase tracking-widest">Total</span>
-                <span className="text-2xl font-black text-[#0047AB]">
+                <span className="text-2xl font-black text-[#231b50]">
                   {formatMoney(subtotal, subtotalCurrency)}
                 </span>
               </div>
@@ -187,7 +188,7 @@ export default function CartPage() {
               <button 
                 onClick={handleCheckout}
                 disabled={items.length === 0 || isLoading}
-                className="w-full bg-[#0047AB] text-white py-5 rounded-xl font-black text-sm uppercase tracking-widest hover:bg-[#003c8f] shadow-xl shadow-blue-900/20 transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2"
+                className="w-full bg-[#231b50] text-white py-5 rounded-xl font-black text-sm uppercase tracking-widest hover:bg-[#1a1440] shadow-xl shadow-[#231b50]/20 transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2"
               >
                 {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Checkout <ArrowRight className="w-4 h-4" /></>}
               </button>
@@ -202,7 +203,7 @@ export default function CartPage() {
 
             {/* Dynamic Offer Card */}
             {currentOfferProduct && (
-              <div className="bg-white rounded-2xl overflow-hidden shadow-xl border border-blue-100 relative group">
+              <div className="bg-white rounded-2xl overflow-hidden shadow-xl border border-violet-100 relative group">
                 <div className="bg-yellow-400 text-black text-[10px] font-black px-3 py-1 uppercase tracking-widest inline-block rounded-br-xl">
                   Super Value
                 </div>
@@ -271,7 +272,7 @@ export default function CartPage() {
 
                   <h3 className="font-black text-black uppercase text-xs md:text-sm mb-2 line-clamp-1">{node.title}</h3>
                   <div className="flex items-center gap-1 mb-4">
-                    {[...Array(5)].map((_, i) => <Star key={i} className="w-2.5 h-2.5 fill-blue-600 text-blue-600" />)}
+                    {[...Array(5)].map((_, i) => <Star key={i} className="w-2.5 h-2.5 fill-[#231b50] text-[#231b50]" />)}
                   </div>
 
                   <div className="mt-auto flex items-center justify-between">
@@ -281,7 +282,7 @@ export default function CartPage() {
                     <button
                       onClick={() => variant?.id && addItem(variant.id, 1)}
                       disabled={!variant?.id || !variant.availableForSale || isLoading}
-                      className="bg-black text-white px-4 py-2 rounded-lg font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all active:scale-95 disabled:opacity-50"
+                      className="bg-black text-white px-4 py-2 rounded-lg font-black text-[10px] uppercase tracking-widest hover:bg-[#231b50] transition-all active:scale-95 disabled:opacity-50"
                     >
                       {variant?.availableForSale ? 'Add' : 'Sold out'}
                     </button>

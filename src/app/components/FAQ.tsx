@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Plus, Minus } from 'lucide-react';
+import { CONTACT } from '@/lib/siteConfig';
 
 const faqs = [
   {
@@ -47,7 +48,7 @@ export default function FAQ() {
       />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10">
-          <p className="text-[#0047AB] text-xs font-black tracking-[0.3em] uppercase mb-4">
+          <p className="text-[#231b50] text-xs font-black tracking-[0.3em] uppercase mb-4">
             FREQUENTLY ASKED
           </p>
           <h2 
@@ -65,8 +66,8 @@ export default function FAQ() {
               key={index} 
               className={`bg-white rounded-2xl border transition-all duration-300 ${
                 openIndex === index 
-                ? 'border-[#0047AB] shadow-xl shadow-blue-900/5' 
-                : 'border-gray-100 hover:border-blue-200'
+                ? 'border-[#231b50] shadow-xl shadow-[#231b50]/5'
+                : 'border-gray-100 hover:border-violet-200'
               }`}
             >
               <button
@@ -74,12 +75,12 @@ export default function FAQ() {
                 className="w-full px-6 py-6 md:px-8 flex items-center justify-between text-left group"
               >
                 <span className={`text-sm md:text-base font-black uppercase tracking-wider transition-colors ${
-                  openIndex === index ? 'text-[#0047AB]' : 'text-gray-900'
+                  openIndex === index ? 'text-[#231b50]' : 'text-gray-900'
                 }`}>
                   {faq.question}
                 </span>
                 <div className={`shrink-0 ml-4 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${
-                  openIndex === index ? 'bg-[#0047AB] text-white rotate-180' : 'bg-gray-50 text-gray-400 group-hover:bg-blue-50 group-hover:text-[#0047AB]'
+                  openIndex === index ? 'bg-[#231b50] text-white rotate-180' : 'bg-gray-50 text-gray-400 group-hover:bg-[#F5F3FF] group-hover:text-[#231b50]'
                 }`}>
                   <Plus className={`w-4 h-4 transition-transform duration-300 ${openIndex === index ? 'rotate-45' : ''}`} />
                 </div>
@@ -107,9 +108,9 @@ export default function FAQ() {
           <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-4">
             STILL HAVE QUESTIONS?
           </p>
-          <a 
-            href="mailto:vibzyltd@gmail.com"
-            className="inline-flex items-center gap-2 text-[#0047AB] font-black text-sm uppercase tracking-wider hover:gap-3 transition-all"
+          <a
+            href={`mailto:${CONTACT.email}`}
+            className="inline-flex items-center gap-2 text-[#231b50] font-black text-sm uppercase tracking-wider hover:gap-3 transition-all"
           >
             Contact our support team <Plus className="w-4 h-4" />
           </a>

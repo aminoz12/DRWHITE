@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { SOCIALS, CONTACT, COMPANY, CURRENCY } from '@/lib/siteConfig';
 
 const InstagramIcon = () => (
   <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg">
@@ -105,20 +106,21 @@ export default function Footer() {
               CLINI WHITE is a solutions-oriented beauty brand, creating a world where everybody feels confident.
             </p>
             <div className="text-xs text-gray-600 leading-relaxed mb-1">
-              <p className="font-semibold text-gray-800">CLINI WHITE by VIBZY LTD</p>
-              <p>82a James Carter Road, Mildenhall</p>
-              <p>United Kingdom, IP28 7DE</p>
+              <p className="font-semibold text-gray-800">{COMPANY.displayName}</p>
+              {COMPANY.addressLines.map((line) => (
+                <p key={line}>{line}</p>
+              ))}
             </div>
-            <a href="mailto:vibzyltd@gmail.com" className="text-xs text-gray-600 hover:text-black underline mt-2 inline-block">
-              vibzyltd@gmail.com
+            <a href={`mailto:${CONTACT.email}`} className="text-xs text-gray-600 hover:text-black underline mt-2 inline-block">
+              {CONTACT.email}
             </a>
 
             {/* Social Icons */}
             <div className="flex items-center gap-3 mt-4">
-              <a href="https://instagram.com" className="text-black hover:opacity-60 transition-opacity" aria-label="Instagram">
+              <a href={SOCIALS.instagram} target="_blank" rel="noopener noreferrer" className="text-black hover:opacity-60 transition-opacity" aria-label="Instagram">
                 <InstagramIcon />
               </a>
-              <a href="https://tiktok.com" className="text-black hover:opacity-60 transition-opacity" aria-label="TikTok">
+              <a href={SOCIALS.tiktok} target="_blank" rel="noopener noreferrer" className="text-black hover:opacity-60 transition-opacity" aria-label="TikTok">
                 <TikTokIcon />
               </a>
             </div>
@@ -139,15 +141,14 @@ export default function Footer() {
           <div>
             <h4 className="text-sm font-bold tracking-wide mb-5">Useful links</h4>
             <ul className="space-y-3 text-xs text-gray-600">
-              <li><Link href="#" className="hover:text-black hover:underline transition-colors">Track my order</Link></li>
-              <li><Link href="#" className="hover:text-black hover:underline transition-colors">FAQs</Link></li>
-              <li><Link href="#" className="hover:text-black hover:underline transition-colors">Terms of service</Link></li>
-              <li><Link href="#" className="hover:text-black hover:underline transition-colors">Cookie Policy</Link></li>
-              <li><Link href="#" className="hover:text-black hover:underline transition-colors">Shipping policy</Link></li>
-              <li><Link href="#" className="hover:text-black hover:underline transition-colors">Refund policy</Link></li>
-              <li><Link href="#" className="hover:text-black hover:underline transition-colors">Privacy policy</Link></li>
+              <li><Link href="/account" className="hover:text-black hover:underline transition-colors">Track my order</Link></li>
+              <li><Link href="/contact#faq-heading" className="hover:text-black hover:underline transition-colors">FAQs</Link></li>
+              <li><Link href="/policies/terms-of-service" className="hover:text-black hover:underline transition-colors">Terms of service</Link></li>
+              <li><Link href="/policies/cookie-policy" className="hover:text-black hover:underline transition-colors">Cookie Policy</Link></li>
+              <li><Link href="/policies/shipping-policy" className="hover:text-black hover:underline transition-colors">Shipping policy</Link></li>
+              <li><Link href="/policies/refund-policy" className="hover:text-black hover:underline transition-colors">Refund policy</Link></li>
+              <li><Link href="/policies/privacy-policy" className="hover:text-black hover:underline transition-colors">Privacy policy</Link></li>
               <li><Link href="/contact" className="hover:text-black hover:underline transition-colors">Contact</Link></li>
-              <li><Link href="#" className="hover:text-black hover:underline transition-colors">Gift cards</Link></li>
             </ul>
           </div>
 
@@ -178,13 +179,13 @@ export default function Footer() {
         <div className="border-t border-gray-300 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
           {/* Country selector */}
           <div className="flex items-center gap-1 text-xs text-gray-600 cursor-pointer hover:text-black transition-colors">
-            <span>United States (USD $)</span>
+            <span>United Kingdom ({CURRENCY.code} {CURRENCY.symbol})</span>
             <ChevronDownIcon />
           </div>
 
           {/* Copyright */}
-          <p className="text-[10px] text-gray-500">
-            &copy; 2024, CLINI WHITE.
+          <p className="text-xs text-gray-500">
+            &copy; 2026 {COMPANY.displayName}. All rights reserved.
           </p>
 
           {/* Payment icons */}

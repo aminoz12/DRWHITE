@@ -12,7 +12,7 @@ export default function AccountPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-white gap-4">
-      <Loader2 className="w-8 h-8 text-blue-700 animate-spin" />
+      <Loader2 className="w-8 h-8 text-[#231b50] animate-spin" />
       <p className="text-sm text-gray-500 font-medium">
         Redirecting to your account…
       </p>

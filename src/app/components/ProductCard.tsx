@@ -5,19 +5,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useCartStore } from '@/lib/cartStore';
 import { formatMoney, getDiscountPercent } from '@/lib/money';
+import { getProductReviews } from '@/lib/reviews';
 
 // ─── Deterministic mock data from product handle ─────────────────────────
 function hashString(str: string): number {
   let h = 0;
   for (let i = 0; i < str.length; i++) h = ((h << 5) - h + str.charCodeAt(i)) | 0;
   return Math.abs(h);
-}
-
-function getMockReviews(handle: string) {
-  const h = hashString(handle);
-  const count = 1500 + (h % 8500);
-  const rating = 3.5 + ((h % 20) / 20) * 1.5; // 3.5 to 5.0
-  return { count, rating: Math.round(rating * 10) / 10 };
 }
 
 // ─── Badge helpers ───────────────────────────────────────────────────────
@@ -83,7 +77,7 @@ function StarRating({ rating, count, size = 10 }: { rating: number; count?: numb
         <Star key={i} filled={filled} size={size} />
       ))}
       {count !== undefined && (
-        <span className="text-[9px] text-gray-400 ml-1">({count.toLocaleString()})</span>
+        <span className="text-[11px] text-gray-500 ml-1">({count.toLocaleString()})</span>
       )}
     </div>
   );
@@ -128,7 +122,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const firstVariant = product.variants?.edges[0]?.node;
   const badge = getBadge(product.tags);
   const colorOpt = getColorOption(product.options);
-  const reviews = getMockReviews(product.handle);
+  const reviews = getProductReviews(product.handle);
 
   const [added, setAdded] = useState(false);
   const { addItem, isLoading } = useCartStore();

@@ -5,6 +5,39 @@ const storefrontAccessToken = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN || pro
 export const SHOPIFY_ACCOUNT_URL = `https://${domain}/account`;
 export const SHOPIFY_DOMAIN = domain;
 
+// Domain that actually serves a working Shopify checkout. The Storefront API
+// returns checkoutUrl on the store's *primary* domain, which for this store is
+// a dead Vercel deployment (drwhitecare.com → 404). We rewrite the host to the
+// canonical myshopify.com domain (always serves checkout), or to an explicit
+// override if one is configured.
+const CHECKOUT_DOMAIN = (
+  process.env.NEXT_PUBLIC_SHOPIFY_CHECKOUT_DOMAIN || domain
+)
+  .replace(/^https?:\/\//, '')
+  .replace(/\/+$/, '');
+
+/**
+ * Force a Shopify checkoutUrl onto a domain that resolves. Keeps the cart
+ * token/path intact and only swaps the host, so the checkout session survives.
+ * Returns the original string unchanged if it can't be parsed.
+ */
+export function normalizeCheckoutUrl(url: string | null | undefined): string | null {
+  if (!url) return url ?? null;
+  try {
+    const parsed = new URL(url);
+    // Already on a known-good Shopify host → leave it alone.
+    if (parsed.hostname === CHECKOUT_DOMAIN || parsed.hostname.endsWith('.myshopify.com')) {
+      return url;
+    }
+    parsed.hostname = CHECKOUT_DOMAIN;
+    parsed.protocol = 'https:';
+    parsed.port = '';
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
+
 export interface ShopifyMoney {
   amount: string;
   currencyCode: string;

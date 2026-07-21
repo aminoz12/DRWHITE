@@ -178,7 +178,7 @@ export default function ResultsGallery() {
               </div>
 
               {/* Shades badge */}
-              <div className="absolute top-3 right-3 bg-[#7C3AED] text-white text-[10px] font-black px-2.5 py-1 rounded-full shadow-md">
+              <div className="absolute top-3 right-3 bg-[#231b50] text-white text-[10px] font-black px-2.5 py-1 rounded-full shadow-md">
                 +{result.shade}
               </div>
             </div>
@@ -188,7 +188,7 @@ export default function ResultsGallery() {
               {/* Stars */}
               <div className="flex items-center gap-1 mb-2">
                 {[...Array(result.rating)].map((_, i) => (
-                  <Star key={i} className="w-3 h-3 text-[#7C3AED] fill-current" />
+                  <Star key={i} className="w-3 h-3 text-[#231b50] fill-current" />
                 ))}
               </div>
 
@@ -202,7 +202,7 @@ export default function ResultsGallery() {
                 {result.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="bg-[#F5F3FF] text-[#7C3AED] text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider"
+                    className="bg-[#F5F3FF] text-[#231b50] text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider"
                   >
                     {tag}
                   </span>
@@ -231,7 +231,7 @@ export default function ResultsGallery() {
         <div className="text-center mt-10">
           <button
             onClick={() => setShowAll(!showAll)}
-            className="inline-flex items-center gap-2 px-8 py-3 border-2 border-[#7C3AED] text-[#7C3AED] text-xs font-black tracking-wider rounded-full hover:bg-[#F5F3FF] transition-colors"
+            className="inline-flex items-center gap-2 px-8 py-3 border-2 border-[#231b50] text-[#231b50] text-xs font-black tracking-wider rounded-full hover:bg-[#F5F3FF] transition-colors"
             style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
           >
             {showAll ? (
@@ -256,7 +256,7 @@ export default function ResultsGallery() {
         </p>
         <Link
           href="/shop"
-          className="inline-flex items-center gap-2 px-8 py-3 bg-[#7C3AED] text-white text-xs font-black tracking-wider rounded-full hover:bg-[#6D28D9] transition-colors shadow-lg shadow-purple-200"
+          className="inline-flex items-center gap-2 px-8 py-3 bg-[#231b50] text-white text-xs font-black tracking-wider rounded-full hover:bg-[#1a1440] transition-colors shadow-lg shadow-violet-200"
           style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
         >
           SHOP NOW

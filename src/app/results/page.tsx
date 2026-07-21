@@ -2,16 +2,17 @@ import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
 import Image from 'next/image';
 import ResultsGallery from './ResultsGallery';
+import { STATS as SITE_STATS } from '@/lib/siteConfig';
 
 export const metadata = {
   title: 'Real Results | CLINI WHITE — See Before & After Transformations',
-  description: 'See real customer before and after results from CLINI WHITE professional teeth whitening. Over 5,600 verified reviews and transformations.',
+  description: `See real customer before and after results from CLINI WHITE professional teeth whitening. Over ${SITE_STATS.reviewsLabel} verified reviews and transformations.`,
 };
 
 const STATS = [
-  { value: '5,642+', label: 'Verified Reviews' },
-  { value: '4.8★', label: 'Average Rating' },
-  { value: '94%', label: 'Would Recommend' },
+  { value: `${SITE_STATS.reviewsLabel}+`, label: 'Verified Reviews' },
+  { value: `${SITE_STATS.ratingLabel}★`, label: 'Average Rating' },
+  { value: SITE_STATS.wouldRecommend, label: 'Would Recommend' },
   { value: '14 days', label: 'Avg. Visible Results' },
 ];
 
@@ -21,7 +22,7 @@ export default function ResultsPage() {
       <Header />
       <main>
         {/* Hero */}
-        <section className="relative bg-[#7C3AED] py-12 px-4 text-center overflow-hidden">
+        <section className="relative bg-[#231b50] py-12 px-4 text-center overflow-hidden">
           <Image
             src="/hero3.png"
             alt=""
@@ -30,11 +31,11 @@ export default function ResultsPage() {
             priority
             className="object-cover object-top"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#7C3AED]/90 via-[#7C3AED]/60 to-[#7C3AED]/90" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#231b50]/90 via-[#231b50]/60 to-[#231b50]/90" />
 
           <div className="relative z-10 max-w-2xl mx-auto">
             <span className="inline-block bg-white/20 text-white text-[10px] font-black tracking-widest px-3 py-1 rounded-full mb-4 uppercase">
-              Verified Customer Photos
+              Customer Results
             </span>
             <h1
               className="font-display text-3xl md:text-4xl font-extrabold text-white mb-4 leading-none tracking-tight"
@@ -43,7 +44,7 @@ export default function ResultsPage() {
               <span className="text-[#DDD6FE]">RESULTS</span>
             </h1>
             <p className="text-white/80 text-base max-w-md mx-auto mb-8">
-              No filters. No editing. Just real customers sharing their genuine CLINI WHITE transformations.
+              See the kind of transformations customers achieve with CLINI WHITE — real routines, real timelines.
             </p>
 
             {/* Stats Row */}
@@ -68,8 +69,8 @@ export default function ResultsPage() {
               { step: '02', title: 'WEEK 1', desc: 'Surface stains start to lift. Customers notice a visible brightening effect.' },
               { step: '03', title: 'WEEK 2+', desc: 'Full whitening results achieved. Smile up to 10 shades brighter.' },
             ].map((item) => (
-              <div key={item.step} className="bg-white rounded-2xl p-6 shadow-sm border border-purple-100">
-                <span className="text-[#7C3AED] text-xs font-black tracking-widest block mb-2">{item.step}</span>
+              <div key={item.step} className="bg-white rounded-2xl p-6 shadow-sm border border-violet-100">
+                <span className="text-[#231b50] text-xs font-black tracking-widest block mb-2">{item.step}</span>
                 <h3
                   className="text-sm font-black text-black uppercase tracking-wide mb-2"
                   style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
@@ -86,7 +87,7 @@ export default function ResultsPage() {
         <section className="py-16 bg-white px-4">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
-              <p className="text-[#7C3AED] text-xs font-black tracking-widest uppercase mb-3">
+              <p className="text-[#231b50] text-xs font-black tracking-widest uppercase mb-3">
                 UNFILTERED &amp; UNEDITED
               </p>
               <h2
@@ -102,7 +103,7 @@ export default function ResultsPage() {
         {/* Trustpilot-style social proof */}
         <section className="bg-[#F5F3FF] py-16 px-4">
           <div className="max-w-5xl mx-auto text-center">
-            <p className="text-[#7C3AED] text-xs font-black tracking-widest uppercase mb-3">
+            <p className="text-[#231b50] text-xs font-black tracking-widest uppercase mb-3">
               WHAT THEY&apos;RE SAYING
             </p>
             <h2
@@ -137,10 +138,10 @@ export default function ResultsPage() {
                   product: 'Whitening Strips',
                 },
               ].map((review) => (
-                <div key={review.name} className="bg-white rounded-2xl p-6 shadow-sm border border-purple-100 text-left">
+                <div key={review.name} className="bg-white rounded-2xl p-6 shadow-sm border border-violet-100 text-left">
                   <div className="flex items-center gap-1 mb-3">
                     {[...Array(review.rating)].map((_, i) => (
-                      <span key={i} className="text-[#7C3AED] text-sm">★</span>
+                      <span key={i} className="text-[#231b50] text-sm">★</span>
                     ))}
                   </div>
                   <p className="text-sm text-gray-700 leading-relaxed mb-4 italic">{review.text}</p>
@@ -170,11 +171,11 @@ export default function ResultsPage() {
               READY FOR YOUR TRANSFORMATION?
             </h2>
             <p className="text-gray-500 text-sm mb-8 max-w-md mx-auto font-medium">
-              Join over 5,600 customers who have already changed their smile. 30-day money-back guarantee.
+              Join {SITE_STATS.customers} customers who have already changed their smile. 30-day money-back guarantee.
             </p>
             <a
               href="/shop"
-              className="inline-flex items-center gap-2 px-10 py-4 bg-[#7C3AED] text-white font-black text-sm tracking-widest rounded-full hover:bg-[#6D28D9] transition-all shadow-xl hover:shadow-purple-200 hover:-translate-y-0.5 active:scale-95"
+              className="inline-flex items-center gap-2 px-10 py-4 bg-[#231b50] text-white font-black text-sm tracking-widest rounded-full hover:bg-[#1a1440] transition-all shadow-xl hover:shadow-violet-200 hover:-translate-y-0.5 active:scale-95"
               style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
             >
               SHOP NOW → START YOUR JOURNEY

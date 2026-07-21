@@ -7,6 +7,7 @@ import {
   addCartLines,
   updateCartLines,
   removeCartLines,
+  normalizeCheckoutUrl,
   type Cart,
   type CartLine,
 } from './shopify';
@@ -66,7 +67,7 @@ export const useCartStore = create<CartState>()(
       items: [],
       totalQuantity: 0,
       subtotal: '0',
-      subtotalCurrency: 'USD',
+      subtotalCurrency: 'GBP',
       isOpen: false,
       isLoading: false,
 
@@ -89,7 +90,7 @@ export const useCartStore = create<CartState>()(
           if (cart) {
             set({
               cartId: cart.id,
-              checkoutUrl: cart.checkoutUrl,
+              checkoutUrl: normalizeCheckoutUrl(cart.checkoutUrl),
               items: cartToItems(cart),
               totalQuantity: cart.totalQuantity,
               subtotal: cart.cost.subtotalAmount.amount,
@@ -156,7 +157,7 @@ export const useCartStore = create<CartState>()(
           items: [],
           totalQuantity: 0,
           subtotal: '0',
-          subtotalCurrency: 'USD',
+          subtotalCurrency: 'GBP',
           isOpen: false,
         }),
     }),
