@@ -36,7 +36,7 @@ export default function WhyCliniWhite() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-8 items-center">
             {/* Left Content */}
-            <div className="lg:pr-8">
+            <div className="lg:pr-8 py-12 lg:py-0">
               <p className="text-[#231b50] text-xs font-bold tracking-widest uppercase mb-3">
                 ADVANCED TECHNOLOGY
               </p>
@@ -75,7 +75,7 @@ export default function WhyCliniWhite() {
             </div>
 
             {/* Right Content - Image */}
-            <div className="relative h-full">
+            <div className="relative w-full h-64 sm:h-80 lg:h-full lg:min-h-[420px]">
               <img
                 src="/PIC1.png"
                 alt="Product Benefits"

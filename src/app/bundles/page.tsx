@@ -28,7 +28,7 @@ export default async function BundlesPage() {
               LIMITED TIME
             </span>
             <h1
-              className="font-display text-4xl md:text-6xl font-extrabold text-white mb-6 leading-none tracking-tight"
+              className="font-display text-3xl sm:text-4xl md:text-6xl font-extrabold text-white mb-6 leading-none tracking-tight"
             >
               BUNDLE<br />
               <span className="text-[#C4B5FD]">&amp; SAVE</span>

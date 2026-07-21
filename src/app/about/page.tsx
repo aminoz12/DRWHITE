@@ -170,7 +170,7 @@ export default function AboutPage() {
                 OUR JOURNEY
               </p>
               <h2
-                className="font-display text-4xl md:text-6xl font-extrabold text-black mb-10 leading-[1.05] tracking-tight"
+                className="font-display text-3xl sm:text-4xl md:text-6xl font-extrabold text-black mb-10 leading-[1.05] tracking-tight"
               >
                 MAKING HISTORY<br />
                 <span className="text-[#231b50]">SINCE DAY ONE</span>

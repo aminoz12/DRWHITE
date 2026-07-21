@@ -19,6 +19,19 @@ body {
   /* Use the self-hosted brand font instead of falling back to system Arial. */
   font-family: var(--font-geist-sans), system-ui, -apple-system, "Segoe UI",
     Roboto, Helvetica, Arial, sans-serif;
+  /* Never allow accidental horizontal scroll on small screens. `clip` (not
+     `hidden`) prevents overflow without creating a scroll container, so the
+     sticky header keeps working. */
+  overflow-x: clip;
+  /* Long unbroken strings (URLs, product handles) wrap instead of overflowing. */
+  overflow-wrap: break-word;
+}
+
+/* Media never exceeds its container on any device. */
+img,
+video,
+canvas {
+  max-width: 100%;
 }
 
 /* Visible keyboard focus indicator (WCAG 2.4.7). */

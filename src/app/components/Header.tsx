@@ -24,8 +24,8 @@ export default function Header() {
   return (
     <>
       {/* Promo Bar */}
-      <div className="bg-black text-white text-center py-1.5">
-        <span className="text-xs font-bold tracking-wider uppercase">
+      <div className="bg-black text-white text-center py-1.5 px-3">
+        <span className="text-[10px] sm:text-xs font-bold tracking-wide sm:tracking-wider uppercase">
           Secret Deals: 60% OFF + FREE Mystery Gift
         </span>
       </div>

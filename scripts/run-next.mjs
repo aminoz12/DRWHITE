@@ -46,7 +46,7 @@ if (extraCaCert) {
 }
 
 if (!env.NODE_OPTIONS?.includes('--max-old-space-size')) {
-  env.NODE_OPTIONS = `${env.NODE_OPTIONS ? `${env.NODE_OPTIONS} ` : ''}--max-old-space-size=6144`;
+  env.NODE_OPTIONS = `${env.NODE_OPTIONS ? `${env.NODE_OPTIONS} ` : ''}--max-old-space-size=8192`;
 }
 
 const nextBin = resolve(root, 'node_modules', 'next', 'dist', 'bin', 'next');

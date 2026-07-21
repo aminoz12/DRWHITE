@@ -6,7 +6,7 @@ import { STATS } from '@/lib/siteConfig';
 
 export default function Hero() {
   return (
-    <section className="relative h-[100vh] min-h-[600px] w-full overflow-hidden">
+    <section className="relative h-[100svh] min-h-[560px] w-full overflow-hidden">
       {/* hero.jpeg - full width, sharp quality */}
       <img
         src="/hero.jpeg"
