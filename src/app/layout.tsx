@@ -4,6 +4,7 @@ import "./globals.css";
 import PromoPopup from "./components/PromoPopup";
 import CartDrawer from "./components/CartDrawer";
 import Analytics from "./components/Analytics";
+import RouteTracker from "./components/RouteTracker";
 import { STATS, SOCIALS, CONTACT, COMPANY } from "@/lib/siteConfig";
 
 const geistSans = Geist({
@@ -184,6 +185,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col">
         <Analytics />
+        <RouteTracker />
         {children}
         <CartDrawer />
         <PromoPopup />

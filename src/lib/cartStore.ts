@@ -11,6 +11,7 @@ import {
   type Cart,
   type CartLine,
 } from './shopify';
+import { trackAddToCart } from './track';
 
 export interface CartItem {
   lineId: string;
@@ -88,15 +89,28 @@ export const useCartStore = create<CartState>()(
           }
 
           if (cart) {
+            const items = cartToItems(cart);
             set({
               cartId: cart.id,
               checkoutUrl: normalizeCheckoutUrl(cart.checkoutUrl),
-              items: cartToItems(cart),
+              items,
               totalQuantity: cart.totalQuantity,
               subtotal: cart.cost.subtotalAmount.amount,
               subtotalCurrency: cart.cost.subtotalAmount.currencyCode,
               isOpen: true,
             });
+
+            const added = items.find((i) => i.variantId === variantId);
+            if (added) {
+              const unitPrice = parseFloat(added.price) / added.quantity;
+              trackAddToCart({
+                contentId: added.variantId,
+                contentName: added.title,
+                value: unitPrice * quantity,
+                currency: added.currencyCode,
+                quantity,
+              });
+            }
           }
         } catch (err) {
           console.error('addItem error:', err);
