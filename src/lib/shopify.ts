@@ -2,19 +2,23 @@ const rawDomain = process.env.SHOPIFY_STORE_DOMAIN || process.env.NEXT_PUBLIC_SH
 const domain = rawDomain.replace(/^https?:\/\//, '').replace(/\/+$/, '');
 const storefrontAccessToken = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN || process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN || '';
 
-export const SHOPIFY_ACCOUNT_URL = `https://${domain}/account`;
 export const SHOPIFY_DOMAIN = domain;
 
 // Domain that actually serves a working Shopify checkout. The Storefront API
 // returns checkoutUrl on the store's *primary* domain, which for this store is
 // a dead Vercel deployment (drwhitecare.com → 404). We rewrite the host to the
 // canonical myshopify.com domain (always serves checkout), or to an explicit
-// override if one is configured.
+// override if one is configured (e.g. shop.cliniwhite.com once that subdomain
+// is connected in Shopify admin — see .env.example).
 const CHECKOUT_DOMAIN = (
   process.env.NEXT_PUBLIC_SHOPIFY_CHECKOUT_DOMAIN || domain
 )
   .replace(/^https?:\/\//, '')
   .replace(/\/+$/, '');
+
+// Customer-facing Shopify pages (checkout, account login) live on the branded
+// storefront domain when one is configured, else on the myshopify.com domain.
+export const SHOPIFY_ACCOUNT_URL = `https://${CHECKOUT_DOMAIN}/account`;
 
 /**
  * Force a Shopify checkoutUrl onto a domain that resolves. Keeps the cart

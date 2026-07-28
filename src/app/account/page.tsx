@@ -2,12 +2,11 @@
 
 import { useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
-
-const SHOPIFY_ACCOUNT = `https://${process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || 'dr-white-5537.myshopify.com'}/account`;
+import { SHOPIFY_ACCOUNT_URL } from '@/lib/shopify';
 
 export default function AccountPage() {
   useEffect(() => {
-    window.location.replace(SHOPIFY_ACCOUNT);
+    window.location.replace(SHOPIFY_ACCOUNT_URL);
   }, []);
 
   return (
