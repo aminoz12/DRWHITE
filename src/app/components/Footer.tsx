@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { SOCIALS, CONTACT, COMPANY, CURRENCY } from '@/lib/siteConfig';
+import NewsletterForm from './NewsletterForm';
 
 const InstagramIcon = () => (
   <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg">
@@ -20,12 +21,6 @@ const TikTokIcon = () => (
 const ChevronDownIcon = () => (
   <svg viewBox="0 0 24 24" className="w-3 h-3 fill-current" xmlns="http://www.w3.org/2000/svg">
     <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
-  </svg>
-);
-
-const ArrowRightIcon = () => (
-  <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg">
-    <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
   </svg>
 );
 
@@ -158,20 +153,7 @@ export default function Footer() {
             <p className="text-xs text-gray-600 leading-relaxed mb-5">
               Be the first one to get exclusive access to our new products, special discounts and more.
             </p>
-            <div className="relative">
-              <input
-                type="email"
-                placeholder="Your email"
-                className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 pr-10 text-xs text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-black transition-colors"
-              />
-              <button
-                type="button"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition-colors"
-                aria-label="Subscribe"
-              >
-                <ArrowRightIcon />
-              </button>
-            </div>
+            <NewsletterForm />
           </div>
         </div>
 
