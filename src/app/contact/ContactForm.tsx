@@ -18,12 +18,6 @@ const inputClass =
 const labelClass =
   'block text-[11px] font-black uppercase tracking-widest text-gray-900 mb-2';
 
-function encode(data: Record<string, string>) {
-  return Object.keys(data)
-    .map((key) => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
-    .join('&');
-}
-
 export default function ContactForm() {
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [fields, setFields] = useState({
@@ -42,14 +36,32 @@ export default function ContactForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // Honeypot: bots that fill the hidden field get a fake success.
+    const honeypot = (e.currentTarget.elements.namedItem('bot-field') as HTMLInputElement | null)?.value;
+    if (honeypot) {
+      setStatus('sent');
+      return;
+    }
     setStatus('sending');
     try {
-      const res = await fetch('/', {
+      // FormSubmit relays the submission to CONTACT.email — keyless, static-host
+      // friendly. First-ever submission triggers a one-time activation email.
+      const res = await fetch(`https://formsubmit.co/ajax/${CONTACT.email}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: encode({ 'form-name': 'contact', ...fields }),
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          _subject: `[${fields.topic}] Contact from ${fields.name}`,
+          _template: 'table',
+          _captcha: 'false',
+          _replyto: fields.email,
+          ...fields,
+        }),
       });
       if (!res.ok) throw new Error(`Form submission failed: ${res.status}`);
+      const json = await res.json();
+      if (json.success !== 'true' && json.success !== true) {
+        throw new Error(json.message || 'FormSubmit rejected the submission');
+      }
       setStatus('sent');
     } catch {
       setStatus('error');
@@ -88,19 +100,11 @@ export default function ContactForm() {
   }
 
   return (
-    <form
-      name="contact"
-      method="POST"
-      data-netlify="true"
-      netlify-honeypot="bot-field"
-      onSubmit={handleSubmit}
-      className="space-y-6"
-    >
-      {/* Netlify form detection */}
-      <input type="hidden" name="form-name" value="contact" />
-      <p className="hidden">
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Honeypot spam trap — hidden from humans, tempting for bots */}
+      <p className="hidden" aria-hidden="true">
         <label>
-          Don&apos;t fill this out: <input name="bot-field" />
+          Don&apos;t fill this out: <input name="bot-field" tabIndex={-1} autoComplete="off" />
         </label>
       </p>
 

@@ -1,6 +1,26 @@
 'use client';
 
 import { useState } from 'react';
+import { shopifyClientFetch } from '@/lib/shopify';
+
+// Newsletter signups are stored as Shopify customers with marketing consent,
+// so they show up in Shopify admin → Customers ("Email subscribers" segment)
+// and flow into any email tool connected to the store. No third-party form
+// service involved — works on any static host.
+const CUSTOMER_CREATE = `
+  mutation newsletterSignup($input: CustomerCreateInput!) {
+    customerCreate(input: $input) {
+      customer { id }
+      customerUserErrors { code message }
+    }
+  }
+`;
+
+function randomPassword() {
+  const bytes = new Uint8Array(24);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+}
 
 export default function NewsletterForm() {
   const [email, setEmail] = useState('');
@@ -10,13 +30,20 @@ export default function NewsletterForm() {
     e.preventDefault();
     setStatus('sending');
     try {
-      const res = await fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ 'form-name': 'newsletter', email }).toString(),
+      const result = await shopifyClientFetch({
+        query: CUSTOMER_CREATE,
+        variables: {
+          input: { email, password: randomPassword(), acceptsMarketing: true },
+        },
       });
-      if (!res.ok) throw new Error(`Newsletter signup failed: ${res.status}`);
-      setStatus('sent');
+      const payload = result?.data?.customerCreate;
+      const errors: { code?: string; message?: string }[] = payload?.customerUserErrors ?? [];
+      // An already-registered email still counts as subscribed.
+      if (payload?.customer || errors.some((err) => err.code === 'TAKEN')) {
+        setStatus('sent');
+      } else {
+        throw new Error(errors[0]?.message || 'customerCreate returned no customer');
+      }
     } catch {
       setStatus('error');
     }
@@ -36,20 +63,7 @@ export default function NewsletterForm() {
   }
 
   return (
-    <form
-      name="newsletter"
-      method="POST"
-      data-netlify="true"
-      netlify-honeypot="bot-field"
-      onSubmit={handleSubmit}
-      className="relative"
-    >
-      <input type="hidden" name="form-name" value="newsletter" />
-      <p className="hidden">
-        <label>
-          Don&apos;t fill this out: <input name="bot-field" />
-        </label>
-      </p>
+    <form onSubmit={handleSubmit} className="relative">
       <input
         type="email"
         name="email"
