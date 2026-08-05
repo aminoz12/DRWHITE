@@ -38,7 +38,7 @@ export default async function PolicyPage({ params }: PolicyPageProps) {
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      <main className="py-16 md:py-24 px-4">
+      <main id="main-content" className="py-16 md:py-24 px-4">
         <article className="max-w-3xl mx-auto">
           <p className="text-[#231b50] text-xs font-black tracking-[0.3em] uppercase mb-4">
             Legal

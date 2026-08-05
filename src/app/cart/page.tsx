@@ -85,7 +85,7 @@ export default function CartPage() {
     <div className="min-h-screen bg-[#F7F7F7]">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid lg:grid-cols-3 gap-8 items-start">
           
           {/* LEFT: CART ITEMS */}
@@ -132,12 +132,13 @@ export default function CartPage() {
                               <p className="text-xs text-gray-500 mt-1 uppercase font-bold">{item.variantTitle}</p>
                             )}
                           </div>
-                          <button 
+                          <button
                             onClick={() => {
                               removeItem(item.lineId);
                               setOfferIndex(prev => Math.max(0, prev - 1));
                             }}
-                            className="text-gray-300 hover:text-red-500 transition-colors"
+                            aria-label={`Remove ${item.title} from cart`}
+                            className="p-2 -m-2 text-gray-500 hover:text-red-500 transition-colors"
                           >
                             <Trash2 className="w-5 h-5" />
                           </button>
@@ -145,16 +146,18 @@ export default function CartPage() {
 
                         <div className="mt-auto flex items-end justify-between">
                           <div className="flex items-center border border-gray-200 rounded-full overflow-hidden">
-                            <button 
+                            <button
                               onClick={() => updateQuantity(item.lineId, item.quantity - 1)}
-                              className="px-3 py-2 hover:bg-gray-50 transition-colors"
+                              aria-label="Decrease quantity"
+                              className="px-3.5 py-3 hover:bg-gray-50 transition-colors"
                             >
                               <Minus className="w-3 h-3" />
                             </button>
                             <span className="px-4 py-2 text-xs font-black min-w-[3rem] text-center">{item.quantity}</span>
-                            <button 
+                            <button
                               onClick={() => updateQuantity(item.lineId, item.quantity + 1)}
-                              className="px-3 py-2 hover:bg-gray-50 transition-colors"
+                              aria-label="Increase quantity"
+                              className="px-3.5 py-3 hover:bg-gray-50 transition-colors"
                             >
                               <Plus className="w-3 h-3" />
                             </button>
@@ -237,7 +240,7 @@ export default function CartPage() {
                     </div>
                   </div>
                 </div>
-                <div className="bg-white px-4 py-2 text-[8px] text-gray-400 font-medium uppercase text-center">
+                <div className="bg-white px-4 py-2 text-[10px] text-gray-400 font-medium uppercase text-center">
                     *Discount applies to this product only. One use per customer.
                 </div>
               </div>
@@ -265,7 +268,7 @@ export default function CartPage() {
                       fill
                       className="object-contain p-4 group-hover:scale-110 transition-transform duration-500"
                     />
-                    <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-[9px] font-black px-2 py-1 rounded uppercase shadow-sm">
+                    <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-[10px] font-black px-2 py-1 rounded uppercase shadow-sm">
                       Best Seller
                     </div>
                   </div>

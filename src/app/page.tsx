@@ -17,7 +17,7 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      <main>
+      <main id="main-content">
         <Hero />
         <BestSellers />
         <HowItWorks />

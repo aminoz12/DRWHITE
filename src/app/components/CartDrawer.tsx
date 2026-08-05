@@ -60,6 +60,7 @@ export default function CartDrawer() {
   return (
     <>
       <div
+        aria-hidden
         className={`fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${
           isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
@@ -67,6 +68,12 @@ export default function CartDrawer() {
 
       <div
         ref={drawerRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cart-drawer-title"
+        // inert removes the off-screen drawer's controls from the tab order
+        // and the accessibility tree while closed.
+        inert={!isOpen}
         className={`fixed top-0 right-0 z-50 h-full w-full max-w-md bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-out ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
@@ -74,7 +81,7 @@ export default function CartDrawer() {
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
           <div className="flex items-center gap-3">
             <ShoppingBag className="w-5 h-5 text-[#231b50]" />
-            <h2 className="text-lg font-black tracking-tight text-gray-900" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+            <h2 id="cart-drawer-title" className="text-lg font-black tracking-tight text-gray-900" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
               YOUR CART
             </h2>
             {totalQuantity > 0 && (
@@ -155,7 +162,7 @@ export default function CartDrawer() {
                       <button
                         onClick={() => updateQuantity(item.lineId, item.quantity - 1)}
                         disabled={isLoading}
-                        className="w-7 h-7 rounded-full border border-gray-200 flex items-center justify-center hover:border-[#231b50] hover:text-[#231b50] transition-colors disabled:opacity-40"
+                        className="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center hover:border-[#231b50] hover:text-[#231b50] transition-colors disabled:opacity-40"
                         aria-label="Decrease quantity"
                       >
                         <Minus className="w-3 h-3" />
@@ -166,7 +173,7 @@ export default function CartDrawer() {
                       <button
                         onClick={() => updateQuantity(item.lineId, item.quantity + 1)}
                         disabled={isLoading}
-                        className="w-7 h-7 rounded-full border border-gray-200 flex items-center justify-center hover:border-[#231b50] hover:text-[#231b50] transition-colors disabled:opacity-40"
+                        className="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center hover:border-[#231b50] hover:text-[#231b50] transition-colors disabled:opacity-40"
                         aria-label="Increase quantity"
                       >
                         <Plus className="w-3 h-3" />
@@ -175,7 +182,7 @@ export default function CartDrawer() {
                       <button
                         onClick={() => removeItem(item.lineId)}
                         disabled={isLoading}
-                        className="ml-auto p-1.5 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-40"
+                        className="ml-auto p-2.5 rounded-full text-gray-500 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-40"
                         aria-label="Remove item"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -196,7 +203,7 @@ export default function CartDrawer() {
                 {formatMoney(subtotal, subtotalCurrency)}
               </span>
             </div>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-500">
               Shipping and taxes calculated at checkout
             </p>
 
@@ -223,15 +230,15 @@ export default function CartDrawer() {
             </button>
 
             <div className="flex items-center justify-center gap-4 pt-2 border-t border-gray-100">
-              <span className="text-[10px] text-gray-400 flex items-center gap-1">
+              <span className="text-[10px] text-gray-500 flex items-center gap-1">
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
                 Secure Checkout
               </span>
-              <span className="text-[10px] text-gray-400 flex items-center gap-1">
+              <span className="text-[10px] text-gray-500 flex items-center gap-1">
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
                 30-Day Returns
               </span>
-              <span className="text-[10px] text-gray-400 flex items-center gap-1">
+              <span className="text-[10px] text-gray-500 flex items-center gap-1">
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
                 Free Shipping
               </span>

@@ -54,7 +54,7 @@ const QUICK_HELP = [
     icon: RotateCcw,
     title: 'RETURNS & REFUNDS',
     desc: 'Every order is covered by our 30-day money-back guarantee. No questions, no hassle.',
-    href: '/bundles',
+    href: '/policies/refund-policy',
     cta: 'See our guarantee',
   },
 ];
@@ -86,7 +86,7 @@ export default function ContactPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(contactSchema) }}
       />
       <Header />
-      <main>
+      <main id="main-content">
         {/* Contact info + form */}
         <section className="py-20 px-4 bg-white">
           <div className="max-w-6xl mx-auto grid lg:grid-cols-5 gap-10 lg:gap-16 items-start">

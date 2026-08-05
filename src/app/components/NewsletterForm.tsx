@@ -68,17 +68,19 @@ export default function NewsletterForm() {
         type="email"
         name="email"
         required
+        autoComplete="email"
+        aria-label="Email address for newsletter"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="Your email"
         disabled={status === 'sending'}
-        className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 pr-10 text-xs text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-black transition-colors disabled:opacity-60"
+        className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 pr-12 text-xs text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-black transition-colors disabled:opacity-60"
       />
       <button
         type="submit"
         disabled={status === 'sending'}
         aria-label="Subscribe"
-        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition-colors"
+        className="absolute right-1 top-1/2 -translate-y-1/2 p-3 text-gray-500 hover:text-black transition-colors"
       >
         {status === 'sending' ? (
           <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
@@ -91,7 +93,7 @@ export default function NewsletterForm() {
         )}
       </button>
       {status === 'error' && (
-        <p className="mt-2 text-[10px] text-red-500 font-bold">
+        <p role="alert" className="mt-2 text-[11px] text-red-600 font-bold">
           Something went wrong — please try again.
         </p>
       )}

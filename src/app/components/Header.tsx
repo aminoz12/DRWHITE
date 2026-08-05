@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ShoppingBag, Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { useCartStore } from '@/lib/cartStore';
@@ -20,7 +20,7 @@ const PERKS = [
 
 const leftNav = [
   { label: 'SHOP ALL', href: '/shop' },
-  { label: 'BESTSELLERS', href: '/shop' },
+  { label: 'BUNDLES', href: '/bundles' },
   { label: 'RESULTS', href: '/results' },
   { label: 'ABOUT', href: '/about' },
 ];
@@ -28,6 +28,11 @@ const leftNav = [
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { totalQuantity, openCart } = useCartStore();
+
+  // The cart count comes from localStorage (zustand persist); rendering it
+  // before hydration completes would mismatch the server HTML (React #418).
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => setHydrated(true), []);
 
   const linkClass = "text-xs font-bold text-black hover:opacity-60 tracking-[0.15em] uppercase transition-opacity";
 
@@ -92,8 +97,8 @@ export default function Header() {
                 aria-label="Open cart"
               >
                 <ShoppingBag className="w-5 h-5" />
-                {totalQuantity > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center w-4 h-4 rounded-full bg-black text-white text-[9px] font-bold">
+                {hydrated && totalQuantity > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center w-4 h-4 rounded-full bg-black text-white text-[10px] font-bold">
                     {totalQuantity > 9 ? '9+' : totalQuantity}
                   </span>
                 )}

@@ -77,23 +77,27 @@ export default function ShopGrid({ products }: { products: Product[] }) {
         {/* In Stock Toggle */}
         <div className="flex items-center gap-3">
           <span className="text-xs font-bold text-gray-900 uppercase tracking-tight">In stock only</span>
-          <button 
+          <button
             onClick={() => setInStockOnly(!inStockOnly)}
-            className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200 focus:outline-none ${inStockOnly ? 'bg-gray-900' : 'bg-gray-200'}`}
+            role="switch"
+            aria-checked={inStockOnly}
+            aria-label="Show in-stock products only"
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${inStockOnly ? 'bg-gray-900' : 'bg-gray-200'}`}
           >
             <span
-              className={`${inStockOnly ? 'translate-x-5' : 'translate-x-1'} inline-block h-3 w-3 transform rounded-full bg-white transition duration-200 ease-in-out`}
+              className={`${inStockOnly ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition duration-200 ease-in-out`}
             />
           </button>
         </div>
 
         {/* Sort Dropdown - Refined */}
         <div className="flex items-center gap-1.5 group cursor-pointer">
-          <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Sort by</span>
+          <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Sort by</span>
           <div className="relative flex items-center">
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
+              aria-label="Sort products"
               className="appearance-none bg-transparent border-none py-0 pl-1 pr-6 text-[11px] font-black text-black uppercase tracking-tight cursor-pointer focus:ring-0"
             >
               <option value="featured">Price</option>
@@ -112,7 +116,7 @@ export default function ShopGrid({ products }: { products: Product[] }) {
             <Search className="w-8 h-8 text-gray-300" />
           </div>
           <h3 className="text-lg font-bold text-gray-900">No products found</h3>
-          <p className="text-sm text-gray-500 mt-1">Try adjusting your search or filters</p>
+          <p className="text-sm text-gray-500 mt-1">Try adjusting your filters</p>
           <button
             onClick={() => { setSearchQuery(''); setSortBy('featured'); }}
             className="mt-6 text-sm font-bold text-[#231b50] hover:underline"

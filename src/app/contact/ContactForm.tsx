@@ -117,6 +117,7 @@ export default function ContactForm() {
             id="contact-name"
             type="text"
             name="name"
+            autoComplete="name"
             required
             value={fields.name}
             onChange={handleChange}
@@ -132,6 +133,7 @@ export default function ContactForm() {
             id="contact-email"
             type="email"
             name="email"
+            autoComplete="email"
             required
             value={fields.email}
             onChange={handleChange}
@@ -207,7 +209,7 @@ export default function ContactForm() {
       </div>
 
       {status === 'error' && (
-        <div className="bg-red-50 border border-red-100 rounded-xl px-5 py-4">
+        <div role="alert" className="bg-red-50 border border-red-100 rounded-xl px-5 py-4">
           <p className="text-xs text-red-600 font-bold leading-relaxed">
             Something went wrong sending your message. Please try again, or email us directly
             at{' '}
@@ -241,7 +243,7 @@ export default function ContactForm() {
         )}
       </button>
 
-      <p className="text-[11px] text-gray-400 text-center leading-relaxed">
+      <p className="text-[11px] text-gray-500 text-center leading-relaxed">
         We typically reply within 24 hours, Monday to Friday. By submitting this form you agree
         to our privacy policy.
       </p>

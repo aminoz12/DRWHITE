@@ -10,7 +10,7 @@ export default function NotFound() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Header />
-      <main className="flex-1 flex items-center justify-center px-4 py-24">
+      <main id="main-content" className="flex-1 flex items-center justify-center px-4 py-24">
         <div className="max-w-xl mx-auto text-center">
           <p className="font-display text-7xl md:text-8xl font-extrabold text-[#231b50] leading-none mb-6">
             404

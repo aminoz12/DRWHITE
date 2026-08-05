@@ -21,7 +21,7 @@ export default function ResultsPage() {
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      <main>
+      <main id="main-content">
         {/* Hero */}
         <section className="relative bg-[#231b50] py-12 px-4 text-center overflow-hidden">
           <Image

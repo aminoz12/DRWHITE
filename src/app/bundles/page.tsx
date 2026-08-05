@@ -22,7 +22,7 @@ export default async function BundlesPage() {
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      <main>
+      <main id="main-content">
         {/* Hero Banner */}
         <section className="bg-[#231b50] text-white py-20 px-4 text-center relative overflow-hidden">
           {/* Decorative circles */}

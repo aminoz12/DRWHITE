@@ -143,6 +143,21 @@ export default function PromoPopup() {
     };
   }, [shouldRender, isScratched]);
 
+  // Escape closes the dialog; page scroll is locked while it is open.
+  useEffect(() => {
+    if (!shouldRender) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') handleDismiss();
+    };
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldRender]);
+
   const handleDismiss = useCallback(() => {
     setIsVisible(false);
     setTimeout(() => {
@@ -165,8 +180,13 @@ export default function PromoPopup() {
   if (!shouldRender) return null;
 
   return (
-    <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={handleDismiss} />
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="promo-popup-title"
+      className={`fixed inset-0 z-[100] flex items-center justify-center p-4 transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+    >
+      <div aria-hidden className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={handleDismiss} />
 
       <div className={`relative w-full max-w-xl bg-white rounded-2xl overflow-hidden shadow-2xl transition-transform duration-500 ease-out ${isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-8'}`}>
         {/* Close */}
@@ -182,7 +202,7 @@ export default function PromoPopup() {
 
           {!isScratched ? (
             <>
-              <h2 className="font-display text-3xl font-extrabold text-black leading-tight mb-1">
+              <h2 id="promo-popup-title" className="font-display text-3xl font-extrabold text-black leading-tight mb-1">
                 Try your luck
               </h2>
               <p className="text-base text-gray-500 mb-8">Scratch below to see what you win</p>
@@ -206,7 +226,16 @@ export default function PromoPopup() {
                 />
               </div>
 
-              <p className="text-xs text-gray-400 mt-5">Scratch the golden area to reveal your prize</p>
+              <p className="text-xs text-gray-500 mt-5">Scratch the golden area to reveal your prize</p>
+
+              {/* Keyboard/AT-accessible path to the same offer */}
+              <button
+                type="button"
+                onClick={() => setIsScratched(true)}
+                className="mt-3 text-xs font-bold text-[#231b50] underline underline-offset-2 hover:opacity-70 transition-opacity"
+              >
+                Reveal my prize without scratching
+              </button>
             </>
           ) : !isSubmitted ? (
             <div className="animate-in fade-in zoom-in duration-500 w-full">
@@ -224,6 +253,8 @@ export default function PromoPopup() {
                   type="email"
                   placeholder="Your email"
                   required
+                  autoComplete="email"
+                  aria-label="Email address to claim your discount"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:border-black focus:bg-white outline-none transition-all text-sm font-medium text-center"
