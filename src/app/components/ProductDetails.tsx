@@ -15,6 +15,114 @@ import { useRouter } from 'next/navigation';
 import PaymentIcons from './PaymentIcons';
 import { formatMoney, getDiscountPercent } from '@/lib/money';
 
+type ProductKind =
+  | 'strips'
+  | 'toothpaste'
+  | 'serum'
+  | 'foam'
+  | 'powder'
+  | 'mouthwash'
+  | 'toothbrush'
+  | 'bundle'
+  | 'other';
+
+function getProductKind(title: string): ProductKind {
+  const t = title.toLowerCase();
+  if (t.includes('bundle') || t.includes('kit') || t.includes('7-in-1')) return 'bundle';
+  if (t.includes('strip')) return 'strips';
+  if (t.includes('toothpaste')) return 'toothpaste';
+  if (t.includes('serum')) return 'serum';
+  if (t.includes('foam')) return 'foam';
+  if (t.includes('powder')) return 'powder';
+  if (t.includes('mouthwash')) return 'mouthwash';
+  if (t.includes('toothbrush')) return 'toothbrush';
+  return 'other';
+}
+
+// What one purchased unit contains, per product type, so the buy box never
+// claims "strips" on a serum. n = number of units in the offer tier.
+function unitLabel(kind: ProductKind, n: number): string {
+  switch (kind) {
+    case 'strips':
+      return `${14 * n} STRIPS IN TOTAL`;
+    case 'mouthwash':
+      return `${12 * n} SACHETS IN TOTAL`;
+    case 'toothpaste':
+      return n === 1 ? '1 TUBE IN TOTAL' : `${n} TUBES IN TOTAL`;
+    case 'serum':
+    case 'foam':
+      return n === 1 ? '1 BOTTLE IN TOTAL' : `${n} BOTTLES IN TOTAL`;
+    case 'powder':
+      return n === 1 ? '1 JAR IN TOTAL' : `${n} JARS IN TOTAL`;
+    case 'toothbrush':
+      return n === 1 ? '1 TOOTHBRUSH' : `${n} TOOTHBRUSHES`;
+    case 'bundle':
+      return n === 1 ? '1 COMPLETE SET' : `${n} COMPLETE SETS`;
+    default:
+      return n === 1 ? '1 PACK IN TOTAL' : `${n} PACKS IN TOTAL`;
+  }
+}
+
+const HOW_TO: Record<ProductKind, { step: string; text: string }[]> = {
+  strips: [
+    { step: '1. Peel & Apply:', text: 'Gently press the strip onto clean, dry teeth.' },
+    { step: '2. Wait 30-60 Minutes:', text: 'Leave the strips on while you go about your day.' },
+    { step: '3. Remove & Rinse:', text: 'Discard the strip and rinse any residue.' },
+    { step: '4. Repeat:', text: 'Use once daily. Most people use them for 7 consecutive days, then as needed for maintenance.' },
+  ],
+  toothpaste: [
+    { step: '1. Apply:', text: 'Squeeze a pea-sized amount onto a dry toothbrush.' },
+    { step: '2. Brush:', text: 'Brush gently for 2-3 minutes so the V34 pigments can neutralise yellow tones.' },
+    { step: '3. Rinse:', text: 'Rinse thoroughly with water.' },
+    { step: '4. Repeat:', text: 'Use once or twice daily in place of, or after, your regular toothpaste.' },
+  ],
+  serum: [
+    { step: '1. Apply:', text: 'Add a thin layer of serum to your toothbrush, alone or on top of toothpaste.' },
+    { step: '2. Brush:', text: 'Brush gently for 2-3 minutes, letting the colour-correcting pigments coat every surface.' },
+    { step: '3. Rinse:', text: 'Rinse thoroughly with water.' },
+    { step: '4. Repeat:', text: 'Use daily for an instant brightening boost before events or photos.' },
+  ],
+  foam: [
+    { step: '1. Dispense:', text: 'Pump the foam directly onto your toothbrush.' },
+    { step: '2. Brush:', text: 'Brush for 1-2 minutes to let the V34 formula work.' },
+    { step: '3. Rinse:', text: 'Spit and rinse with water.' },
+    { step: '4. Repeat:', text: 'Use daily — ideal after coffee, tea or red wine.' },
+  ],
+  powder: [
+    { step: '1. Dip:', text: 'Dip a clean, damp toothbrush into the powder.' },
+    { step: '2. Brush:', text: 'Brush gently for 2-3 minutes to lift surface stains.' },
+    { step: '3. Rinse:', text: 'Rinse thoroughly with water.' },
+    { step: '4. Repeat:', text: 'Use once daily alongside your regular toothpaste routine.' },
+  ],
+  mouthwash: [
+    { step: '1. Prepare:', text: 'Empty one sachet into your mouth, or dissolve as directed on the pack.' },
+    { step: '2. Swish:', text: 'Swish for 30-60 seconds, coating all surfaces of your teeth.' },
+    { step: '3. Spit:', text: 'Spit out — do not swallow.' },
+    { step: '4. Repeat:', text: 'Use once daily after brushing for colour correction on the go.' },
+  ],
+  toothbrush: [
+    { step: '1. Charge:', text: 'Fully charge the toothbrush before first use.' },
+    { step: '2. Brush:', text: 'Brush for the full 2-minute timer using your preferred smart mode.' },
+    { step: '3. Rinse:', text: 'Rinse the brush head and let it air-dry.' },
+    { step: '4. Maintain:', text: 'Replace the brush head every 3 months for best results.' },
+  ],
+  bundle: [
+    { step: '1. Start:', text: 'Begin with the core whitening product in your set.' },
+    { step: '2. Layer:', text: 'Add the colour-correcting products (serum, foam or powder) to your daily routine.' },
+    { step: '3. Follow:', text: 'Each product in the set includes its own directions — use as directed.' },
+    { step: '4. Repeat:', text: 'Stay consistent daily for 7-14 days for the full transformation.' },
+  ],
+  other: [
+    { step: '1. Follow:', text: 'Use as directed on the packaging.' },
+    { step: '2. Be Consistent:', text: 'Use daily for best results.' },
+    { step: '3. Maintain:', text: 'Continue as needed to maintain your results.' },
+    { step: '4. Combine:', text: 'Pairs perfectly with the rest of the CLINI WHITE V34 range.' },
+  ],
+};
+
+// Units contained in each offer tier: BUY 1, BUY 1 GET 1, BUY 2 GET 2.
+const TIER_UNITS = [1, 2, 4];
+
 interface ProductDetailsProps {
   product: {
     id: string;
@@ -134,13 +242,6 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 )}
               </div>
 
-              <div className="flex items-center gap-2 pt-0.5">
-                <div className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
-                </div>
-                <span className="text-[11px] font-bold text-orange-500 uppercase tracking-wide">Almost sold out</span>
-              </div>
             </div>
 
             {/* PURCHASE SECTION */}
@@ -155,7 +256,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                     <input
                       type="radio"
                       name="variant"
-                      className="hidden"
+                      className="sr-only"
                       checked={selectedVariant?.id === node.id}
                       onChange={() => setSelectedVariant(node)}
                     />
@@ -168,7 +269,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                           {index === 0 ? 'BUY 1' : index === 1 ? 'BUY 1 GET 1' : 'BUY 2 GET 2'}
                         </p>
                         <p className="text-[10px] font-black text-[#231b50] mt-2 uppercase">
-                          {index === 0 ? '14 STRIPS IN TOTAL' : index === 1 ? '28 STRIPS IN TOTAL' : '56 STRIPS IN TOTAL'}
+                          {unitLabel(getProductKind(product.title), TIER_UNITS[index] ?? index + 1)}
                         </p>
                       </div>
                     </div>
@@ -284,18 +385,11 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
               </Accordion>
               <Accordion title="How to use" id="how" activeId={activeAccordion} onToggle={setActiveAccordion}>
                 <div className="pb-8 space-y-6 text-sm text-black">
-                  <div className="space-y-1">
-                    <p><span className="font-bold">1. Peel & Apply:</span> Gently press the strip onto clean, dry teeth.</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p><span className="font-bold">2. Wait 30-60 Minutes:</span> Leave the strips on while you go about your day.</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p><span className="font-bold">3. Remove & Rinse:</span> Discard the strip and rinse any residue.</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p><span className="font-bold">4. Repeat:</span> Use once daily. Most people use them for 7 consecutive days, then as needed for maintenance.</p>
-                  </div>
+                  {HOW_TO[getProductKind(product.title)].map(({ step, text }) => (
+                    <div key={step} className="space-y-1">
+                      <p><span className="font-bold">{step}</span> {text}</p>
+                    </div>
+                  ))}
                 </div>
               </Accordion>
               <Accordion title="What is PAP" id="pap" activeId={activeAccordion} onToggle={setActiveAccordion}>
