@@ -63,7 +63,7 @@ function colorNameToHex(name: string): string {
 // ─── Star component ────────────────────────────────────────────────────────
 function Star({ filled, size = 10 }: { filled: boolean; size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" className={filled ? 'text-[#E85D75]' : 'text-gray-300'}>
+    <svg width={size} height={size} viewBox="0 0 24 24" className={filled ? 'text-[#231b50]' : 'text-gray-300'}>
       <path fill="currentColor" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
     </svg>
   );
@@ -148,7 +148,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Badge — positioned at top-left of image */}
         {badge && (
           <div className="absolute top-2 left-2 z-10">
-            <span className={`inline-block ${badge.bg} ${badge.text} text-[8px] font-black tracking-widest uppercase px-2 py-1 rounded-md`}>
+            <span className={`inline-block ${badge.bg} ${badge.text} text-[10px] font-black tracking-widest uppercase px-2 py-1 rounded-md`}>
               {badge.label}
             </span>
           </div>
@@ -192,7 +192,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               />
             ))}
             {colorOpt.values.length > 4 && (
-              <span className="text-[8px] text-gray-400 font-medium ml-0.5">+{colorOpt.values.length - 4}</span>
+              <span className="text-[10px] text-gray-400 font-medium ml-0.5">+{colorOpt.values.length - 4}</span>
             )}
           </div>
         )}

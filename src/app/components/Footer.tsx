@@ -18,12 +18,6 @@ const TikTokIcon = () => (
   </svg>
 );
 
-const ChevronDownIcon = () => (
-  <svg viewBox="0 0 24 24" className="w-3 h-3 fill-current" xmlns="http://www.w3.org/2000/svg">
-    <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
-  </svg>
-);
-
 const ApplePayIcon = () => (
   <svg viewBox="0 0 48 32" className="h-6 w-auto" xmlns="http://www.w3.org/2000/svg">
     <rect width="48" height="32" rx="4" fill="white" stroke="#e5e5e5" strokeWidth="1"/>
@@ -127,7 +121,7 @@ export default function Footer() {
             <h4 className="text-sm font-bold tracking-wide mb-5">Main menu</h4>
             <ul className="space-y-3 text-xs text-gray-600">
               <li><Link href="/shop" className="hover:text-black hover:underline transition-colors">Shop all</Link></li>
-              <li><Link href="/shop" className="hover:text-black hover:underline transition-colors">Bestsellers</Link></li>
+              <li><Link href="/bundles" className="hover:text-black hover:underline transition-colors">Bundles</Link></li>
               <li><Link href="/about" className="hover:text-black hover:underline transition-colors">About</Link></li>
             </ul>
           </div>
@@ -159,11 +153,10 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="border-t border-gray-300 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          {/* Country selector */}
-          <div className="flex items-center gap-1 text-xs text-gray-600 cursor-pointer hover:text-black transition-colors">
-            <span>United Kingdom ({CURRENCY.code} {CURRENCY.symbol})</span>
-            <ChevronDownIcon />
-          </div>
+          {/* Store region — static label, not a selector */}
+          <p className="text-xs text-gray-600">
+            United Kingdom ({CURRENCY.code} {CURRENCY.symbol})
+          </p>
 
           {/* Copyright */}
           <p className="text-xs text-gray-500">

@@ -13,6 +13,7 @@ import {
 import { useCartStore } from '@/lib/cartStore';
 import { useRouter } from 'next/navigation';
 import PaymentIcons from './PaymentIcons';
+import LazyVideo from './LazyVideo';
 import { formatMoney, getDiscountPercent } from '@/lib/money';
 
 type ProductKind =
@@ -185,6 +186,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     }, 800);
   };
 
+  const [activeImage, setActiveImage] = useState(0);
+
   const price = selectedVariant?.price || product.priceRange.minVariantPrice;
   const comparePrice = selectedVariant?.compareAtPrice;
   const formattedPrice = formatMoney(price.amount, price.currencyCode);
@@ -203,8 +206,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
           <div className="space-y-6">
             <div className="relative aspect-square flex items-center justify-center">
               <Image
-                src={images[0]?.url || ''}
-                alt={images[0]?.altText || product.title}
+                src={images[activeImage]?.url || images[0]?.url || ''}
+                alt={images[activeImage]?.altText || product.title}
                 width={800}
                 height={800}
                 className="object-contain w-full h-full transform scale-100"
@@ -213,14 +216,23 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             </div>
             <div className="grid grid-cols-2 gap-4">
               {images.slice(1, 5).map((img, i) => (
-                <div key={i} className="relative aspect-square group cursor-pointer">
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => setActiveImage(activeImage === i + 1 ? 0 : i + 1)}
+                  aria-label={`View product image ${i + 2}`}
+                  className={`relative aspect-square group overflow-hidden rounded-md transition-shadow ${
+                    activeImage === i + 1 ? 'ring-2 ring-[#231b50] ring-offset-2' : ''
+                  }`}
+                >
                   <Image
                     src={img.url}
                     alt={img.altText || product.title}
                     fill
+                    sizes="(max-width: 1024px) 50vw, 25vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                </div>
+                </button>
               ))}
             </div>
           </div>
@@ -285,7 +297,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                     </div>
 
                     {(index === 1 || index === 2) && (
-                      <div className="absolute -top-[10px] right-2 bg-[#f44336] text-white text-[9px] font-black px-2 py-1 rounded-sm uppercase italic">
+                      <div className="absolute -top-[10px] right-2 bg-[#f44336] text-white text-[10px] font-black px-2 py-1 rounded-sm uppercase italic">
                         LIMITED OFFER
                       </div>
                     )}
@@ -425,14 +437,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
           <div className="flex w-fit animate-marquee hover:[animation-play-state:paused] py-4">
             {[1, 2, 3, 4, 5, 1, 2, 3, 4, 5].map((id, i) => (
               <div key={i} className="flex-none w-[200px] sm:w-[250px] aspect-[9/16] mx-3 rounded-2xl overflow-hidden bg-gray-100 relative shadow-md">
-                <video
-                  src={`/vid${id}.mp4`}
-                  className="w-full h-full object-cover"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                />
+                <LazyVideo src={`/vid${id}.mp4`} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-black/10 pointer-events-none" />
               </div>
             ))}

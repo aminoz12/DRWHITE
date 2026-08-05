@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Eye, Play } from 'lucide-react';
+import LazyVideo from './LazyVideo';
 
 // Each card links to the real catalog product featured in the clip.
 const testimonials = [
@@ -72,13 +73,9 @@ export default function HowItWorks() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
           {testimonials.map((item) => (
             <Link key={item.id} href={`/product/${item.handle}`} className="relative rounded-xl overflow-hidden aspect-[9/16] max-h-[450px] group cursor-pointer shadow-sm bg-black block">
-              {/* Video Background */}
-              <video
+              {/* Video Background — lazy-loaded */}
+              <LazyVideo
                 src={item.video}
-                autoPlay
-                loop
-                muted
-                playsInline
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
 
