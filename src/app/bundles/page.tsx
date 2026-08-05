@@ -4,7 +4,8 @@ import Footer from '@/app/components/Footer';
 import BundlesGrid from './BundlesGrid';
 
 export const metadata = {
-  title: 'Bundle & Save | CLINI WHITE — Professional Teeth Whitening',
+  title: 'Bundle & Save — Professional Teeth Whitening',
+  alternates: { canonical: '/bundles' },
   description: 'Save more when you bundle CLINI WHITE professional whitening products. Stack your routine and get the best value on strips, kits, and accessories.',
 };
 

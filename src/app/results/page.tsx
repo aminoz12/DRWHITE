@@ -5,7 +5,8 @@ import ResultsGallery from './ResultsGallery';
 import { STATS as SITE_STATS } from '@/lib/siteConfig';
 
 export const metadata = {
-  title: 'Real Results | CLINI WHITE — See Before & After Transformations',
+  title: 'Real Results — Before & After Transformations',
+  alternates: { canonical: '/results' },
   description: `See real customer before and after results from CLINI WHITE professional teeth whitening. Over ${SITE_STATS.reviewsLabel} verified reviews and transformations.`,
 };
 

@@ -5,7 +5,8 @@ import { ShieldCheck, Award, Leaf, Microscope, Heart, Star, Users, Sparkles, Clo
 import { STATS } from '@/lib/siteConfig';
 
 export const metadata = {
-  title: 'About Us | CLINI WHITE — Professional Teeth Whitening',
+  title: 'About Us — Professional Teeth Whitening',
+  alternates: { canonical: '/about' },
   description: "CLINI WHITE is the UK's leading professional at-home teeth whitening brand. Learn about our mission, science, and commitment to a brighter, healthier smile.",
 };
 

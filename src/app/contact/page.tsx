@@ -7,7 +7,8 @@ import ContactForm from './ContactForm';
 import { CONTACT, COMPANY, SOCIALS, SITE_URL } from '@/lib/siteConfig';
 
 export const metadata = {
-  title: 'Contact Us | CLINI WHITE — Professional Teeth Whitening',
+  title: 'Contact Us',
+  alternates: { canonical: '/contact' },
   description:
     'Get in touch with the CLINI WHITE team. Questions about your order, our PAP whitening products, or partnerships — we reply within 24 hours.',
 };

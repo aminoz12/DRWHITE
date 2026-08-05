@@ -10,10 +10,11 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/account/", "/cart/", "/checkout/"],
+        // Static export serves extensionless URLs without trailing slashes,
+        // so list both forms to be safe.
+        disallow: ["/api/", "/account", "/account/", "/cart", "/cart/", "/checkout", "/checkout/"],
       },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,
-    host: SITE_URL,
   };
 }

@@ -9,6 +9,10 @@ import FAQ from "./components/FAQ";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 
+export const metadata = {
+  alternates: { canonical: '/' },
+};
+
 export default async function Home() {
   return (
     <div className="min-h-screen bg-white">
@@ -21,7 +25,7 @@ export default async function Home() {
         <Bundles />
         <WhyItWorks />
         <Worldwide />
-        <FAQ />
+        <FAQ withSchema />
       </main>
       <Footer />
     </div>

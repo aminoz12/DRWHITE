@@ -6,7 +6,8 @@ import ShopGrid from './ShopGrid';
 
 
 export const metadata: Metadata = {
-  title: 'Shop All Products | CLINI WHITE',
+  title: 'Shop All Products',
+  alternates: { canonical: '/shop' },
   description: 'Explore our full range of professional-grade teeth whitening kits, strips, and accessories.',
 };
 
@@ -21,6 +22,7 @@ export default async function ShopPage() {
         {/* Product Listing Section */}
         <section className="pt-16 pb-24 relative z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 className="sr-only">Shop All CLINI WHITE Teeth Whitening Products</h1>
             {products.length === 0 ? (
               <div className="bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-xl">
                 <p className="text-gray-500 font-medium">
