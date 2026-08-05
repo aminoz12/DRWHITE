@@ -23,7 +23,9 @@ const faqs = [
   },
 ];
 
-export default function FAQ() {
+// withSchema: emit the FAQPage JSON-LD only once site-wide (on the homepage) —
+// duplicating the same FAQPage entity on many URLs dilutes it for Google.
+export default function FAQ({ withSchema = false }: { withSchema?: boolean }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const toggleFAQ = (index: number) => {
@@ -42,10 +44,12 @@ export default function FAQ() {
 
   return (
     <section className="py-16 bg-[#F8FAFC]" aria-labelledby="faq-heading">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
+      {withSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      )}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10">
           <p className="text-[#231b50] text-xs font-black tracking-[0.3em] uppercase mb-4">

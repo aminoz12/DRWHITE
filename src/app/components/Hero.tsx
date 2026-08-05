@@ -37,10 +37,10 @@ export default function Hero() {
             {/* Headline */}
             <h1 className="font-display font-extrabold tracking-tight" style={{ color: '#231b50' }}>
               <span className="block text-3xl leading-[1.1] sm:text-4xl lg:text-[52px]">
-                Teeth Whitening
+                Teeth Whitening{' '}
               </span>
               <span className="block text-3xl leading-[1.1] sm:text-4xl lg:text-[52px]">
-                that adapts
+                that adapts{' '}
               </span>
               <span className="block text-3xl leading-[1.1] sm:text-4xl lg:text-[52px]">
                 to you

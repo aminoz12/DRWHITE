@@ -1,13 +1,11 @@
 import type { Metadata } from 'next';
 import { getProduct, getProducts } from '@/lib/shopify';
 import ProductDetails from '@/app/components/ProductDetails';
-import ProductReviews from '@/app/components/ProductReviews';
 import FAQ from '@/app/components/FAQ';
 import FeaturedCollection from '@/app/components/FeaturedCollection';
 import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
 import { SITE_URL, BRAND_NAME } from '@/lib/siteConfig';
-import { getProductReviews } from '@/lib/reviews';
 
 export async function generateStaticParams() {
   try {
@@ -92,7 +90,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
     );
   }
 
-  const reviews = getProductReviews(handle);
   const price = product.priceRange?.minVariantPrice;
   const anyAvailable = product.variants?.edges?.some(
     (e: any) => e.node.availableForSale
@@ -115,13 +112,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
         : 'https://schema.org/OutOfStock',
       url: `${SITE_URL}/product/${handle}`,
     },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: reviews.rating,
-      reviewCount: reviews.count,
-      bestRating: 5,
-      worstRating: 1,
-    },
+    // NOTE: no aggregateRating/review markup until a real reviews platform
+    // (e.g. Judge.me) supplies genuine data — invented values risk a Google
+    // structured-data manual action and breach UK consumer-protection rules.
   };
 
   return (
@@ -133,7 +126,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <Header />
       <main>
         <ProductDetails product={product} />
-        <ProductReviews handle={handle} productTitle={product.title} />
         <FAQ />
         <FeaturedCollection />
       </main>

@@ -5,8 +5,18 @@ import { ShoppingBag, Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { useCartStore } from '@/lib/cartStore';
 import { SHOPIFY_ACCOUNT_URL } from '@/lib/shopify';
+import { STATS } from '@/lib/siteConfig';
 
-const SHOPIFY_ACCOUNT = SHOPIFY_ACCOUNT_URL || 'https://dr-white-5537.myshopify.com/account';
+const SHOPIFY_ACCOUNT = SHOPIFY_ACCOUNT_URL;
+
+// True, verifiable perks rotated in the announcement bar — never a fake offer.
+const PERKS = [
+  '100% Money-Back Guarantee',
+  'Peroxide-Free PAP Formula',
+  `Rated ${STATS.ratingLabel} by ${STATS.customers} Customers`,
+  'Worldwide Tracked Shipping',
+  'Zero Sensitivity — Clinically Tested',
+];
 
 const leftNav = [
   { label: 'SHOP ALL', href: '/shop' },
@@ -23,11 +33,20 @@ export default function Header() {
 
   return (
     <>
-      {/* Promo Bar */}
-      <div className="bg-black text-white text-center py-1.5 px-3">
-        <span className="text-[10px] sm:text-xs font-bold tracking-wide sm:tracking-wider uppercase">
-          Secret Deals: 60% OFF + FREE Mystery Gift
-        </span>
+      {/* Announcement bar — rotating true perks */}
+      <div className="bg-black text-white py-1.5 overflow-hidden">
+        <div className="animate-marquee flex w-max whitespace-nowrap">
+          {[...PERKS, ...PERKS].map((perk, i) => (
+            <span
+              key={i}
+              aria-hidden={i >= PERKS.length}
+              className="text-[10px] sm:text-xs font-bold tracking-wide sm:tracking-wider uppercase mx-5 flex items-center gap-5"
+            >
+              {perk}
+              <span className="opacity-40">✦</span>
+            </span>
+          ))}
+        </div>
       </div>
 
       {/* Navbar */}

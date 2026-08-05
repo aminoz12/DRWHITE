@@ -139,7 +139,7 @@ export async function shopifyClientFetch({ query, variables }: { query: string; 
 // ─── PRODUCT QUERIES ───────────────────────────────────────────────────────
 export async function getProducts() {
   const query = `
-    query getProducts {
+    query getProducts @inContext(country: GB) {
       products(first: 10) {
         edges {
           node {
@@ -196,7 +196,7 @@ export async function getProducts() {
 
 export async function getProductsByCollection(handle: string) {
   const query = `
-    query getCollection($handle: String!) {
+    query getCollection($handle: String!) @inContext(country: GB) {
       collection(handle: $handle) {
         id
         title
@@ -266,7 +266,7 @@ export async function getProductsByCollection(handle: string) {
 
 export async function getProduct(handle: string) {
   const query = `
-    query getProduct($handle: String!) {
+    query getProduct($handle: String!) @inContext(country: GB) {
       product(handle: $handle) {
         id
         title
@@ -395,7 +395,7 @@ export async function createCart(
   lines: { merchandiseId: string; quantity: number }[]
 ): Promise<Cart | null> {
   const query = `
-    mutation cartCreate($input: CartInput!) {
+    mutation cartCreate($input: CartInput!) @inContext(country: GB) {
       cartCreate(input: $input) {
         cart { ...CartFields }
         userErrors { field message }
@@ -422,7 +422,7 @@ export async function addCartLines(
   lines: { merchandiseId: string; quantity: number }[]
 ): Promise<Cart | null> {
   const query = `
-    mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
+    mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) @inContext(country: GB) {
       cartLinesAdd(cartId: $cartId, lines: $lines) {
         cart { ...CartFields }
         userErrors { field message }
@@ -449,7 +449,7 @@ export async function updateCartLines(
   lines: { id: string; quantity: number }[]
 ): Promise<Cart | null> {
   const query = `
-    mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
+    mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) @inContext(country: GB) {
       cartLinesUpdate(cartId: $cartId, lines: $lines) {
         cart { ...CartFields }
         userErrors { field message }
@@ -471,7 +471,7 @@ export async function removeCartLines(
   lineIds: string[]
 ): Promise<Cart | null> {
   const query = `
-    mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
+    mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) @inContext(country: GB) {
       cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
         cart { ...CartFields }
         userErrors { field message }

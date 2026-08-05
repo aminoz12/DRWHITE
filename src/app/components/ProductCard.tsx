@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useCartStore } from '@/lib/cartStore';
 import { formatMoney, getDiscountPercent } from '@/lib/money';
-import { getProductReviews } from '@/lib/reviews';
+import { STATS } from '@/lib/siteConfig';
 
 // ─── Deterministic mock data from product handle ─────────────────────────
 function hashString(str: string): number {
@@ -122,7 +122,6 @@ export default function ProductCard({ product }: ProductCardProps) {
   const firstVariant = product.variants?.edges[0]?.node;
   const badge = getBadge(product.tags);
   const colorOpt = getColorOption(product.options);
-  const reviews = getProductReviews(product.handle);
 
   const [added, setAdded] = useState(false);
   const { addItem, isLoading } = useCartStore();
@@ -174,7 +173,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       {/* Info below image — no card padding */}
       <div className="space-y-1.5">
         {/* Star rating */}
-        <StarRating rating={reviews.rating} count={reviews.count} size={10} />
+        <StarRating rating={STATS.rating} size={10} />
 
         {/* Product name */}
         <h3 className="text-[11px] font-black text-black uppercase tracking-wide leading-tight line-clamp-2">

@@ -66,7 +66,7 @@ export default function WhyCliniWhite() {
               </div>
 
               <Link
-                href="/product/purple-whitening-strips"
+                href="/product/v34-colour-corrector-strips-12-strip"
                 className="inline-block w-full max-w-md bg-[#231b50] text-white text-xs font-bold tracking-wider py-3 text-center hover:bg-[#1a1440] transition-colors"
                 style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
               >
