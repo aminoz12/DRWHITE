@@ -1,9 +1,10 @@
 import type { NextConfig } from "next";
 
+// No `output: 'export'` — the site deploys on Vercel, where the full Next.js
+// runtime gives us automatic image optimization (AVIF/WebP), real redirects,
+// and ISR so Shopify price/catalog changes go live without a redeploy.
 const nextConfig: NextConfig = {
-  output: 'export',
   images: {
-    unoptimized: true,
     qualities: [75, 100],
     remotePatterns: [
       {

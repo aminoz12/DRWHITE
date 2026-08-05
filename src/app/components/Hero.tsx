@@ -1,18 +1,23 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowRight, Star } from 'lucide-react';
 import { STATS } from '@/lib/siteConfig';
 
 export default function Hero() {
   return (
     <section className="relative h-[100svh] min-h-[560px] w-full overflow-hidden">
-      {/* hero.jpeg - full width, sharp quality */}
-      <img
+      {/* LCP element — priority-loaded, optimized by next/image */}
+      <Image
         src="/hero.jpeg"
         alt="CLINI WHITE Teeth Whitening"
-        className="absolute inset-0 h-full w-full object-cover object-center"
-        loading="eager"
+        fill
+        priority
+        fetchPriority="high"
+        sizes="100vw"
+        quality={75}
+        className="object-cover object-center"
       />
 
       {/* Left gradient for text readability */}
@@ -47,7 +52,7 @@ export default function Hero() {
               </span>
             </h1>
 
-            <p className="mt-3 max-w-xs text-xs leading-relaxed text-black/50">
+            <p className="mt-3 max-w-xs text-xs leading-relaxed text-black/70">
               Say goodbye to sensitivity. Say hello to 8 shades whiter in 7 days.
             </p>
 

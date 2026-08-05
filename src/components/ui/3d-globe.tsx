@@ -12,7 +12,8 @@ import { cn } from "@/lib/utils";
 export interface GlobeMarker {
   lat: number;
   lng: number;
-  src: string;
+  /** Optional avatar image; without it a brand-coloured dot is rendered. */
+  src?: string;
   label?: string;
   size?: number;
 }
@@ -80,9 +81,9 @@ interface Globe3DProps {
 // ============================================================================
 
 const DEFAULT_EARTH_TEXTURE =
-  "https://unpkg.com/three-globe@2.31.0/example/img/earth-blue-marble.jpg";
+  "/images/globe/earth-blue-marble.jpg";
 const DEFAULT_BUMP_TEXTURE =
-  "https://unpkg.com/three-globe@2.31.0/example/img/earth-topology.png";
+  "/images/globe/earth-topology.png";
 
 // ============================================================================
 // Utility Functions
@@ -223,7 +224,8 @@ function Marker({
         >
           <div
             className={cn(
-              "cursor-pointer overflow-hidden rounded-full bg-neutral-900 shadow-lg transition-transform duration-200",
+              "overflow-hidden rounded-full shadow-lg transition-transform duration-200",
+              marker.src ? "bg-neutral-900" : "bg-[#C4B5FD] ring-1 ring-white/60",
               hovered && "scale-125 shadow-xl ring-1 ring-white/50",
             )}
             style={{
@@ -233,13 +235,16 @@ function Marker({
             onMouseEnter={handlePointerEnter}
             onMouseLeave={handlePointerLeave}
             onClick={handleClick}
+            title={marker.label}
           >
-            <img
-              src={marker.src}
-              alt={marker.label || "Marker"}
-              className="h-full w-full object-cover"
-              draggable={false}
-            />
+            {marker.src && (
+              <img
+                src={marker.src}
+                alt={marker.label || "Marker"}
+                className="h-full w-full object-cover"
+                draggable={false}
+              />
+            )}
           </div>
         </Html>
       </group>

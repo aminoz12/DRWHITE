@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import type { GlobeMarker } from "@/components/ui/3d-globe";
 
@@ -8,23 +9,43 @@ const Globe3D = dynamic(
   { ssr: false }
 );
 
-const sampleMarkers: GlobeMarker[] = [
-  { lat: 40.7128, lng: -74.006, src: "https://assets.aceternity.com/avatars/1.webp", label: "New York" },
-  { lat: 51.5074, lng: -0.1278, src: "https://assets.aceternity.com/avatars/2.webp", label: "London" },
-  { lat: 35.6762, lng: 139.6503, src: "https://assets.aceternity.com/avatars/3.webp", label: "Tokyo" },
-  { lat: -33.8688, lng: 151.2093, src: "https://assets.aceternity.com/avatars/4.webp", label: "Sydney" },
-  { lat: 48.8566, lng: 2.3522, src: "https://assets.aceternity.com/avatars/5.webp", label: "Paris" },
-  { lat: 28.6139, lng: 77.209, src: "https://assets.aceternity.com/avatars/6.webp", label: "New Delhi" },
-  { lat: 55.7558, lng: 37.6173, src: "https://assets.aceternity.com/avatars/7.webp", label: "Moscow" },
-  { lat: -22.9068, lng: -43.1729, src: "https://assets.aceternity.com/avatars/8.webp", label: "Rio de Janeiro" },
-  { lat: 31.2304, lng: 121.4737, src: "https://assets.aceternity.com/avatars/9.webp", label: "Shanghai" },
-  { lat: 25.2048, lng: 55.2708, src: "https://assets.aceternity.com/avatars/10.webp", label: "Dubai" },
-  { lat: -34.6037, lng: -58.3816, src: "https://assets.aceternity.com/avatars/11.webp", label: "Buenos Aires" },
-  { lat: 1.3521, lng: 103.8198, src: "https://assets.aceternity.com/avatars/12.webp", label: "Singapore" },
-  { lat: 37.5665, lng: 126.978, src: "https://assets.aceternity.com/avatars/13.webp", label: "Seoul" },
+// Cities CLINI WHITE ships to — plain markers, no third-party avatars.
+const MARKERS: GlobeMarker[] = [
+  { lat: 51.5074, lng: -0.1278, label: "London" },
+  { lat: 48.8566, lng: 2.3522, label: "Paris" },
+  { lat: 52.52, lng: 13.405, label: "Berlin" },
+  { lat: 40.4168, lng: -3.7038, label: "Madrid" },
+  { lat: 41.9028, lng: 12.4964, label: "Rome" },
+  { lat: 52.3676, lng: 4.9041, label: "Amsterdam" },
+  { lat: 40.7128, lng: -74.006, label: "New York" },
+  { lat: 43.6532, lng: -79.3832, label: "Toronto" },
+  { lat: -33.8688, lng: 151.2093, label: "Sydney" },
+  { lat: 25.2048, lng: 55.2708, label: "Dubai" },
+  { lat: 1.3521, lng: 103.8198, label: "Singapore" },
 ];
 
 export default function Worldwide() {
+  // The 3D globe pulls a ~900 KB three.js chunk — only load it once the
+  // section is actually about to enter the viewport.
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [showGlobe, setShowGlobe] = useState(false);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setShowGlobe(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "400px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section className="py-12 bg-[#F3F6F9]">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -37,25 +58,22 @@ export default function Worldwide() {
           </p>
         </div>
 
-        <div className="w-full aspect-[4/3] md:aspect-[16/9] max-h-[600px] mx-auto overflow-hidden">
-          <Globe3D
-            markers={sampleMarkers}
-            config={{
-              atmosphereColor: "#4da6ff",
-              atmosphereIntensity: 20,
-              bumpScale: 5,
-              autoRotateSpeed: 0.3,
-              showAtmosphere: false,
-            }}
-            onMarkerClick={(marker) => {
-              console.log("Clicked marker:", marker.label);
-            }}
-            onMarkerHover={(marker) => {
-              if (marker) {
-                console.log("Hovering:", marker.label);
-              }
-            }}
-          />
+        <div
+          ref={containerRef}
+          className="w-full aspect-[4/3] md:aspect-[16/9] max-h-[600px] mx-auto overflow-hidden"
+        >
+          {showGlobe && (
+            <Globe3D
+              markers={MARKERS}
+              config={{
+                atmosphereColor: "#4da6ff",
+                atmosphereIntensity: 20,
+                bumpScale: 5,
+                autoRotateSpeed: 0.3,
+                showAtmosphere: false,
+              }}
+            />
+          )}
         </div>
       </div>
     </section>

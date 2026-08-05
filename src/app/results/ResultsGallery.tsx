@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Star, ChevronDown, ChevronUp } from 'lucide-react';
 
 const ALL_RESULTS = [
@@ -167,13 +168,12 @@ export default function ResultsGallery() {
             {/* Single Result Image (Already contains before/after) */}
             <div className="relative">
               <div className="relative h-64 overflow-hidden">
-                <img
+                <Image
                   src={result.image}
                   alt={`${result.name} result`}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = 'none';
-                  }}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover"
                 />
               </div>
 
@@ -202,7 +202,7 @@ export default function ResultsGallery() {
                 {result.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="bg-[#F5F3FF] text-[#231b50] text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider"
+                    className="bg-[#F5F3FF] text-[#231b50] text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider"
                   >
                     {tag}
                   </span>

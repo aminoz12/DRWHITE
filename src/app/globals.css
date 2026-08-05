@@ -109,14 +109,3 @@ canvas {
   background-color: #fafbfc;
 }
 
-.hero-product-scene canvas {
-  width: 100% !important;
-  height: 100% !important;
-  background: transparent !important;
-  cursor: grab;
-  touch-action: pan-y;
-}
-
-.hero-product-scene:active canvas {
-  cursor: grabbing;
-}

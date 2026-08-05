@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 
 const benefits = [
   {
@@ -76,10 +77,12 @@ export default function WhyCliniWhite() {
 
             {/* Right Content - Image */}
             <div className="relative w-full h-64 sm:h-80 lg:h-full lg:min-h-[420px]">
-              <img
+              <Image
                 src="/PIC1.png"
                 alt="Product Benefits"
-                className="w-full h-full object-cover"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover"
               />
             </div>
           </div>
