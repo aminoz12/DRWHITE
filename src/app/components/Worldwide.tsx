@@ -1,34 +1,9 @@
-"use client";
-
-import { useEffect, useRef, useState } from "react";
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import { STATS } from "@/lib/siteConfig";
-import type { GlobeMarker } from "@/components/ui/3d-globe";
-
-const Globe3D = dynamic(
-  () => import("@/components/ui/3d-globe").then((mod) => mod.Globe3D),
-  { ssr: false }
-);
 
 // Illustrated people avatars (self-hosted, ~7KB each) — generic icons, so
 // they never imply a specific real customer.
 const AVATARS = Array.from({ length: 8 }, (_, i) => `/images/avatars/person-${i + 1}.png`);
-
-// Cities CLINI WHITE ships to, each marked by a person icon.
-const MARKERS: GlobeMarker[] = [
-  { lat: 51.5074, lng: -0.1278, label: "London", src: AVATARS[0], size: 26 },
-  { lat: 48.8566, lng: 2.3522, label: "Paris", src: AVATARS[1], size: 22 },
-  { lat: 52.52, lng: 13.405, label: "Berlin", src: AVATARS[2], size: 22 },
-  { lat: 40.4168, lng: -3.7038, label: "Madrid", src: AVATARS[3], size: 20 },
-  { lat: 41.9028, lng: 12.4964, label: "Rome", src: AVATARS[4], size: 20 },
-  { lat: 52.3676, lng: 4.9041, label: "Amsterdam", src: AVATARS[5], size: 20 },
-  { lat: 40.7128, lng: -74.006, label: "New York", src: AVATARS[6], size: 26 },
-  { lat: 43.6532, lng: -79.3832, label: "Toronto", src: AVATARS[7], size: 20 },
-  { lat: -33.8688, lng: 151.2093, label: "Sydney", src: AVATARS[2], size: 22 },
-  { lat: 25.2048, lng: 55.2708, label: "Dubai", src: AVATARS[4], size: 20 },
-  { lat: 1.3521, lng: 103.8198, label: "Singapore", src: AVATARS[1], size: 20 },
-];
 
 const WORLD_STATS = [
   { value: STATS.countries, label: "Countries shipped to" },
@@ -37,31 +12,10 @@ const WORLD_STATS = [
 ];
 
 export default function Worldwide() {
-  // The 3D globe pulls a ~900 KB three.js chunk — only load it once the
-  // section is actually about to enter the viewport.
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [showGlobe, setShowGlobe] = useState(false);
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          setShowGlobe(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: "400px" }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <section className="py-16 bg-[#F3F6F9] overflow-hidden">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-10">
+        <div className="text-center">
           <p className="text-[#231b50] text-xs font-black tracking-[0.3em] uppercase mb-4">
             GLOBAL COMMUNITY
           </p>
@@ -102,24 +56,6 @@ export default function Worldwide() {
               </p>
             </div>
           </div>
-        </div>
-
-        <div
-          ref={containerRef}
-          className="w-full aspect-[4/3] md:aspect-[16/9] max-h-[560px] mx-auto overflow-hidden"
-        >
-          {showGlobe && (
-            <Globe3D
-              markers={MARKERS}
-              config={{
-                atmosphereColor: "#4da6ff",
-                atmosphereIntensity: 20,
-                bumpScale: 5,
-                autoRotateSpeed: 0.3,
-                showAtmosphere: false,
-              }}
-            />
-          )}
         </div>
 
         {/* Stats row */}

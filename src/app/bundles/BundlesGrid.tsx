@@ -120,18 +120,21 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
                 </div>
               )}
 
-              <div className="relative aspect-square bg-[#F5F3FF] overflow-hidden">
-                {image ? (
-                  <img
-                    src={image.url}
-                    alt={image.altText || node.title}
-                    className="w-full h-full object-contain p-6"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-400">
-                    <ShoppingBag className="w-12 h-12 opacity-20" />
-                  </div>
-                )}
+              {/* White image area with a light frame ("cadre") */}
+              <div className="relative aspect-square bg-white p-4">
+                <div className="relative w-full h-full rounded-xl border border-gray-100 bg-white overflow-hidden">
+                  {image ? (
+                    <img
+                      src={image.url}
+                      alt={image.altText || node.title}
+                      className="w-full h-full object-contain p-5"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-400">
+                      <ShoppingBag className="w-12 h-12 opacity-20" />
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="p-6 flex flex-col flex-1">
