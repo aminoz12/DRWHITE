@@ -14,9 +14,9 @@ const REVIEW_FACES = [
 ];
 
 const WORLD_STATS = [
-  { icon: Globe2, value: STATS.countries, label: "Countries shipped to", dark: false },
-  { icon: Users, value: STATS.customers, label: "Happy customers", dark: true },
-  { icon: ThumbsUp, value: STATS.wouldRecommend, label: "Would recommend", dark: false },
+  { icon: Globe2, value: STATS.countries, label: "Countries shipped to" },
+  { icon: Users, value: STATS.customers, label: "Happy customers" },
+  { icon: ThumbsUp, value: STATS.wouldRecommend, label: "Would recommend" },
 ];
 
 export default function Worldwide() {
@@ -66,42 +66,15 @@ export default function Worldwide() {
           </div>
         </div>
 
-        {/* Stats row */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-3xl mx-auto mt-12">
-          {WORLD_STATS.map(({ icon: Icon, value, label, dark }) => (
-            <div
-              key={label}
-              className={`group rounded-2xl px-6 py-8 text-center border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
-                dark
-                  ? "bg-[#231b50] border-[#231b50] hover:shadow-[#231b50]/25"
-                  : "bg-white border-violet-100 shadow-sm hover:shadow-violet-100"
-              }`}
-            >
-              <div
-                className={`w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-5 transition-colors ${
-                  dark
-                    ? "bg-white/10"
-                    : "bg-[#F5F3FF] group-hover:bg-[#231b50]"
-                }`}
-              >
-                <Icon
-                  className={`w-5 h-5 transition-colors ${
-                    dark ? "text-[#C4B5FD]" : "text-[#231b50] group-hover:text-white"
-                  }`}
-                />
-              </div>
-              <p
-                className={`font-display text-3xl font-extrabold leading-none ${
-                  dark ? "text-white" : "text-[#231b50]"
-                }`}
-              >
+        {/* Stats row — plain, no card frames */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-6 max-w-3xl mx-auto mt-12">
+          {WORLD_STATS.map(({ icon: Icon, value, label }) => (
+            <div key={label} className="text-center">
+              <Icon className="w-6 h-6 text-[#231b50] mx-auto mb-3" aria-hidden />
+              <p className="font-display text-3xl md:text-4xl font-extrabold text-[#231b50] leading-none">
                 {value}
               </p>
-              <p
-                className={`text-[11px] font-bold uppercase tracking-wider mt-2.5 ${
-                  dark ? "text-white/60" : "text-gray-500"
-                }`}
-              >
+              <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mt-2.5">
                 {label}
               </p>
             </div>
