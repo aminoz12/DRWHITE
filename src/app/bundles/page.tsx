@@ -3,12 +3,37 @@ import { getServerCountry } from '@/lib/market-server';
 import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
 import BundlesGrid from './BundlesGrid';
+import { PiggyBank, Sparkles, Truck, BadgeCheck } from 'lucide-react';
 
 export const metadata = {
   title: 'Bundle & Save — Professional Teeth Whitening',
   alternates: { canonical: '/bundles' },
   description: 'Save more when you bundle CLINI WHITE professional whitening products. Stack your routine and get the best value on strips, kits, and accessories.',
 };
+
+const PERKS = [
+  { icon: PiggyBank, text: 'Up to 40% off single prices' },
+  { icon: Truck, text: 'Free shipping on bundles' },
+  { icon: BadgeCheck, text: '30-day money-back guarantee' },
+];
+
+const WHY_BUNDLE = [
+  {
+    icon: PiggyBank,
+    title: 'MAXIMUM SAVINGS',
+    desc: 'Bundles are priced below individual product totals — always.',
+  },
+  {
+    icon: Sparkles,
+    title: 'COMPLETE ROUTINE',
+    desc: 'Whiten, maintain, and protect. Every bundle is expertly curated.',
+  },
+  {
+    icon: Truck,
+    title: 'FREE SHIPPING',
+    desc: 'Every bundle ships free, no minimum spend required.',
+  },
+];
 
 export default async function BundlesPage() {
   // Try the dedicated collections first, then fall back to any product
@@ -25,107 +50,75 @@ export default async function BundlesPage() {
     <div className="min-h-screen bg-white">
       <Header />
       <main id="main-content">
-        {/* Hero Banner */}
-        <section className="bg-[#231b50] text-white py-20 px-4 text-center relative overflow-hidden">
-          {/* Decorative circles */}
-          <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-white/5 -translate-y-1/2 translate-x-1/3" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-white/5 translate-y-1/2 -translate-x-1/3" />
-
-          <div className="relative z-10 max-w-3xl mx-auto">
-            <span className="inline-block bg-white/20 text-white text-xs font-black tracking-widest px-4 py-1.5 rounded-full mb-6 uppercase">
-              LIMITED TIME
-            </span>
-            <h1
-              className="font-display text-3xl sm:text-4xl md:text-6xl font-extrabold text-white mb-6 leading-none tracking-tight"
-            >
-              BUNDLE<br />
-              <span className="text-[#C4B5FD]">&amp; SAVE</span>
-            </h1>
-            <p className="text-white/80 text-lg max-w-xl mx-auto mb-8 leading-relaxed">
-              Stack your whitening routine and unlock serious savings. The more you bundle, the more you save.
+        {/* Page head — compact, no hero */}
+        <section className="pt-16 pb-10 px-4 text-center">
+          <div className="max-w-3xl mx-auto">
+            <p className="text-[#231b50] text-xs font-black tracking-[0.3em] uppercase mb-4">
+              Curated Combinations
             </p>
-            <div className="flex flex-wrap justify-center gap-6">
-              {[
-                { value: 'Up to 40%', label: 'Off Single Prices' },
-                { value: 'Free', label: 'Shipping on Bundles' },
-                { value: '30-Day', label: 'Money-Back Guarantee' },
-              ].map((stat) => (
-                <div key={stat.label} className="text-center">
-                  <p className="text-2xl font-black text-white">{stat.value}</p>
-                  <p className="text-xs text-white/60 font-bold tracking-wider uppercase mt-0.5">{stat.label}</p>
+            <h1 className="font-display text-3xl md:text-4xl font-extrabold text-black mb-4 uppercase tracking-tight">
+              Bundle <span className="text-[#231b50]">&amp; Save</span>
+            </h1>
+            <p className="text-gray-600 text-sm md:text-base max-w-xl mx-auto leading-relaxed">
+              Stack your whitening routine and unlock serious savings. The more you bundle,
+              the more you save.
+            </p>
+
+            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 mt-8">
+              {PERKS.map(({ icon: Icon, text }) => (
+                <span
+                  key={text}
+                  className="inline-flex items-center gap-2 text-gray-600 text-[11px] font-bold uppercase tracking-widest"
+                >
+                  <Icon className="w-4 h-4 text-[#231b50]" />
+                  {text}
+                </span>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Bundles Grid — client component for cart */}
+        <section className="pb-16 bg-white px-4">
+          <div className="max-w-7xl mx-auto">
+            <BundlesGrid products={allProducts} />
+          </div>
+        </section>
+
+        {/* Why Bundle */}
+        <section className="bg-[#F5F3FF] py-14 px-4">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="font-display text-2xl md:text-3xl font-extrabold text-black text-center uppercase tracking-tight mb-10">
+              Why <span className="text-[#231b50]">Bundle?</span>
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              {WHY_BUNDLE.map(({ icon: Icon, title, desc }) => (
+                <div
+                  key={title}
+                  className="bg-white rounded-2xl p-8 text-center shadow-sm border border-violet-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300"
+                >
+                  <div className="w-12 h-12 rounded-full bg-[#231b50] flex items-center justify-center mx-auto mb-5">
+                    <Icon className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="font-display text-sm font-extrabold text-[#231b50] uppercase tracking-wider mb-2">
+                    {title}
+                  </h3>
+                  <p className="text-xs text-gray-600 leading-relaxed">{desc}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Why Bundle */}
-        <section className="bg-[#F5F3FF] py-12 px-4">
-          <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {[
-              {
-                icon: '💰',
-                title: 'MAXIMUM SAVINGS',
-                desc: 'Bundles are priced below individual product totals — always.',
-              },
-              {
-                icon: '🦷',
-                title: 'COMPLETE ROUTINE',
-                desc: 'Whiten, maintain, and protect. Every bundle is expertly curated.',
-              },
-              {
-                icon: '🚚',
-                title: 'FREE SHIPPING',
-                desc: 'Every bundle ships free, no minimum spend required.',
-              },
-            ].map((item) => (
-              <div
-                key={item.title}
-                className="bg-white rounded-2xl p-6 text-center shadow-sm border border-violet-100"
-              >
-                <span className="text-3xl mb-4 block">{item.icon}</span>
-                <h3
-                  className="text-sm font-black text-[#231b50] uppercase tracking-wider mb-2"
-                  style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
-                >
-                  {item.title}
-                </h3>
-                <p className="text-xs text-gray-600 leading-relaxed">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Bundles Grid — client component for cart */}
-        <section className="py-16 bg-white px-4">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12">
-              <p className="text-[#231b50] text-xs font-black tracking-widest uppercase mb-3">
-                CURATED COMBINATIONS
-              </p>
-              <h2
-                className="font-display text-3xl md:text-4xl font-extrabold text-black tracking-tight"
-              >
-                SHOP BUNDLES
-              </h2>
-            </div>
-
-            <BundlesGrid products={allProducts} />
-          </div>
-        </section>
-
         {/* Guarantee Strip */}
         <section className="bg-[#231b50] py-10 px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <p
-              className="text-white text-xl font-black mb-2"
-              style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
-            >
-              NOT HAPPY? WE&apos;LL MAKE IT RIGHT.
+            <p className="font-display text-white text-xl font-extrabold mb-2 uppercase tracking-tight">
+              Not happy? We&apos;ll make it right.
             </p>
             <p className="text-white/70 text-sm max-w-lg mx-auto">
-              Every bundle comes with our 30-day money-back guarantee. If you&apos;re not seeing results,
-              contact us for a full refund — no questions asked.
+              Every bundle comes with our 30-day money-back guarantee. If you&apos;re not seeing
+              results, contact us for a full refund — no questions asked.
             </p>
           </div>
         </section>
