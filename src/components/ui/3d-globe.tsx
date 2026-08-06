@@ -229,8 +229,8 @@ function Marker({
               hovered && "scale-125 shadow-xl ring-1 ring-white/50",
             )}
             style={{
-              width: "8px",
-              height: "8px",
+              width: `${marker.size ?? 8}px`,
+              height: `${marker.size ?? 8}px`,
             }}
             onMouseEnter={handlePointerEnter}
             onMouseLeave={handlePointerLeave}
