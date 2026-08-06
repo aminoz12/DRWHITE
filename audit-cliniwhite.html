@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audit complet — CLINI WHITE (cliniwhite.com)</title>
+<style>
+  :root{
+    --navy:#232063; --purple:#6b5bd2; --purple-soft:#efedfb;
+    --ink:#1a1830; --muted:#6c6a86; --line:#e7e6f0; --bg:#f6f6fb; --card:#ffffff;
+    --crit:#e5484d; --crit-bg:#fdecec; --high:#f5a623; --high-bg:#fef5e6;
+    --med:#3b82f6; --med-bg:#eaf1fe; --good:#1fab6d; --good-bg:#e7f7ef;
+    --shadow:0 1px 2px rgba(26,24,48,.06),0 8px 24px rgba(26,24,48,.06);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+  a{color:var(--purple);text-decoration:none}
+
+  /* Header */
+  header.top{background:linear-gradient(135deg,#232063 0%,#3a2f8f 55%,#6b5bd2 100%);color:#fff;padding:54px 0 120px;position:relative;overflow:hidden}
+  header.top::after{content:"";position:absolute;right:-120px;top:-120px;width:360px;height:360px;background:radial-gradient(circle,rgba(255,255,255,.14),transparent 70%)}
+  .eyebrow{text-transform:uppercase;letter-spacing:.18em;font-size:12px;font-weight:700;opacity:.85}
+  header.top h1{font-size:38px;line-height:1.15;margin:10px 0 6px;font-weight:800}
+  header.top .site{font-size:16px;opacity:.9}
+  header.top .meta{margin-top:14px;font-size:13px;opacity:.8}
+
+  /* Score hero */
+  .scoreband{margin-top:-84px;position:relative;z-index:2}
+  .scorecard{background:var(--card);border-radius:20px;box-shadow:var(--shadow);padding:26px 28px;display:grid;grid-template-columns:auto 1fr;gap:30px;align-items:center}
+  .gauge{position:relative;width:150px;height:150px;flex:none}
+  .gauge svg{transform:rotate(-90deg)}
+  .gauge .num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .gauge .num b{font-size:38px;font-weight:800;line-height:1;color:var(--navy)}
+  .gauge .num span{font-size:12px;color:var(--muted);margin-top:2px}
+  .scoremsg h2{font-size:20px;margin-bottom:4px}
+  .scoremsg p{color:var(--muted);font-size:14.5px}
+  .targetpill{display:inline-flex;align-items:center;gap:7px;background:var(--purple-soft);color:var(--navy);
+    font-weight:700;font-size:13px;padding:6px 12px;border-radius:999px;margin-top:12px}
+
+  /* Dimension grid */
+  section{padding:38px 0}
+  .sec-title{font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--purple);margin-bottom:4px}
+  .sec-h{font-size:24px;font-weight:800;margin-bottom:18px}
+  .dims{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .dim{background:var(--card);border-radius:16px;padding:18px;box-shadow:var(--shadow);border:1px solid var(--line)}
+  .dim .icn{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;background:var(--purple-soft);margin-bottom:10px}
+  .dim h3{font-size:14.5px;margin-bottom:8px}
+  .dim .val{font-size:26px;font-weight:800;color:var(--navy)}
+  .dim .val small{font-size:14px;color:var(--muted);font-weight:600}
+  .bar{height:7px;border-radius:99px;background:#edecf5;margin-top:9px;overflow:hidden}
+  .bar>i{display:block;height:100%;border-radius:99px;width:0;transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+
+  /* Filters + findings */
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+  .fbtn{border:1px solid var(--line);background:#fff;color:var(--muted);font-size:13px;font-weight:600;
+    padding:7px 14px;border-radius:999px;cursor:pointer;transition:.15s}
+  .fbtn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .fbtn:hover{border-color:var(--purple)}
+
+  .find{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--line);border-radius:12px;
+    padding:16px 18px;margin-bottom:12px;box-shadow:var(--shadow);transition:.2s}
+  .find[data-sev="crit"]{border-left-color:var(--crit)}
+  .find[data-sev="high"]{border-left-color:var(--high)}
+  .find[data-sev="med"]{border-left-color:var(--med)}
+  .find .fhead{display:flex;align-items:flex-start;gap:12px;cursor:pointer}
+  .find .fnum{font-weight:800;color:var(--muted);font-size:13px;flex:none;margin-top:2px}
+  .find .ftitle{flex:1;font-weight:700;font-size:15.5px}
+  .find .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .tag{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;text-transform:uppercase;letter-spacing:.03em}
+  .tag.crit{background:var(--crit-bg);color:var(--crit)} .tag.high{background:var(--high-bg);color:#b9770f}
+  .tag.med{background:var(--med-bg);color:var(--med)} .tag.cat{background:#f0eff7;color:var(--muted)}
+  .chev{flex:none;color:var(--muted);transition:.2s;margin-top:2px}
+  .find.open .chev{transform:rotate(180deg)}
+  .fbody{max-height:0;overflow:hidden;transition:max-height .35s ease;font-size:14.5px}
+  .find.open .fbody{max-height:600px}
+  .fbody .inner{padding-top:12px;margin-top:12px;border-top:1px dashed var(--line);color:#33314d}
+  .fbody b{color:var(--navy)}
+  .fix{background:var(--good-bg);border-radius:9px;padding:10px 13px;margin-top:10px;font-size:14px}
+  .fix b{color:var(--good)}
+  .metricline{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;font-size:13px;color:var(--muted)}
+  .metricline span b{color:var(--ink)}
+
+  /* Good stuff */
+  .goods{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .good{background:var(--good-bg);border-radius:10px;padding:12px 14px;font-size:14px;display:flex;gap:10px}
+  .good .ok{color:var(--good);font-weight:800}
+
+  /* Roadmap */
+  .road{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .sprint{background:var(--card);border-radius:16px;padding:20px;box-shadow:var(--shadow);border:1px solid var(--line)}
+  .sprint .h{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .sprint .dot{width:11px;height:11px;border-radius:50%}
+  .sprint h4{font-size:15px}
+  .sprint .when{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+  .sprint ul{list-style:none}
+  .sprint li{position:relative;padding-left:22px;margin-bottom:9px;font-size:14px}
+  .sprint li::before{content:"";position:absolute;left:0;top:8px;width:8px;height:8px;border-radius:2px;background:var(--purple)}
+
+  /* metrics strip */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:6px}
+  .kpi{background:var(--card);border-radius:14px;padding:16px;text-align:center;box-shadow:var(--shadow);border:1px solid var(--line)}
+  .kpi b{display:block;font-size:24px;color:var(--navy);font-weight:800}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+
+  footer{padding:34px 0 60px;text-align:center;color:var(--muted);font-size:13px}
+  .note{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13.5px;color:var(--muted);margin-top:16px}
+
+  @media(max-width:860px){
+    .dims,.road,.kpis{grid-template-columns:1fr 1fr}
+    .scorecard{grid-template-columns:1fr;text-align:center;justify-items:center}
+    header.top h1{font-size:29px}
+  }
+  @media(max-width:560px){.dims,.road,.kpis,.goods{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">Audit complet de site — Design · SEO · Performance · Conversion</div>
+    <h1>CLINI WHITE</h1>
+    <div class="site">cliniwhite.com — marque de blanchiment dentaire à domicile (V34 / PAP)</div>
+    <div class="meta">Analyse en conditions réelles · 4 août 2026 · Objectif : passer de la note actuelle à 10/10</div>
+  </div>
+</header>
+
+<div class="wrap scoreband">
+  <div class="scorecard">
+    <div class="gauge">
+      <svg width="150" height="150" viewBox="0 0 150 150">
+        <circle cx="75" cy="75" r="64" fill="none" stroke="#edecf5" stroke-width="14"/>
+        <circle id="gaugeArc" cx="75" cy="75" r="64" fill="none" stroke="url(#g)" stroke-width="14"
+          stroke-linecap="round" stroke-dasharray="402" stroke-dashoffset="402"/>
+        <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#6b5bd2"/><stop offset="1" stop-color="#232063"/></linearGradient></defs>
+      </svg>
+      <div class="num"><b>6.8</b><span>/ 10 aujourd'hui</span></div>
+    </div>
+    <div class="scoremsg">
+      <h2>Une base solide, freinée par des détails de crédibilité</h2>
+      <p>Techniquement, le site est propre et rapide (Next.js, balisage structuré, fiches produit convaincantes). Ce qui l'empêche d'atteindre 10/10, ce sont des incohérences visibles — devises mélangées, un bug produit, des visuels et preuves sociales qui font « dropshipping ». Ce sont surtout des correctifs rapides à fort impact.</p>
+      <div class="targetpill">🎯 12 correctifs prioritaires identifiés pour viser 10/10</div>
+    </div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="sec-title">Scores par dimension</div>
+    <div class="sec-h">Où se situe le site aujourd'hui</div>
+    <div class="dims">
+      <div class="dim">
+        <div class="icn">🎨</div><h3>Design & UX</h3>
+        <div class="val">6.5<small>/10</small></div>
+        <div class="bar"><i data-w="65" style="background:var(--high)"></i></div>
+      </div>
+      <div class="dim">
+        <div class="icn">🔍</div><h3>SEO & Contenu</h3>
+        <div class="val">7.0<small>/10</small></div>
+        <div class="bar"><i data-w="70" style="background:var(--med)"></i></div>
+      </div>
+      <div class="dim">
+        <div class="icn">⚡</div><h3>Performance</h3>
+        <div class="val">7.5<small>/10</small></div>
+        <div class="bar"><i data-w="75" style="background:var(--good)"></i></div>
+      </div>
+      <div class="dim">
+        <div class="icn">🛒</div><h3>Conversion (CRO)</h3>
+        <div class="val">6.0<small>/10</small></div>
+        <div class="bar"><i data-w="60" style="background:var(--crit)"></i></div>
+      </div>
+    </div>
+    <div class="note">📊 <b>Méthode :</b> navigation réelle sur la page d'accueil et une fiche produit, inspection du DOM/balisage, mesure des temps de chargement et du poids des ressources, lecture du robots.txt et du sitemap. Les temps affichés sont mesurés pendant la session ; un test Lighthouse/Core Web Vitals en labo reste recommandé pour valider les scores officiels (l'API PageSpeed était momentanément indisponible).</div>
+  </div>
+</section>
+
+<section style="padding-top:6px">
+  <div class="wrap">
+    <div class="sec-title">Mesures techniques relevées</div>
+    <div class="sec-h">Performance en conditions réelles</div>
+    <div class="kpis">
+      <div class="kpi"><b>394&nbsp;ms</b><span>TTFB (temps au 1er octet)</span></div>
+      <div class="kpi"><b>1.66&nbsp;s</b><span>Chargement complet</span></div>
+      <div class="kpi"><b>2.55&nbsp;Mo</b><span>Poids total transféré</span></div>
+      <div class="kpi"><b>69</b><span>Requêtes réseau</span></div>
+    </div>
+    <div class="note">✅ Ces chiffres sont bons. Le principal poste d'optimisation est l'image hero (~1,9&nbsp;Mo, 2752×1321&nbsp;px, chargée en priorité) — c'est l'élément LCP à alléger.</div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-title">Diagnostic détaillé</div>
+    <div class="sec-h">Problèmes classés par priorité <span style="font-weight:500;font-size:15px;color:var(--muted)">— cliquez pour voir le correctif</span></div>
+    <div class="filters">
+      <button class="fbtn active" data-f="all">Tout (17)</button>
+      <button class="fbtn" data-f="crit">🔴 Critique (3)</button>
+      <button class="fbtn" data-f="high">🟠 Élevé (7)</button>
+      <button class="fbtn" data-f="med">🔵 Moyen (7)</button>
+    </div>
+    <div id="findings"></div>
+  </div>
+</section>
+
+<section style="padding-top:6px">
+  <div class="wrap">
+    <div class="sec-title">À conserver absolument</div>
+    <div class="sec-h">Ce qui fonctionne déjà bien</div>
+    <div class="goods">
+      <div class="good"><span class="ok">✓</span><div>Site <b>rapide</b> (Next.js) : TTFB 394&nbsp;ms, chargement ~1,7&nbsp;s, images en lazy-load.</div></div>
+      <div class="good"><span class="ok">✓</span><div>Balisage SEO propre : <b>title</b>, meta description, canonical, Open&nbsp;Graph et Twitter Card corrects.</div></div>
+      <div class="good"><span class="ok">✓</span><div><b>4 schémas JSON-LD</b> (Organization, WebSite, ItemList, FAQPage) + <b>Product</b> avec note agrégée sur les fiches.</div></div>
+      <div class="good"><span class="ok">✓</span><div>Fiches produit convaincantes : badges de confiance, icônes de paiement, « secure checkout », garantie, remise.</div></div>
+      <div class="good"><span class="ok">✓</span><div>Design épuré, typographie forte, <b>hero impactant</b> et cohérent avec la marque.</div></div>
+      <div class="good"><span class="ok">✓</span><div><b>Bundles</b> avec économies affichées — bon levier de panier moyen (AOV).</div></div>
+      <div class="good"><span class="ok">✓</span><div>robots.txt + sitemap.xml présents et bien structurés (20 URLs).</div></div>
+      <div class="good"><span class="ok">✓</span><div>Section FAQ claire qui traite les objections clés (sensibilité, couronnes, usage).</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-title">Plan d'action</div>
+    <div class="sec-h">La feuille de route vers 10/10</div>
+    <div class="road">
+      <div class="sprint">
+        <div class="h"><span class="dot" style="background:var(--crit)"></span><h4>Sprint 1 — Quick wins</h4></div>
+        <div class="when">Semaine 1 · effort faible · impact fort</div>
+        <ul>
+          <li>Corriger le bug « 14 strips » sur les produits qui ne sont pas des strips (sérum, foam, powder…)</li>
+          <li>Unifier la devise : £ partout (ou détection géo cohérente), jamais US$ et £ sur la même page</li>
+          <li>Réparer l'espacement du H1 (« Teeth Whitening that adapts to you »)</li>
+          <li>Remplacer les cartes « social proof » génériques par de vrais produits, noms et prix du catalogue</li>
+          <li>Réduire le bandeau « 100% MONEY-BACK » répété 10×</li>
+        </ul>
+      </div>
+      <div class="sprint">
+        <div class="h"><span class="dot" style="background:var(--high)"></span><h4>Sprint 2 — SEO & Perf</h4></div>
+        <div class="when">Semaines 2 à 4 · impact moyen-fort</div>
+        <ul>
+          <li>Choisir un hôte canonique unique et rediriger 301 (www ↔ non-www)</li>
+          <li>Compresser le hero en AVIF/WebP responsive (viser &lt;200&nbsp;Ko)</li>
+          <li>Intégrer un vrai widget d'avis clients rédigés (texte + photos)</li>
+          <li>Lancer Lighthouse et corriger les Core Web Vitals (LCP/CLS/INP)</li>
+          <li>Ajouter un seuil de livraison gratuite visible dès la page d'accueil</li>
+          <li>Uniformiser les images produits (rendus pro partout, plus de photos WhatsApp)</li>
+        </ul>
+      </div>
+      <div class="sprint">
+        <div class="h"><span class="dot" style="background:var(--purple)"></span><h4>Sprint 3 — Croissance</h4></div>
+        <div class="when">Mois 2 · construction de fond</div>
+        <ul>
+          <li>Lancer un blog/guides SEO (« comment blanchir ses dents », « V34 expliqué »…)</li>
+          <li>Ajouter des upsells : paliers de quantité + abonnement (récurrence)</li>
+          <li>Page « Results » avec avant/après vérifiables et vidéos authentiques</li>
+          <li>Enrichir la home : comparatif vs strips classiques, bénéfices détaillés</li>
+          <li>Mettre en place des A/B tests sur les CTA et le tunnel d'achat</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Audit réalisé par Claude · analyse en conditions réelles de cliniwhite.com · 4 août 2026<br>
+    Note actuelle <b>6,8/10</b> → Potentiel <b>10/10</b> une fois les 12 correctifs prioritaires appliqués.
+  </div>
+</footer>
+
+<script>
+  const data=[
+    {sev:"crit",cat:["Conversion","Confiance"],title:"Bug produit : le sérum affiche « 14 STRIPS IN TOTAL » dans le bloc d'achat",
+     body:"Sur la fiche du <b>V34 Colour Corrector Serum</b> (un flacon de 30&nbsp;ml), l'option d'achat indique « BUY&nbsp;1 — 14 STRIPS IN TOTAL ». Le gabarit des bandelettes (strips) a manifestement débordé sur les produits liquides. Un visiteur qui voit « strips » sur un sérum doute de tout le reste.",
+     fix:"Corriger l'unité/variante par type de produit (ml pour les liquides, nombre de bandelettes pour les strips). Vérifier aussi foam, powder, mouthwash et dentifrice."},
+    {sev:"crit",cat:["Conversion","UX"],title:"Devises incohérentes : US$ et £ mélangés sur la même page",
+     body:"Le hero, les best-sellers et les fiches affichent des prix en <b>US$</b>, tandis que la section « social proof » affiche des <b>£</b>. Pour une marque qui se présente comme « UK's #1 », afficher des dollars crée de la friction et de la méfiance — et un mélange de devises sur un même écran fait bugué.",
+     fix:"Choisir une devise par marché (£ pour le UK) via une vraie détection géographique, et supprimer les prix £ codés en dur des cartes social proof."},
+    {sev:"crit",cat:["Conversion","Confiance"],title:"Cartes « social proof » génériques qui ne correspondent pas au catalogue",
+     body:"Les vignettes de la section « People can't stop sharing » affichent toutes le même produit fictif : « <b>Premium Teeth… £19.99</b> », alors que ce nom n'existe pas dans la boutique (les vrais produits sont V34 Serum, Foam, Powder…). Ça ressemble à un template non personnalisé et sape la crédibilité de la preuve sociale.",
+     fix:"Relier chaque vidéo/vignette à un vrai produit du catalogue (nom, prix, lien réels). Utiliser de véritables contenus UGC clients."},
+
+    {sev:"high",cat:["SEO","Accessibilité"],title:"Le H1 n'a pas d'espaces dans le code : « Teeth Whiteningthat adaptsto you »",
+     body:"Visuellement les sauts de ligne masquent le problème, mais dans le DOM le H1 est collé : « <b>Teeth Whiteningthat adaptsto you</b> ». Les lecteurs d'écran le lisent mal et Google parse des mots-clés erronés (« Whiteningthat », « adaptsto »).",
+     fix:"Ajouter de vrais espaces/`&nbsp;` entre les segments, ou utiliser des &lt;br&gt; sans supprimer les espaces."},
+    {sev:"high",cat:["Design","Confiance"],title:"Images produits de la home en basse qualité (photos WhatsApp)",
+     body:"Les vignettes best-sellers sont des fichiers « <b>WhatsApp_Image_2026-06-…</b> » de ~578×432&nbsp;px, alors que les fiches produit ont de beaux rendus 3D propres. Cette incohérence donne un air amateur / dropshipping à la page la plus vue du site.",
+     fix:"Remplacer par les rendus produit officiels haute résolution, cadrage et fond homogènes sur toutes les vignettes."},
+    {sev:"high",cat:["SEO"],title:"Incohérence www / non-www (risque de contenu dupliqué)",
+     body:"Le site répond sur <b>www.cliniwhite.com</b>, mais le canonical, le sitemap et le robots.txt pointent tous vers <b>cliniwhite.com</b> (sans www). Si les deux versions renvoient un 200 sans redirection, Google voit deux sites identiques et dilue le référencement.",
+     fix:"Choisir un hôte unique et mettre une redirection 301 permanente de l'autre vers celui-ci ; aligner canonical, sitemap et robots."},
+    {sev:"high",cat:["SEO","Contenu"],title:"Aucun contenu éditorial / blog — top-funnel SEO inexploité",
+     body:"Le sitemap ne contient que des pages produit et institutionnelles : <b>0 contenu éditorial</b>. Les recherches à fort volume (« comment blanchir ses dents », « dentifrice violet ça marche ? », « PAP vs peroxyde ») ne sont captées par personne chez vous.",
+     fix:"Créer un hub de guides/blog optimisé sur les intentions de recherche du secteur, avec maillage interne vers les produits."},
+    {sev:"high",cat:["Conversion","Confiance"],title:"Scarcité « ALMOST SOLD OUT » potentiellement permanente",
+     body:"La fiche produit affiche « <b>ALMOST SOLD OUT</b> ». Si ce badge est présent en permanence sur tous les produits, il devient une fausse urgence : les visiteurs habitués la détectent, et c'est un risque de conformité (publicité trompeuse).",
+     fix:"Réserver les badges de stock à un stock réellement bas (piloté par l'inventaire), ou utiliser une urgence honnête (compte à rebours d'offre)."},
+    {sev:"high",cat:["Performance"],title:"Image hero trop lourde (~1,9 Mo) — pénalise le LCP",
+     body:"L'image d'accueil (<b>hero.jpeg, 2752×1321&nbsp;px</b>) est chargée en priorité (eager) et pèse l'essentiel des 2,55&nbsp;Mo de la page. C'est l'élément qui détermine le Largest Contentful Paint sur mobile.",
+     fix:"Servir le hero en AVIF/WebP, en tailles responsive (srcset) adaptées à l'écran ; viser &lt;200&nbsp;Ko. Conserver le preload."},
+    {sev:"high",cat:["Conversion"],title:"Pas d'avis clients rédigés visibles",
+     body:"On voit la note (4,8 puis 4,9/5) et un nombre d'avis, mais <b>aucun avis texte</b> n'est affiché. La preuve sociale chiffrée sans verbatims réels convainc beaucoup moins et paraît moins crédible.",
+     fix:"Intégrer un widget d'avis (texte + photos clients), avec avis vérifiés, sur les fiches et un extrait sur la home."},
+    {sev:"high",cat:["Contenu","Confiance"],title:"Chiffres de preuve sociale incohérents entre les pages",
+     body:"La home annonce « <b>4.8 par 5&nbsp;600+ clients</b> », la fiche sérum « <b>4.9 · 767 avis</b> ». Des chiffres qui varient d'une page à l'autre sans logique claire affaiblissent la confiance.",
+     fix:"Définir une source unique de vérité pour les notes/volumes et l'afficher de façon cohérente partout."},
+
+    {sev:"med",cat:["Conversion","AOV"],title:"Une seule option d'achat (« BUY 1 ») — pas d'upsell quantité",
+     body:"La fiche sérum ne propose que « Buy 1 ». Aucun palier « Achetez 2, économisez X » ni option d'<b>abonnement</b>. C'est du panier moyen laissé sur la table, alors que le secteur consomme par recharge.",
+     fix:"Ajouter 2-3 paliers de quantité avec remise progressive et une option abonnement (livraison récurrente)."},
+    {sev:"med",cat:["Design"],title:"Bandeau « 100% MONEY-BACK GUARANTEE » répété 10 fois",
+     body:"Le marquee défilant répète la même phrase <b>dix fois</b>. Une garantie est un atout, mais la marteler ainsi alourdit visuellement et banalise le message.",
+     fix:"Réduire à 3-4 répétitions, ou alterner plusieurs bénéfices (garantie, livraison, sans peroxyde, avis)."},
+    {sev:"med",cat:["Conversion"],title:"Pas de clarté sur la livraison dès la page d'accueil",
+     body:"Aucun message sur les <b>frais/délais de livraison</b> ni de seuil de livraison gratuite visible en haut de page. Le coût de livraison surprise est une cause majeure d'abandon de panier.",
+     fix:"Afficher une barre « Livraison gratuite dès X€ » et les délais estimés dès la home et le panier."},
+    {sev:"med",cat:["Performance"],title:"14 scripts tiers à surveiller",
+     body:"La page charge <b>14 scripts</b> (avis, analytics, pixels marketing probables). Individuellement légers, ils peuvent cumuler du temps de blocage (TBT/INP) sur mobile.",
+     fix:"Auditer chaque tag, différer (defer/async) ou charger à l'interaction ceux qui ne sont pas critiques."},
+    {sev:"med",cat:["SEO"],title:"robots.txt : directive « Host: » obsolète",
+     body:"Le robots.txt contient une directive « <b>Host:</b> » — une ancienne instruction Yandex, <b>ignorée par Google</b>. Sans danger, mais inutile et source de confusion.",
+     fix:"Retirer la ligne « Host: » ; la canonicalisation d'hôte se gère par redirection 301 et balise canonical."},
+    {sev:"med",cat:["Accessibilité"],title:"Accessibilité à auditer (contraste, focus, alt)",
+     body:"Le sous-titre du hero est en gris clair sur fond clair (contraste à vérifier), et l'accessibilité globale (états de focus clavier, ordre de tabulation, alternatives textuelles) n'a pas été validée de bout en bout.",
+     fix:"Passer un audit WCAG AA : contrastes ≥4,5:1, focus visibles, navigation clavier complète, alt pertinents."}
+  ];
+
+  const catClass="cat";
+  const sevLabel={crit:"Critique",high:"Élevé",med:"Moyen"};
+  const cont=document.getElementById('findings');
+  data.forEach((d,i)=>{
+    const el=document.createElement('div');
+    el.className='find';el.dataset.sev=d.sev;
+    el.innerHTML=`
+      <div class="fhead">
+        <div class="fnum">${String(i+1).padStart(2,'0')}</div>
+        <div style="flex:1">
+          <div class="ftitle">${d.title}</div>
+          <div class="tags">
+            <span class="tag ${d.sev}">${sevLabel[d.sev]}</span>
+            ${d.cat.map(c=>`<span class="tag cat">${c}</span>`).join('')}
+          </div>
+        </div>
+        <div class="chev">▾</div>
+      </div>
+      <div class="fbody"><div class="inner">
+        <div>${d.body}</div>
+        <div class="fix"><b>✔ Correctif :</b> ${d.fix}</div>
+      </div></div>`;
+    el.querySelector('.fhead').addEventListener('click',()=>el.classList.toggle('open'));
+    cont.appendChild(el);
+  });
+
+  // filters
+  document.querySelectorAll('.fbtn').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    const f=b.dataset.f;
+    document.querySelectorAll('.find').forEach(el=>{
+      el.style.display=(f==='all'||el.dataset.sev===f)?'block':'none';
+    });
+  }));
+
+  // animate bars + gauge on load
+  window.addEventListener('load',()=>{
+    setTimeout(()=>{
+      document.querySelectorAll('.bar>i').forEach(i=>i.style.width=i.dataset.w+'%');
+      const arc=document.getElementById('gaugeArc');
+      const pct=6.8/10, circ=402;
+      arc.style.transition='stroke-dashoffset 1.4s cubic-bezier(.2,.8,.2,1)';
+      arc.style.strokeDashoffset=circ*(1-pct);
+    },200);
+  });
+</script>
+</body>
+</html>

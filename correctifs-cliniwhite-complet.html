@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLINI WHITE — Guide de correctifs complet</title>
+<style>
+  :root{
+    --navy:#232063;--purple:#6b5bd2;--purple-soft:#efedfb;--ink:#1a1830;--muted:#6c6a86;
+    --line:#e7e6f0;--bg:#f6f6fb;--card:#fff;
+    --crit:#e5484d;--crit-bg:#fdecec;--high:#f5a623;--high-bg:#fef5e6;--med:#3b82f6;--med-bg:#eaf1fe;
+    --good:#1fab6d;--good-bg:#e7f7ef;--code-bg:#1c1a2e;--shadow:0 1px 2px rgba(26,24,48,.06),0 8px 24px rgba(26,24,48,.06);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.65}
+  .wrap{max-width:920px;margin:0 auto;padding:0 22px}
+  header.top{background:linear-gradient(135deg,#232063,#3a2f8f 55%,#6b5bd2);color:#fff;padding:48px 0 34px}
+  .eyebrow{text-transform:uppercase;letter-spacing:.18em;font-size:12px;font-weight:700;opacity:.85}
+  header.top h1{font-size:30px;font-weight:800;margin:8px 0 6px}
+  header.top p{opacity:.9;font-size:15px}
+
+  /* sommaire */
+  .toc{background:var(--card);border-radius:14px;box-shadow:var(--shadow);border:1px solid var(--line);padding:18px 22px;margin-top:24px}
+  .toc h3{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--purple);margin-bottom:12px}
+  .toc-group{margin-bottom:12px}
+  .toc-group>span{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+  .toc a{display:block;color:var(--ink);text-decoration:none;font-size:14px;padding:5px 0 5px 14px;border-left:2px solid var(--line);margin-top:3px;transition:.15s}
+  .toc a:hover{border-color:var(--purple);color:var(--purple);padding-left:18px}
+
+  .fix-block{background:var(--card);border-radius:16px;box-shadow:var(--shadow);border:1px solid var(--line);margin:22px 0;overflow:hidden;scroll-margin-top:16px}
+  .fix-head{padding:18px 22px 14px;border-bottom:1px solid var(--line)}
+  .badge{display:inline-block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:4px 10px;border-radius:999px;margin-bottom:9px}
+  .badge.high{background:var(--high-bg);color:#b9770f} .badge.med{background:var(--med-bg);color:var(--med)}
+  .fix-head h2{font-size:19px;color:var(--navy)}
+  .fix-head .prob{font-size:13.5px;color:var(--muted);margin-top:6px}
+  .fix-body{padding:18px 22px}
+  .step{font-weight:800;color:var(--purple);font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;margin:18px 0 8px}
+  .step:first-child{margin-top:0}
+  p.t{font-size:14px;margin-bottom:8px} code{background:#efeef7;padding:1px 5px;border-radius:5px;font-size:12.5px}
+  .codewrap{position:relative;margin:10px 0}
+  .codewrap .lang{position:absolute;top:8px;right:12px;font-size:11px;color:#8f8bb5;font-weight:700;text-transform:uppercase}
+  .copy{position:absolute;top:6px;right:66px;background:#332f52;color:#cfc9f0;border:none;font-size:11px;font-weight:700;padding:5px 10px;border-radius:6px;cursor:pointer;transition:.15s;z-index:2}
+  .copy:hover{background:var(--purple)} .copy.done{background:var(--good);color:#fff}
+  pre{background:var(--code-bg);color:#e6e3ff;border-radius:11px;padding:34px 16px 16px;overflow-x:auto;font-size:12.7px;line-height:1.6;font-family:'SF Mono',Menlo,Monaco,Consolas,monospace}
+  pre .c{color:#7d78a8} pre .k{color:#c792ea} pre .s{color:#c3e88d} pre .f{color:#82aaff} pre .n{color:#f78c6c}
+  .why{background:var(--purple-soft);border-radius:10px;padding:11px 14px;font-size:13px;margin-top:12px;color:#33314d}
+  .why b{color:var(--navy)}
+  .note{background:#fff8e6;border:1px solid #f3e2b3;border-radius:10px;padding:11px 14px;font-size:12.5px;color:#7a5b12;margin-top:11px}
+  .copybox{background:var(--good-bg);border:1px solid #bfe8d3;border-radius:11px;padding:14px 16px;margin:10px 0;position:relative}
+  .copybox .copy{position:static;float:right;margin-left:10px}
+  .copybox h4{font-size:12.5px;color:var(--good);margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em}
+  .copybox table{width:100%;border-collapse:collapse;font-size:13px;clear:both}
+  .copybox td{padding:5px 8px;border-bottom:1px solid #cdeadb;vertical-align:top}
+  .copybox td:first-child{font-weight:700;white-space:nowrap;color:var(--navy)}
+  footer{padding:30px 0 60px;text-align:center;color:var(--muted);font-size:13px}
+  @media(max-width:560px){header.top h1{font-size:23px}.copy{right:58px}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">Guide de correctifs complet — priorités Élevée &amp; Moyenne</div>
+    <h1>CLINI WHITE — 13 correctifs pour viser 10/10</h1>
+    <p>Chaque bloc de code a un bouton « Copier ». Patrons Next.js / React à adapter à ton code.</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="toc">
+    <h3>Sommaire</h3>
+    <div class="toc-group"><span style="color:#b9770f">🟠 Priorité élevée</span>
+      <a href="#h1">1 · Images produits de la home (basse qualité)</a>
+      <a href="#h2">2 · Redirection www → non-www (contenu dupliqué)</a>
+      <a href="#h3">3 · Blog / contenu SEO (top-funnel)</a>
+      <a href="#h4">4 · Scarcité honnête (« Almost sold out »)</a>
+      <a href="#h5">5 · Image hero à alléger (LCP)</a>
+      <a href="#h6">6 · Avis clients rédigés</a>
+      <a href="#h7">7 · Cohérence des chiffres de preuve sociale</a>
+    </div>
+    <div class="toc-group"><span style="color:var(--med)">🔵 Priorité moyenne</span>
+      <a href="#m1">8 · Upsell quantité + abonnement (AOV)</a>
+      <a href="#m2">9 · Bandeau garantie répété 10×</a>
+      <a href="#m3">10 · Barre de livraison gratuite</a>
+      <a href="#m4">11 · Scripts tiers (performance)</a>
+      <a href="#m5">12 · robots.txt — retirer « Host: »</a>
+      <a href="#m6">13 · Accessibilité (contraste, focus)</a>
+    </div>
+  </div>
+
+  <!-- ============ HIGH 1 ============ -->
+  <div class="fix-block" id="h1">
+    <div class="fix-head"><div class="badge high">Élevé 01</div>
+      <h2>Images produits de la home en basse qualité</h2>
+      <div class="prob">Les vignettes best-sellers sont des photos WhatsApp (~578×432). Il faut des rendus pro homogènes, optimisés via next/image.</div>
+    </div>
+    <div class="fix-body">
+      <div class="step">1 · Remplacer &lt;img&gt; par next/image (optimisation auto)</div>
+      <div class="codewrap"><span class="lang">jsx</span><button class="copy">Copier</button>
+<pre><span class="k">import</span> Image <span class="k">from</span> <span class="s">"next/image"</span>;
+
+&lt;div className=<span class="s">"product-thumb"</span>&gt;   <span class="c">// ratio fixe → zéro CLS</span>
+  &lt;Image
+    src={product.image}          <span class="c">// rendu pro 1000×1000, fond homogène</span>
+    alt={product.name}
+    width={<span class="n">600</span>} height={<span class="n">600</span>}
+    sizes=<span class="s">"(max-width:600px) 45vw, 300px"</span>
+    quality={<span class="n">82</span>}
+  /&gt;
+&lt;/div&gt;</pre></div>
+      <div class="step">2 · Cadrage identique pour toutes les vignettes (CSS)</div>
+      <div class="codewrap"><span class="lang">css</span><button class="copy">Copier</button>
+<pre><span class="f">.product-thumb</span>{
+  aspect-ratio:<span class="n">1</span>/<span class="n">1</span>;      <span class="c">/* toutes carrées, alignées */</span>
+  background:<span class="s">#f4f3fa</span>;    <span class="c">/* même fond partout */</span>
+  border-radius:<span class="n">14px</span>; overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+}
+<span class="f">.product-thumb img</span>{ width:<span class="n">100%</span>; height:<span class="n">100%</span>; object-fit:contain; }</pre></div>
+      <div class="why">💡 <b>Pourquoi :</b> la home est ta page la plus vue. Des visuels amateurs = perception « dropshipping ». Des rendus homogènes + next/image (WebP/AVIF automatique) crédibilisent la marque ET accélèrent le chargement.</div>
+      <div class="note">📸 Action non-code : refaire/récupérer les 5 rendus produits en 1000×1000 px, même angle, même fond, mêmes ombres. Réutilise les visuels déjà propres des fiches produit.</div>
+    </div>
+  </div>
+
+  <!-- ============ HIGH 2 ============ -->
+  <div class="fix-block" id="h2">
+    <div class="fix-head"><div class="badge high">Élevé 02</div>
+      <h2>Redirection www → non-www (contenu dupliqué)</h2>
+      <div class="prob">Le site répond sur www et non-www ; canonical + sitemap pointent vers non-www. Il faut forcer une seule version en 301.</div>
+    </div>
+    <div class="fix-body">
+      <div class="step">1 · Redirection permanente dans next.config.js</div>
+      <div class="codewrap"><span class="lang">js</span><button class="copy">Copier</button>
+<pre><span class="c">// next.config.js — force cliniwhite.com (sans www)</span>
+module.exports = {
+  <span class="k">async</span> <span class="f">redirects</span>() {
+    <span class="k">return</span> [{
+      source: <span class="s">"/:path*"</span>,
+      has: [{ type: <span class="s">"host"</span>, value: <span class="s">"www.cliniwhite.com"</span> }],
+      destination: <span class="s">"https://cliniwhite.com/:path*"</span>,
+      permanent: <span class="k">true</span>,   <span class="c">// 301</span>
+    }];
+  },
+};</pre></div>
+      <div class="step">2 · Vérifier la balise canonical (déjà correcte)</div>
+      <div class="codewrap"><span class="lang">jsx</span><button class="copy">Copier</button>
+<pre><span class="c">// app/layout.js ou head — hôte canonique unique</span>
+&lt;link rel=<span class="s">"canonical"</span> href=<span class="s">"https://cliniwhite.com"</span> /&gt;
+<span class="c">// ✓ ton canonical, sitemap et robots pointent déjà vers non-www :</span>
+<span class="c">//   il ne manque QUE la redirection 301 ci-dessus.</span></pre></div>
+      <div class="why">💡 <b>Pourquoi :</b> si www et non-www renvoient tous deux un 200, Google voit deux sites identiques et dilue ton référencement. Une 301 concentre toute l'autorité SEO sur une seule URL.</div>
+      <div class="note">🔧 Sur Vercel/Netlify, tu peux aussi définir le domaine principal dans le dashboard (Domains → « Redirect to primary ») — même effet sans toucher au code.</div>
+    </div>
+  </div>
+
+  <!-- ============ HIGH 3 ============ -->
+  <div class="fix-block" id="h3">
+    <div class="fix-head"><div class="badge high">Élevé 03</div>
+      <h2>Blog / contenu SEO (trafic top-funnel)</h2>
+      <div class="prob">0 contenu éditorial au sitemap. Les recherches à fort volume ne captent aucun trafic vers le site.</div>
+    </div>
+    <div class="fix-body">
+      <div class="step">1 · Structure de route blog (App Router)</div>
+      <div class="codewrap"><span class="lang">bash</span><button class="copy">Copier</button>
+<pre><span class="c"># Arborescence minimale</span>
+app/
+  blog/
+    page.js              <span class="c"># liste des articles</span>
+    [slug]/
+      page.js            <span class="c"># article + JSON-LD Article</span>
+content/
+  posts/*.md             <span class="c"># tes articles en Markdown</span></pre></div>
+      <div class="step">2 · Balisage Article (JSON-LD) sur chaque post</div>
+      <div class="codewrap"><span class="lang">jsx</span><button class="copy">Copier</button>
+<pre>&lt;script type=<span class="s">"application/ld+json"</span> dangerouslySetInnerHTML={{__html: JSON.<span class="f">stringify</span>({
+  <span class="s">"@context"</span>:<span class="s">"https://schema.org"</span>, <span class="s">"@type"</span>:<span class="s">"Article"</span>,
+  headline: post.title, datePublished: post.date,
+  author:{<span class="s">"@type"</span>:<span class="s">"Organization"</span>,name:<span class="s">"CLINI WHITE"</span>},
+  image: post.cover,
+})}} /&gt;</pre></div>
+      <div class="copybox"><button class="copy">Copier</button>
+        <h4>📋 8 articles à écrire (intentions de recherche fortes)</h4>
+        <table>
+          <tr><td>Guide</td><td>Comment blanchir ses dents à la maison en 2026</td></tr>
+          <tr><td>Produit</td><td>Dentifrice violet V34 : est-ce que ça marche vraiment ?</td></tr>
+          <tr><td>Comparatif</td><td>PAP vs peroxyde : quelle différence pour blanchir ?</td></tr>
+          <tr><td>Sensibilité</td><td>Blanchiment et dents sensibles : ce qu'il faut savoir</td></tr>
+          <tr><td>Timeline</td><td>Combien de temps pour des dents plus blanches ?</td></tr>
+          <tr><td>Taches</td><td>Enlever les taches de café, thé et tabac sur les dents</td></tr>
+          <tr><td>Mode d'emploi</td><td>Bandelettes blanchissantes : erreurs à éviter</td></tr>
+          <tr><td>Preuve</td><td>Résultats avant/après : à quoi s'attendre honnêtement</td></tr>
+        </table>
+      </div>
+      <div class="why">💡 <b>Pourquoi :</b> ces requêtes ont un gros volume et une intention d'achat. Chaque article capte du trafic gratuit et renvoie vers tes fiches produit via un maillage interne.</div>
+    </div>
+  </div>
+
+  <!-- ============ HIGH 4 ============ -->
+  <div class="fix-block" id="h4">
+    <div class="fix-head"><div class="badge high">Élevé 04</div>
+      <h2>Scarcité honnête (« ALMOST SOLD OUT »)</h2>
+      <div class="prob">Si le badge s'affiche en permanence sur tous les produits, c'est une fausse urgence — risque de confiance et de conformité.</div>
+    </div>
+    <div class="fix-body">
+      <div class="step">Afficher le badge uniquement si le stock réel est bas</div>
+      <div class="codewrap"><span class="lang">jsx</span><button class="copy">Copier</button>
+<pre><span class="k">const</span> LOW_STOCK_THRESHOLD = <span class="n">15</span>;
+
+<span class="k">function</span> <span class="f">StockBadge</span>({ stock }) {
+  <span class="k">if</span> (stock === <span class="n">0</span>)  <span class="k">return</span> &lt;span className=<span class="s">"badge out"</span>&gt;Out of stock&lt;/span&gt;;
+  <span class="k">if</span> (stock &lt;= LOW_STOCK_THRESHOLD)
+    <span class="k">return</span> &lt;span className=<span class="s">"badge low"</span>&gt;Only {stock} left&lt;/span&gt;; <span class="c">// vrai chiffre</span>
+  <span class="k">return null</span>;  <span class="c">// stock normal → aucun badge</span>
+}</pre></div>
+      <div class="why">💡 <b>Pourquoi :</b> une urgence honnête (« Only 8 left », piloté par l'inventaire) convertit sans risque. Une urgence permanente et fausse finit par être repérée et peut être sanctionnée (publicité trompeuse).</div>
+      <div class="note">✅ Alternative honnête si tu n'as pas de stock temps réel : une vraie offre limitée dans le temps (compte à rebours réel qui se termine), pas un badge figé.</div>
+    </div>
+  </div>
+
+  <!-- ============ HIGH 5 ============ -->
+  <div class="fix-block" id="h5">
+    <div class="fix-head"><div class="badge high">Élevé 05</div>
+      <h2>Image hero à alléger (élément LCP)</h2>
+      <div class="prob">hero.jpeg pèse ~1,9 Mo en 2752×1321. C'est le principal frein à la vitesse mobile.</div>
+    </div>
+    <div class="fix-body">
+      <div class="step">1 · Activer AVIF/WebP globalement</div>
+      <div class="codewrap"><span class="lang">js</span><button class="copy">Copier</button>
+<pre><span class="c">// next.config.js</span>
+module.exports = {
+  images: { formats: [<span class="s">"image/avif"</span>, <span class="s">"image/webp"</span>] },
+};</pre></div>
+      <div class="step">2 · Hero en next/image avec priority + sizes</div>
+      <div class="codewrap"><span class="lang">jsx</span><button class="copy">Copier</button>
+<pre>&lt;Image
+  src={<span class="s">"/hero.jpeg"</span>}
+  alt=<span class="s">"CLINI WHITE Teeth Whitening"</span>
+  fill priority                 <span class="c">// LCP → préchargé, pas de lazy</span>
+  sizes=<span class="s">"100vw"</span>
+  quality={<span class="n">72</span>}
+  style={{objectFit:<span class="s">"cover"</span>}}
+/&gt;
+<span class="c">// Résultat : le navigateur reçoit un AVIF ~120–180 Ko au lieu de 1,9 Mo</span></pre></div>
+      <div class="why">💡 <b>Pourquoi :</b> le hero est l'élément qui définit le Largest Contentful Paint. Le passer en AVIF responsive fait chuter le poids de ~90 % et améliore directement le score mobile et le SEO.</div>
+      <div class="note">🖼️ Si tu n'utilises pas next/image pour le hero, sers un &lt;picture&gt; avec sources AVIF/WebP + srcset (480/768/1280/1920 px).</div>
+    </div>
+  </div>
+
+  <!-- ============ HIGH 6 ============ -->
+  <div class="fix-block" id="h6">
+    <div class="fix-head"><div class="badge high">Élevé 06</div>
+      <h2>Avis clients rédigés (preuve sociale réelle)</h2>
+      <div class="prob">On voit une note (4,8/4,9) mais aucun avis texte. La preuve chiffrée seule convainc peu.</div>
+    </div>
+    <div class="fix-body">
+      <div class="step">1 · Intégrer un vrai widget d'avis</div>
+      <p class="t">Le plus simple et crédible : un outil dédié qui collecte et affiche des avis vérifiés (texte + photos) — <b>Judge.me</b>, <b>Loox</b> ou <b>Okendo</b>. Ils gèrent la collecte post-achat par email et le balisage Review automatiquement.</p>
+      <div class="step">2 · Composant d'avis + schema Review (si tu gères en interne)</div>
+      <div class="codewrap"><span class="lang">jsx</span><button class="copy">Copier</button>
+<pre><span class="k">function</span> <span class="f">Reviews</span>({ reviews }) {
+  <span class="k">return</span> (
+    &lt;section className=<span class="s">"reviews"</span>&gt;
+      {reviews.<span class="f">map</span>(r =&gt; (
+        &lt;article key={r.id} className=<span class="s">"review"</span>&gt;
+          &lt;div className=<span class="s">"stars"</span>&gt;{<span class="s">"★"</span>.<span class="f">repeat</span>(r.rating)}&lt;/div&gt;
+          &lt;strong&gt;{r.author} &lt;span className=<span class="s">"verified"</span>&gt;✓ Verified&lt;/span&gt;&lt;/strong&gt;
+          &lt;p&gt;{r.body}&lt;/p&gt;
+          {r.photo &amp;&amp; &lt;img src={r.photo} alt=<span class="s">"Customer result"</span> /&gt;}
+        &lt;/article&gt;
+      ))}
+    &lt;/section&gt;
+  );
+}</pre></div>
+      <div class="why">💡 <b>Pourquoi :</b> des verbatims réels avec photos avant/après lèvent les objections mieux que n'importe quel argument marketing — surtout sur un produit « résultat visible ».</div>
+      <div class="note">⚖️ N'affiche que de vrais avis. Un badge « Verified » sur de faux avis est un risque légal et de réputation.</div>
+    </div>
+  </div>
+
+  <!-- ============ HIGH 7 ============ -->
+  <div class="fix-block" id="h7">
+    <div class="fix-head"><div class="badge high">Élevé 07</div>
+      <h2>Cohérence des chiffres de preuve sociale</h2>
+      <div class="prob">Home : « 4.8 par 5 600+ clients ». Fiche : « 4.9 · 767 avis ». Des chiffres qui varient sans logique affaiblissent la confiance.</div>
+    </div>
+    <div class="fix-body">
+      <div class="step">Une source unique de vérité pour les stats de marque</div>
+      <div class="codewrap"><span class="lang">js</span><button class="copy">Copier</button>
+<pre><span class="c">// lib/socialStats.js — LA référence unique, utilisée partout</span>
+<span class="k">export const</span> BRAND_STATS = {
+  avgRating: <span class="n">4.8</span>,          <span class="c">// note globale marque</span>
+  totalReviews: <span class="n">5642</span>,      <span class="c">// total tous produits</span>
+  totalCustomers: <span class="s">"5,600+"</span>,
+  countries: <span class="s">"50+"</span>,
+};
+<span class="c">// La note PAR PRODUIT (ex : 4.9 / 767) reste locale au produit —</span>
+<span class="c">// mais la note GLOBALE affichée dans le hero vient toujours d'ici.</span></pre></div>
+      <div class="why">💡 <b>Pourquoi :</b> distingue clairement la note <b>globale de marque</b> (constante partout) de la note <b>par produit</b> (propre à chaque fiche). Deux chiffres différents pour la même chose = doute.</div>
+    </div>
+  </div>
+
+  <!-- ============ MED 8 ============ -->
+  <div class="fix-block" id="m1">
+    <div class="fix-head"><div class="badge med">Moyen 08</div>
+      <h2>Upsell quantité + abonnement (panier moyen)</h2>
+      <div class="prob">La fiche ne propose que « Buy 1 ». Aucun palier de quantité ni abonnement : de l'AOV laissé sur la table.</div>
+    </div>
+    <div class="fix-body">
+      <div class="step">Paliers de quantité avec remise progressive</div>
+      <div class="codewrap"><span class="lang">jsx</span><button class="copy">Copier</button>
+<pre><span class="k">const</span> tiers = [
+  { qty:<span class="n">1</span>, label:<span class="s">"Buy 1"</span>,           price:<span class="n">14.99</span> },
+  { qty:<span class="n">2</span>, label:<span class="s">"Buy 2 — Save 10%"</span>,  price:<span class="n">26.99</span>, popular:<span class="k">true</span> },
+  { qty:<span class="n">3</span>, label:<span class="s">"Buy 3 — Save 20%"</span>,  price:<span class="n">35.99</span> },
+];
+
+{tiers.<span class="f">map</span>(t =&gt; (
+  &lt;label key={t.qty} className={<span class="s">`tier ${t.popular?"popular":""}`</span>}&gt;
+    &lt;input type=<span class="s">"radio"</span> name=<span class="s">"qty"</span> value={t.qty} /&gt;
+    &lt;span&gt;{t.label}&lt;/span&gt;
+    &lt;strong&gt;{<span class="f">formatPrice</span>(t.price)}&lt;/strong&gt;
+  &lt;/label&gt;
+))}</pre></div>
+      <div class="why">💡 <b>Pourquoi :</b> le blanchiment se consomme par cure/recharge. Des paliers « Achetez 2/3 » et une option abonnement augmentent le panier moyen et la valeur vie client, sans coût d'acquisition supplémentaire.</div>
+    </div>
+  </div>
+
+  <!-- ============ MED 9 ============ -->
+  <div class="fix-block" id="m2">
+    <div class="fix-head"><div class="badge med">Moyen 09</div>
+      <h2>Bandeau « garantie » répété 10×</h2>
+      <div class="prob">Le marquee répète la même phrase 10 fois. Alterner plusieurs bénéfices est plus utile et moins lourd.</div>
+    </div>
+    <div class="fix-body">
+      <div class="step">Faire défiler plusieurs messages plutôt qu'un seul</div>
+      <div class="codewrap"><span class="lang">jsx</span><button class="copy">Copier</button>
+<pre><span class="k">const</span> perks = [
+  <span class="s">"100% Money-Back Guarantee"</span>,
+  <span class="s">"Peroxide-Free Formula"</span>,
+  <span class="s">"Free Shipping over £30"</span>,
+  <span class="s">"Rated 4.8 by 5,600+ Customers"</span>,
+  <span class="s">"Results in 7 Days"</span>,
+];
+
+&lt;div className=<span class="s">"marquee"</span>&gt;
+  {perks.<span class="f">map</span>((p,i) =&gt; &lt;span key={i}&gt;{p} ✦ &lt;/span&gt;)}
+  {perks.<span class="f">map</span>((p,i) =&gt; &lt;span key={<span class="s">"b"</span>+i} aria-hidden&gt;{p} ✦ &lt;/span&gt;)}
+&lt;/div&gt;</pre></div>
+      <div class="why">💡 <b>Pourquoi :</b> le même espace vend désormais 5 arguments au lieu d'un seul martelé. Plus informatif, moins répétitif.</div>
+    </div>
+  </div>
+
+  <!-- ============ MED 10 ============ -->
+  <div class="fix-block" id="m3">
+    <div class="fix-head"><div class="badge med">Moyen 10</div>
+      <h2>Barre de livraison gratuite</h2>
+      <div class="prob">Aucune info livraison en haut de page. Les frais surprise au checkout sont une cause majeure d'abandon.</div>
+    </div>
+    <div class="fix-body">
+      <div class="step">Barre dynamique « plus que X£ pour la livraison offerte »</div>
+      <div class="codewrap"><span class="lang">jsx</span><button class="copy">Copier</button>
+<pre><span class="k">const</span> FREE_SHIPPING = <span class="n">30</span>;
+
+<span class="k">function</span> <span class="f">ShippingBar</span>({ cartTotal }) {
+  <span class="k">const</span> left = FREE_SHIPPING - cartTotal;
+  <span class="k">return</span> (
+    &lt;div className=<span class="s">"ship-bar"</span>&gt;
+      {left &gt; <span class="n">0</span>
+        ? <span class="s">`Add ${formatPrice(left)} for FREE shipping 🚚`</span>
+        : <span class="s">"🎉 You've unlocked FREE shipping!"</span>}
+      &lt;progress value={cartTotal} max={FREE_SHIPPING} /&gt;
+    &lt;/div&gt;
+  );
+}</pre></div>
+      <div class="why">💡 <b>Pourquoi :</b> annoncer le seuil dès la home rassure et pousse à ajouter un produit pour l'atteindre — ça augmente le panier tout en réduisant l'abandon.</div>
+    </div>
+  </div>
+
+  <!-- ============ MED 11 ============ -->
+  <div class="fix-block" id="m4">
+    <div class="fix-head"><div class="badge med">Moyen 11</div>
+      <h2>Scripts tiers (performance)</h2>
+      <div class="prob">14 scripts chargés. Individuellement légers, ils peuvent cumuler du temps de blocage sur mobile.</div>
+    </div>
+    <div class="fix-body">
+      <div class="step">Charger chaque tag avec la bonne stratégie next/script</div>
+      <div class="codewrap"><span class="lang">jsx</span><button class="copy">Copier</button>
+<pre><span class="k">import</span> Script <span class="k">from</span> <span class="s">"next/script"</span>;
+
+<span class="c">// Analytics : après l'hydratation, jamais bloquant</span>
+&lt;Script src=<span class="s">"/analytics.js"</span> strategy=<span class="s">"afterInteractive"</span> /&gt;
+
+<span class="c">// Chat, pixels marketing : au repos du navigateur</span>
+&lt;Script src=<span class="s">"/chat-widget.js"</span> strategy=<span class="s">"lazyOnload"</span> /&gt;</pre></div>
+      <div class="why">💡 <b>Pourquoi :</b> <code>afterInteractive</code> et <code>lazyOnload</code> retirent les scripts non-critiques du chemin de rendu → meilleur TBT/INP sans rien perdre en fonctionnalité.</div>
+      <div class="note">🔍 Audit rapide : liste tes 14 scripts, garde les essentiels, différe le reste, supprime les tags marketing inutilisés.</div>
+    </div>
+  </div>
+
+  <!-- ============ MED 12 ============ -->
+  <div class="fix-block" id="m5">
+    <div class="fix-head"><div class="badge med">Moyen 12</div>
+      <h2>robots.txt — retirer la directive « Host: »</h2>
+      <div class="prob">« Host: » est une ancienne directive Yandex, ignorée par Google. Inutile et source de confusion.</div>
+    </div>
+    <div class="fix-body">
+      <div class="step">robots.txt corrigé (à coller tel quel)</div>
+      <div class="codewrap"><span class="lang">txt</span><button class="copy">Copier</button>
+<pre>User-Agent: *
+Allow: /
+Disallow: /api/
+Disallow: /account/
+Disallow: /cart/
+Disallow: /checkout/
+
+Sitemap: https://cliniwhite.com/sitemap.xml</pre></div>
+      <div class="why">💡 <b>Pourquoi :</b> la canonicalisation d'hôte se gère par la redirection 301 (correctif 02) et la balise canonical, pas par « Host: ». On garde un robots.txt propre.</div>
+    </div>
+  </div>
+
+  <!-- ============ MED 13 ============ -->
+  <div class="fix-block" id="m6">
+    <div class="fix-head"><div class="badge med">Moyen 13</div>
+      <h2>Accessibilité (contraste, focus clavier)</h2>
+      <div class="prob">Sous-titre du hero en gris clair (contraste à vérifier), états de focus à rendre visibles.</div>
+    </div>
+    <div class="fix-body">
+      <div class="step">1 · Focus clavier visible sur tous les éléments interactifs</div>
+      <div class="codewrap"><span class="lang">css</span><button class="copy">Copier</button>
+<pre><span class="c">/* Anneau de focus net, seulement au clavier */</span>
+<span class="f">:focus-visible</span>{
+  outline:<span class="n">3px</span> solid <span class="s">#6b5bd2</span>;
+  outline-offset:<span class="n">2px</span>;
+  border-radius:<span class="n">4px</span>;
+}</pre></div>
+      <div class="step">2 · Contraste du texte (viser WCAG AA ≥ 4,5:1)</div>
+      <div class="codewrap"><span class="lang">css</span><button class="copy">Copier</button>
+<pre><span class="c">/* ❌ gris trop clair sur fond clair */</span>
+<span class="f">.hero-subtitle</span>{ color:<span class="s">#9a98ad</span>; }
+<span class="c">/* ✅ assez foncé pour être lisible partout */</span>
+<span class="f">.hero-subtitle</span>{ color:<span class="s">#3a3852</span>; }</pre></div>
+      <div class="why">💡 <b>Pourquoi :</b> l'accessibilité élargit ton audience, évite un risque légal, et Google en tient compte. Un focus visible et des contrastes suffisants sont des gains rapides.</div>
+      <div class="note">🧪 Vérifie l'ensemble avec Lighthouse (onglet Accessibility) ou l'extension axe DevTools — vise un score ≥ 95.</div>
+    </div>
+  </div>
+
+  <footer>
+    Guide de correctifs complet · basé sur l'analyse en conditions réelles de cliniwhite.com · 4 août 2026<br>
+    3 correctifs critiques (guide précédent) + 13 ici = la feuille de route complète vers 10/10.
+  </footer>
+</div>
+
+<script>
+  document.querySelectorAll('.copy').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const block=btn.closest('.codewrap,.copybox');
+      let text='';const pre=block.querySelector('pre');
+      if(pre){text=pre.innerText;}
+      else{text=[...block.querySelectorAll('tr')].map(r=>[...r.children].map(c=>c.innerText).join(' — ')).join('\n');}
+      navigator.clipboard.writeText(text).then(()=>{
+        const o=btn.textContent;btn.textContent='✓ Copié';btn.classList.add('done');
+        setTimeout(()=>{btn.textContent=o;btn.classList.remove('done')},1500);
+      });
+    });
+  });
+</script>
+</body>
+</html>

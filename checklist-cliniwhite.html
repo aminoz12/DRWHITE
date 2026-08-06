@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLINI WHITE — Checklist de mise en œuvre vers 10/10</title>
+<style>
+  :root{
+    --navy:#232063;--purple:#6b5bd2;--purple-soft:#efedfb;--ink:#1a1830;--muted:#6c6a86;
+    --line:#e7e6f0;--bg:#f6f6fb;--card:#fff;--crit:#e5484d;--high:#f5a623;--med:#3b82f6;
+    --good:#1fab6d;--good-bg:#e7f7ef;--shadow:0 1px 2px rgba(26,24,48,.06),0 8px 24px rgba(26,24,48,.06);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:860px;margin:0 auto;padding:0 20px}
+  header.top{background:linear-gradient(135deg,#232063,#3a2f8f 55%,#6b5bd2);color:#fff;padding:44px 0 30px}
+  .eyebrow{text-transform:uppercase;letter-spacing:.18em;font-size:12px;font-weight:700;opacity:.85}
+  header.top h1{font-size:28px;font-weight:800;margin:8px 0 4px}
+  header.top p{opacity:.9;font-size:14.5px}
+
+  /* progress sticky */
+  .progress-card{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);padding:14px 0;margin-bottom:8px}
+  .pc-inner{display:flex;align-items:center;gap:16px}
+  .pbar{flex:1;height:12px;background:#edecf5;border-radius:99px;overflow:hidden}
+  .pbar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#6b5bd2,#232063);border-radius:99px;transition:width .4s cubic-bezier(.2,.8,.2,1)}
+  .pnum{font-weight:800;color:var(--navy);font-size:15px;white-space:nowrap}
+  .presset{background:none;border:1px solid var(--line);color:var(--muted);font-size:12px;font-weight:600;padding:6px 12px;border-radius:999px;cursor:pointer}
+  .presset:hover{border-color:var(--purple);color:var(--purple)}
+
+  .phase{margin:26px 0 8px}
+  .phase h2{font-size:20px;color:var(--navy);display:flex;align-items:center;gap:10px}
+  .phase .dot{width:12px;height:12px;border-radius:50%}
+  .phase .when{font-size:12.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin:4px 0 0 22px}
+
+  .task{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:10px 0;box-shadow:var(--shadow);display:flex;gap:13px;align-items:flex-start;transition:.2s;cursor:pointer}
+  .task:hover{border-color:#cfc9f0}
+  .task.done{background:#fafaf8;opacity:.62}
+  .task.done .tt{text-decoration:line-through}
+  .cb{flex:none;width:22px;height:22px;border-radius:7px;border:2px solid #c9c6e0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:.15s}
+  .task.done .cb{background:var(--good);border-color:var(--good)}
+  .cb svg{width:13px;height:13px;opacity:0;transition:.15s}
+  .task.done .cb svg{opacity:1}
+  .tbody{flex:1}
+  .tt{font-weight:700;font-size:15px}
+  .tmeta{display:flex;gap:8px;flex-wrap:wrap;margin-top:7px;align-items:center}
+  .chip{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;text-transform:uppercase;letter-spacing:.03em}
+  .chip.crit{background:#fdecec;color:var(--crit)} .chip.high{background:#fef5e6;color:#b9770f} .chip.med{background:#eaf1fe;color:var(--med)}
+  .chip.eff{background:#f0eff7;color:var(--muted)}
+  .chip.cat{background:#eef;color:#5a58a6}
+  .ref{font-size:12px;color:var(--muted)}
+
+  .done-msg{display:none;background:var(--good-bg);border:1px solid #bfe8d3;border-radius:14px;padding:20px;text-align:center;margin:20px 0;font-size:15px;color:#146c48;font-weight:600}
+  .done-msg.show{display:block}
+  footer{padding:26px 0 60px;text-align:center;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">Checklist de mise en œuvre</div>
+    <h1>De 6,8 à 10/10 — 16 correctifs dans l'ordre</h1>
+    <p>Coche au fur et à mesure. Ta progression se met à jour en haut.</p>
+  </div>
+</header>
+
+<div class="progress-card">
+  <div class="wrap pc-inner">
+    <div class="pbar"><i id="pfill"></i></div>
+    <div class="pnum"><span id="pdone">0</span>/<span id="ptotal">16</span> · <span id="ppct">0%</span></div>
+    <button class="presset" id="reset">Réinitialiser</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="done-msg" id="doneMsg">🎉 Bravo — les 16 correctifs sont cochés. Le site est prêt pour un nouveau passage à 10/10 !</div>
+
+  <!-- SPRINT 1 -->
+  <div class="phase">
+    <h2><span class="dot" style="background:var(--crit)"></span>Sprint 1 — Quick wins</h2>
+    <div class="when">Semaine 1 · effort faible · impact fort · corriger d'abord ce qui casse la confiance</div>
+  </div>
+  <div id="s1"></div>
+
+  <!-- SPRINT 2 -->
+  <div class="phase">
+    <h2><span class="dot" style="background:var(--high)"></span>Sprint 2 — SEO &amp; Performance</h2>
+    <div class="when">Semaines 2 à 4 · impact moyen-fort · visibilité et vitesse</div>
+  </div>
+  <div id="s2"></div>
+
+  <!-- SPRINT 3 -->
+  <div class="phase">
+    <h2><span class="dot" style="background:var(--purple)"></span>Sprint 3 — Croissance</h2>
+    <div class="when">Mois 2 · construction de fond · trafic et panier moyen</div>
+  </div>
+  <div id="s3"></div>
+
+  <footer>
+    Checklist basée sur l'audit de cliniwhite.com · 4 août 2026 · ⏱️ effort total estimé : ~5–8 jours de dev + contenu.
+  </footer>
+</div>
+
+<script>
+  const tasks={
+    s1:[
+      {t:"Corriger le bug « 14 strips » sur les produits liquides (sérum, foam, powder, mouthwash, dentifrice + bundles)",sev:"crit",cat:"Conversion",eff:"1–2 h"},
+      {t:"Unifier la devise : £ partout, supprimer tous les US$ et £ codés en dur",sev:"crit",cat:"Conversion",eff:"1–2 h"},
+      {t:"Relier les cartes « social proof » à de vrais produits (noms, prix, liens réels)",sev:"crit",cat:"Confiance",eff:"2–3 h"},
+      {t:"Réparer l'espacement du H1 (« Teeth Whitening that adapts to you »)",sev:"high",cat:"SEO",eff:"5 min"},
+      {t:"Réduire le bandeau garantie répété 10× → alterner 5 bénéfices",sev:"med",cat:"Design",eff:"30 min"},
+      {t:"Remplacer les vignettes produits WhatsApp par des rendus pro homogènes (next/image)",sev:"high",cat:"Design",eff:"3–4 h*"},
+    ],
+    s2:[
+      {t:"Mettre la redirection 301 www → non-www (next.config.js ou dashboard hébergeur)",sev:"high",cat:"SEO",eff:"30 min"},
+      {t:"Alléger l'image hero en AVIF/WebP responsive (viser < 200 Ko)",sev:"high",cat:"Perf",eff:"1 h"},
+      {t:"Intégrer un widget d'avis clients rédigés (Judge.me / Loox / Okendo)",sev:"high",cat:"Conversion",eff:"2–4 h"},
+      {t:"Remplacer « Almost sold out » par un badge de stock honnête (piloté par l'inventaire)",sev:"high",cat:"Conversion",eff:"1 h"},
+      {t:"Unifier les chiffres de preuve sociale (source unique de vérité)",sev:"high",cat:"Contenu",eff:"30 min"},
+      {t:"Ajouter la barre de livraison gratuite (« plus que X£ »)",sev:"med",cat:"Conversion",eff:"1 h"},
+      {t:"Optimiser le chargement des 14 scripts tiers (afterInteractive / lazyOnload)",sev:"med",cat:"Perf",eff:"1–2 h"},
+      {t:"Nettoyer robots.txt (retirer la directive « Host: »)",sev:"med",cat:"SEO",eff:"5 min"},
+      {t:"Corriger l'accessibilité : focus clavier visible + contraste du texte gris",sev:"med",cat:"A11y",eff:"1 h"},
+      {t:"Lancer Lighthouse et valider les Core Web Vitals (LCP/CLS/INP)",sev:"high",cat:"Perf",eff:"30 min"},
+    ],
+    s3:[
+      {t:"Lancer le blog SEO : structure de route + 8 articles ciblés",sev:"high",cat:"SEO",eff:"multi-jours"},
+      {t:"Ajouter les upsells : paliers de quantité + option abonnement",sev:"med",cat:"AOV",eff:"3–4 h"},
+    ]
+  };
+  const sevLabel={crit:"Critique",high:"Élevé",med:"Moyen"};
+  const check='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  let total=0;
+  ["s1","s2","s3"].forEach(k=>{
+    const cont=document.getElementById(k);
+    tasks[k].forEach(o=>{
+      total++;
+      const el=document.createElement('div');el.className='task';
+      el.innerHTML=`<div class="cb">${check}</div>
+        <div class="tbody"><div class="tt">${o.t}</div>
+          <div class="tmeta">
+            <span class="chip ${o.sev}">${sevLabel[o.sev]}</span>
+            <span class="chip cat">${o.cat}</span>
+            <span class="chip eff">⏱ ${o.eff}</span>
+          </div></div>`;
+      el.addEventListener('click',()=>{el.classList.toggle('done');update();});
+      cont.appendChild(el);
+    });
+  });
+  const fill=document.getElementById('pfill'),pdone=document.getElementById('pdone'),
+        ppct=document.getElementById('ppct'),doneMsg=document.getElementById('doneMsg');
+  function update(){
+    const done=document.querySelectorAll('.task.done').length;
+    const pct=Math.round(done/total*100);
+    fill.style.width=pct+'%';pdone.textContent=done;ppct.textContent=pct+'%';
+    doneMsg.classList.toggle('show',done===total);
+  }
+  document.getElementById('reset').addEventListener('click',()=>{
+    document.querySelectorAll('.task.done').forEach(t=>t.classList.remove('done'));update();
+  });
+  document.getElementById('ptotal').textContent=total;
+  update();
+</script>
+</body>
+</html>
