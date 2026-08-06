@@ -6,6 +6,7 @@ import FeaturedCollection from '@/app/components/FeaturedCollection';
 import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
 import { SITE_URL, BRAND_NAME } from '@/lib/siteConfig';
+import { getServerCountry } from '@/lib/market-server';
 
 export async function generateStaticParams() {
   try {
@@ -71,7 +72,8 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { handle } = await params;
-  const product = await getProduct(handle);
+  const country = await getServerCountry();
+  const product = await getProduct(handle, country);
 
   if (!product) {
     return (

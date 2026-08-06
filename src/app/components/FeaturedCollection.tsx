@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getProductsByCollection } from '@/lib/shopify';
+import { getClientCountry } from '@/lib/market';
 import type { ShopifyProductEdge } from '@/lib/shopify';
 import { formatMoney } from '@/lib/money';
 
@@ -14,7 +15,7 @@ export default function FeaturedCollection() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const data = (await getProductsByCollection('featured')) as ShopifyProductEdge[];
+        const data = (await getProductsByCollection('featured', getClientCountry())) as ShopifyProductEdge[];
         setProducts(data.slice(0, 4)); // Show 4 products
       } catch (error) {
         console.error('Failed to fetch featured products:', error);

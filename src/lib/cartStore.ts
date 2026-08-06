@@ -7,6 +7,7 @@ import {
   addCartLines,
   updateCartLines,
   removeCartLines,
+  updateCartBuyerCountry,
   normalizeCheckoutUrl,
   type Cart,
   type CartLine,
@@ -42,6 +43,7 @@ interface CartState {
   addItem: (variantId: string, quantity?: number) => Promise<void>;
   removeItem: (lineId: string) => Promise<void>;
   updateQuantity: (lineId: string, quantity: number) => Promise<void>;
+  setCountry: (country: string) => Promise<void>;
   clearCart: () => void;
 }
 
@@ -159,6 +161,29 @@ export const useCartStore = create<CartState>()(
           }
         } catch (err) {
           console.error('updateQuantity error:', err);
+        } finally {
+          set({ isLoading: false });
+        }
+      },
+
+      // Reprice the existing cart when the visitor switches currency.
+      setCountry: async (country: string) => {
+        const { cartId } = get();
+        if (!cartId) return;
+        set({ isLoading: true });
+        try {
+          const cart = await updateCartBuyerCountry(cartId, country);
+          if (cart) {
+            set({
+              checkoutUrl: normalizeCheckoutUrl(cart.checkoutUrl),
+              items: cartToItems(cart),
+              totalQuantity: cart.totalQuantity,
+              subtotal: cart.cost.subtotalAmount.amount,
+              subtotalCurrency: cart.cost.subtotalAmount.currencyCode,
+            });
+          }
+        } catch (err) {
+          console.error('setCountry error:', err);
         } finally {
           set({ isLoading: false });
         }

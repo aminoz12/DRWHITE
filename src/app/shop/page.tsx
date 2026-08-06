@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { getProducts } from '@/lib/shopify';
+import { getServerCountry } from '@/lib/market-server';
 import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
 import ShopGrid from './ShopGrid';
@@ -12,7 +13,8 @@ export const metadata: Metadata = {
 };
 
 export default async function ShopPage() {
-  const products = await getProducts();
+  const country = await getServerCountry();
+  const products = await getProducts(country);
 
   return (
     <div className="min-h-screen bg-white">

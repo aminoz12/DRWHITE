@@ -2,9 +2,11 @@ import { getProducts } from '@/lib/shopify';
 import type { ShopifyProductEdge } from '@/lib/shopify';
 import ProductCard from './ProductCard';
 import { STATS, SITE_URL } from '@/lib/siteConfig';
+import { getServerCountry } from '@/lib/market-server';
 
 export default async function BestSellers() {
-  const products = (await getProducts()) as ShopifyProductEdge[];
+  const country = await getServerCountry();
+  const products = (await getProducts(country)) as ShopifyProductEdge[];
 
   const productListSchema = {
     '@context': 'https://schema.org',

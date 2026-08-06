@@ -1,4 +1,5 @@
 import { getProducts, getProductsByCollection } from '@/lib/shopify';
+import { getServerCountry } from '@/lib/market-server';
 import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
 import BundlesGrid from './BundlesGrid';
@@ -12,12 +13,13 @@ export const metadata = {
 export default async function BundlesPage() {
   // Try the dedicated collections first, then fall back to any product
   // with "bundle" in its title so the page never renders empty.
-  const products = await getProductsByCollection('bundles');
-  const fallback = products.length > 0 ? products : await getProductsByCollection('huge-savings');
+  const country = await getServerCountry();
+  const products = await getProductsByCollection('bundles', country);
+  const fallback = products.length > 0 ? products : await getProductsByCollection('huge-savings', country);
   const allProducts =
     fallback.length > 0
       ? fallback
-      : (await getProducts()).filter((p: { title: string }) => /bundle/i.test(p.title));
+      : (await getProducts(country)).filter((p: { title: string }) => /bundle/i.test(p.title));
 
   return (
     <div className="min-h-screen bg-white">

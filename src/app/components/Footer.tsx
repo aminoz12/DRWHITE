@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { SOCIALS, CONTACT, COMPANY, CURRENCY } from '@/lib/siteConfig';
+import { SOCIALS, CONTACT, COMPANY } from '@/lib/siteConfig';
 import NewsletterForm from './NewsletterForm';
+import CurrencySwitcher from './CurrencySwitcher';
 
 const InstagramIcon = () => (
   <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg">
@@ -153,10 +154,8 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="border-t border-gray-300 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          {/* Store region — static label, not a selector */}
-          <p className="text-xs text-gray-600">
-            United Kingdom ({CURRENCY.code} {CURRENCY.symbol})
-          </p>
+          {/* Country / currency selector (geo-defaulted) */}
+          <CurrencySwitcher />
 
           {/* Copyright */}
           <p className="text-xs text-gray-500">

@@ -9,6 +9,7 @@ import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
 import PaymentIcons from '@/app/components/PaymentIcons';
 import { getProducts, normalizeCheckoutUrl } from '@/lib/shopify';
+import { getClientCountry } from '@/lib/market';
 import type { ShopifyProductEdge, ShopifyProductNode } from '@/lib/shopify';
 import { formatMoney } from '@/lib/money';
 
@@ -30,7 +31,7 @@ export default function CartPage() {
 
   useEffect(() => {
     async function fetchUpsells() {
-      const products = (await getProducts()) as ShopifyProductEdge[];
+      const products = (await getProducts(getClientCountry())) as ShopifyProductEdge[];
       setUpsellProducts(products);
       if (products.length > 0) {
         // Pick a random product for the first offer that isn't already in the cart (ideally)

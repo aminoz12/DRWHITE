@@ -1,9 +1,11 @@
 import { getProductsByCollection } from '@/lib/shopify';
 import type { ShopifyProductEdge } from '@/lib/shopify';
 import ProductCard from './ProductCard';
+import { getServerCountry } from '@/lib/market-server';
 
 export default async function Bundles() {
-  const products = (await getProductsByCollection('huge-savings')) as ShopifyProductEdge[];
+  const country = await getServerCountry();
+  const products = (await getProductsByCollection('huge-savings', country)) as ShopifyProductEdge[];
 
   return (
     <section className="py-12 bg-gray-50">

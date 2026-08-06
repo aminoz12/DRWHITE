@@ -1,3 +1,5 @@
+import { DEFAULT_COUNTRY, getClientCountry } from './market';
+
 const rawDomain = process.env.SHOPIFY_STORE_DOMAIN || process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || 'your-store.myshopify.com';
 const domain = rawDomain.replace(/^https?:\/\//, '').replace(/\/+$/, '');
 const storefrontAccessToken = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN || process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN || '';
@@ -137,9 +139,9 @@ export async function shopifyClientFetch({ query, variables }: { query: string; 
 }
 
 // ─── PRODUCT QUERIES ───────────────────────────────────────────────────────
-export async function getProducts() {
+export async function getProducts(country: string = DEFAULT_COUNTRY) {
   const query = `
-    query getProducts @inContext(country: GB) {
+    query getProducts($country: CountryCode) @inContext(country: $country) {
       products(first: 10) {
         edges {
           node {
@@ -190,13 +192,13 @@ export async function getProducts() {
     }
   `;
 
-  const response = await shopifyFetch({ query });
+  const response = await shopifyFetch({ query, variables: { country } });
   return response.data?.products?.edges || [];
 }
 
-export async function getProductsByCollection(handle: string) {
+export async function getProductsByCollection(handle: string, country: string = DEFAULT_COUNTRY) {
   const query = `
-    query getCollection($handle: String!) @inContext(country: GB) {
+    query getCollection($handle: String!, $country: CountryCode) @inContext(country: $country) {
       collection(handle: $handle) {
         id
         title
@@ -251,7 +253,7 @@ export async function getProductsByCollection(handle: string) {
     }
   `;
 
-  const response = await shopifyFetch({ query, variables: { handle } });
+  const response = await shopifyFetch({ query, variables: { handle, country } });
 
   if (response.errors) {
     console.error('Shopify collection error:', response.errors);
@@ -264,9 +266,9 @@ export async function getProductsByCollection(handle: string) {
   return response.data?.collection?.products?.edges || [];
 }
 
-export async function getProduct(handle: string) {
+export async function getProduct(handle: string, country: string = DEFAULT_COUNTRY) {
   const query = `
-    query getProduct($handle: String!) @inContext(country: GB) {
+    query getProduct($handle: String!, $country: CountryCode) @inContext(country: $country) {
       product(handle: $handle) {
         id
         title
@@ -307,7 +309,7 @@ export async function getProduct(handle: string) {
     }
   `;
 
-  const response = await shopifyFetch({ query, variables: { handle } });
+  const response = await shopifyFetch({ query, variables: { handle, country } });
   return response.data?.product;
 }
 
@@ -395,7 +397,7 @@ export async function createCart(
   lines: { merchandiseId: string; quantity: number }[]
 ): Promise<Cart | null> {
   const query = `
-    mutation cartCreate($input: CartInput!) @inContext(country: GB) {
+    mutation cartCreate($input: CartInput!, $country: CountryCode) @inContext(country: $country) {
       cartCreate(input: $input) {
         cart { ...CartFields }
         userErrors { field message }
@@ -404,9 +406,10 @@ export async function createCart(
     ${CART_FRAGMENT}
   `;
 
+  const country = getClientCountry();
   const response = await shopifyClientFetch({
     query,
-    variables: { input: { lines } },
+    variables: { input: { lines, buyerIdentity: { countryCode: country } }, country },
   });
 
   if (response.errors || response.data?.cartCreate?.userErrors?.length) {
@@ -422,7 +425,7 @@ export async function addCartLines(
   lines: { merchandiseId: string; quantity: number }[]
 ): Promise<Cart | null> {
   const query = `
-    mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) @inContext(country: GB) {
+    mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!, $country: CountryCode) @inContext(country: $country) {
       cartLinesAdd(cartId: $cartId, lines: $lines) {
         cart { ...CartFields }
         userErrors { field message }
@@ -433,7 +436,7 @@ export async function addCartLines(
 
   const response = await shopifyClientFetch({
     query,
-    variables: { cartId, lines },
+    variables: { cartId, lines, country: getClientCountry() },
   });
 
   if (response.errors || response.data?.cartLinesAdd?.userErrors?.length) {
@@ -449,7 +452,7 @@ export async function updateCartLines(
   lines: { id: string; quantity: number }[]
 ): Promise<Cart | null> {
   const query = `
-    mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) @inContext(country: GB) {
+    mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!, $country: CountryCode) @inContext(country: $country) {
       cartLinesUpdate(cartId: $cartId, lines: $lines) {
         cart { ...CartFields }
         userErrors { field message }
@@ -460,7 +463,7 @@ export async function updateCartLines(
 
   const response = await shopifyClientFetch({
     query,
-    variables: { cartId, lines },
+    variables: { cartId, lines, country: getClientCountry() },
   });
 
   return response.data?.cartLinesUpdate?.cart ?? null;
@@ -471,7 +474,7 @@ export async function removeCartLines(
   lineIds: string[]
 ): Promise<Cart | null> {
   const query = `
-    mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) @inContext(country: GB) {
+    mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!, $country: CountryCode) @inContext(country: $country) {
       cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
         cart { ...CartFields }
         userErrors { field message }
@@ -482,10 +485,44 @@ export async function removeCartLines(
 
   const response = await shopifyClientFetch({
     query,
-    variables: { cartId, lineIds },
+    variables: { cartId, lineIds, country: getClientCountry() },
   });
 
   return response.data?.cartLinesRemove?.cart ?? null;
+}
+
+/**
+ * Reprice an existing cart in another market's currency by updating the
+ * buyer identity's country. Used by the currency switcher.
+ */
+export async function updateCartBuyerCountry(
+  cartId: string,
+  country: string
+): Promise<Cart | null> {
+  const query = `
+    mutation cartBuyerIdentityUpdate($cartId: ID!, $buyerIdentity: CartBuyerIdentityInput!, $country: CountryCode) @inContext(country: $country) {
+      cartBuyerIdentityUpdate(cartId: $cartId, buyerIdentity: $buyerIdentity) {
+        cart { ...CartFields }
+        userErrors { field message }
+      }
+    }
+    ${CART_FRAGMENT}
+  `;
+
+  const response = await shopifyClientFetch({
+    query,
+    variables: { cartId, buyerIdentity: { countryCode: country }, country },
+  });
+
+  if (response.errors || response.data?.cartBuyerIdentityUpdate?.userErrors?.length) {
+    console.error(
+      'Cart buyer identity errors:',
+      response.errors || response.data?.cartBuyerIdentityUpdate?.userErrors
+    );
+    return null;
+  }
+
+  return response.data?.cartBuyerIdentityUpdate?.cart ?? null;
 }
 
 // ─── LEGACY HELPERS (kept as fallback) ────────────────────────────────────
