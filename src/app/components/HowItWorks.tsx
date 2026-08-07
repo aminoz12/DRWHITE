@@ -9,7 +9,7 @@ import LazyVideo from './LazyVideo';
 const testimonials = [
   {
     id: 1,
-    video: '/vid1.mp4',
+    video: '/videos/video1.mp4',
     views: '32.9K',
     tag: "Dentist says why people shouldn't use whitening strips... 😩",
     hasPlay: false,
@@ -18,7 +18,7 @@ const testimonials = [
   },
   {
     id: 2,
-    video: '/vid2.mp4',
+    video: '/videos/video2.mp4',
     views: '14.6K',
     tag: '3 teeth stain hacks 🦷',
     hasPlay: false,
@@ -27,7 +27,7 @@ const testimonials = [
   },
   {
     id: 3,
-    video: '/vid3.mp4',
+    video: '/videos/video3.mp4',
     views: '7.2K',
     tag: 'GETS RID OF EVERYDAY STAINS FROM COFFEE TO SMOKING',
     hasPlay: true,
@@ -36,7 +36,7 @@ const testimonials = [
   },
   {
     id: 4,
-    video: '/vid4.mp4',
+    video: '/videos/video4.mp4',
     views: '11K',
     tag: 'Before:',
     hasPlay: false,
@@ -45,7 +45,7 @@ const testimonials = [
   },
   {
     id: 5,
-    video: '/vid5.mp4',
+    video: '/videos/video5.mp4',
     views: '5.5K',
     tag: '🌟 Glow Up 2025 🌟\nBright white teeth in 34 days',
     hasPlay: false,

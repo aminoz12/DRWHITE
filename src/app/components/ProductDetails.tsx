@@ -452,7 +452,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
           <div className="flex w-fit animate-marquee hover:[animation-play-state:paused] py-4">
             {[1, 2, 3, 4, 5, 1, 2, 3, 4, 5].map((id, i) => (
               <div key={i} className="flex-none w-[200px] sm:w-[250px] aspect-[9/16] mx-3 rounded-2xl overflow-hidden bg-gray-100 relative shadow-md">
-                <LazyVideo src={`/vid${id}.mp4`} className="w-full h-full object-cover" />
+                <LazyVideo src={`/videos/video${id}.mp4`} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-black/10 pointer-events-none" />
               </div>
             ))}
