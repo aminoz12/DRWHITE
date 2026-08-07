@@ -1,17 +1,22 @@
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 import { getProducts } from '@/lib/shopify';
 import type { ShopifyProductEdge } from '@/lib/shopify';
 import ProductCard from './ProductCard';
 import { STATS, SITE_URL } from '@/lib/siteConfig';
 import { getServerCountry } from '@/lib/market-server';
 
+const FEATURED_COUNT = 4;
+
 export default async function BestSellers() {
   const country = await getServerCountry();
   const products = (await getProducts(country)) as ShopifyProductEdge[];
+  const featured = products.slice(0, FEATURED_COUNT);
 
   const productListSchema = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    itemListElement: products.slice(0, 5).map((p, i) => {
+    itemListElement: featured.map((p, i) => {
       const node = p.node;
       const image = node.images?.edges[0]?.node;
       const price = node.priceRange?.minVariantPrice;
@@ -78,11 +83,25 @@ export default async function BestSellers() {
             <p className="text-sm mt-2">SHOPIFY_STORE_DOMAIN and SHOPIFY_STOREFRONT_ACCESS_TOKEN</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {products.slice(0, 5).map((product) => (
-              <ProductCard key={product.node.id} product={product.node} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {featured.map((product) => (
+                <ProductCard key={product.node.id} product={product.node} />
+              ))}
+            </div>
+
+            {products.length > FEATURED_COUNT && (
+              <div className="text-center mt-10">
+                <Link
+                  href="/shop"
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-full border-2 border-[#231b50] px-8 text-[11px] font-black uppercase tracking-widest text-[#231b50] transition-colors hover:bg-[#231b50] hover:text-white"
+                >
+                  Shop all {products.length} products
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            )}
+          </>
         )}
       </div>
     </section>
