@@ -41,17 +41,18 @@ export default async function Bundles() {
               ))}
             </div>
 
-            {products.length > FEATURED_COUNT && (
-              <div className="text-center mt-10">
-                <Link
-                  href="/bundles"
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-full border-2 border-[#231b50] px-8 text-[11px] font-black uppercase tracking-widest text-[#231b50] transition-colors hover:bg-[#231b50] hover:text-white"
-                >
-                  See all {products.length} bundles
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </div>
-            )}
+            <div className="text-center mt-10">
+              <Link
+                href="/bundles"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#231b50] px-10 text-[11px] font-black uppercase tracking-widest text-white shadow-lg shadow-violet-200 transition-all hover:-translate-y-0.5 hover:bg-[#1a1440] active:scale-95"
+              >
+                Shop the bundles
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+              <p className="text-gray-500 text-xs mt-4">
+                Free shipping · 30-day money-back guarantee
+              </p>
+            </div>
           </>
         )}
       </div>
