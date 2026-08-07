@@ -36,14 +36,14 @@ const WHY_BUNDLE = [
 ];
 
 export default async function BundlesPage() {
-  // Try the dedicated collections first, then fall back to any product
-  // with "bundle" in its title so the page never renders empty.
+  // "huge-savings" is the store's bundle collection — same one the homepage
+  // section reads. Falls back to any product with "bundle" in its title so
+  // the page never renders empty.
   const country = await getServerCountry();
-  const products = await getProductsByCollection('bundles', country);
-  const fallback = products.length > 0 ? products : await getProductsByCollection('huge-savings', country);
+  const products = await getProductsByCollection('huge-savings', country);
   const allProducts =
-    fallback.length > 0
-      ? fallback
+    products.length > 0
+      ? products
       : (await getProducts(country)).filter((p: { title: string }) => /bundle/i.test(p.title));
 
   return (
