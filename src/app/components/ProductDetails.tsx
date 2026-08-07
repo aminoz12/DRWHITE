@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import {
   Check,
   Loader2,
@@ -198,19 +199,19 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
   const savings = getDiscountPercent(price.amount, comparePrice?.amount);
 
   return (
-    <section className="bg-white py-8 lg:py-12 font-sans antialiased">
+    <section className="bg-white py-8 lg:py-12 pb-28 lg:pb-12 font-sans antialiased">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
 
           {/* LEFT: IMAGE GALLERY */}
           <div className="space-y-6">
-            <div className="relative aspect-square flex items-center justify-center">
+            <div className="relative aspect-square flex items-center justify-center bg-white border border-gray-100 rounded-2xl overflow-hidden">
               <Image
                 src={images[activeImage]?.url || images[0]?.url || ''}
                 alt={images[activeImage]?.altText || product.title}
                 width={800}
                 height={800}
-                className="object-contain w-full h-full transform scale-100"
+                className="object-contain w-full h-full p-6"
                 priority
               />
             </div>
@@ -221,8 +222,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                   type="button"
                   onClick={() => setActiveImage(activeImage === i + 1 ? 0 : i + 1)}
                   aria-label={`View product image ${i + 2}`}
-                  className={`relative aspect-square group overflow-hidden rounded-md transition-shadow ${
-                    activeImage === i + 1 ? 'ring-2 ring-[#231b50] ring-offset-2' : ''
+                  className={`relative aspect-square group overflow-hidden rounded-xl border transition-all ${
+                    activeImage === i + 1 ? 'border-[#231b50] ring-2 ring-[#231b50] ring-offset-2' : 'border-gray-100 hover:border-gray-300'
                   }`}
                 >
                   <Image
@@ -240,6 +241,15 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
           {/* RIGHT: PRODUCT INFO */}
           <div className="flex flex-col space-y-6">
             <div className="space-y-5">
+              <nav aria-label="Breadcrumb" className="text-[11px] font-bold uppercase tracking-widest text-gray-500">
+                <ol className="flex items-center gap-2">
+                  <li><Link href="/" className="hover:text-[#231b50] transition-colors">Home</Link></li>
+                  <li aria-hidden>/</li>
+                  <li><Link href="/shop" className="hover:text-[#231b50] transition-colors">Shop</Link></li>
+                  <li aria-hidden>/</li>
+                  <li className="text-gray-700 truncate max-w-[220px]" aria-current="page">{product.title}</li>
+                </ol>
+              </nav>
               <h1 className="font-display text-3xl lg:text-4xl font-extrabold uppercase tracking-tight text-[#1a1a1a] leading-none">
                 {product.title}
               </h1>
@@ -296,9 +306,14 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                       )}
                     </div>
 
-                    {(index === 1 || index === 2) && (
-                      <div className="absolute -top-[10px] right-2 bg-[#f44336] text-white text-[10px] font-black px-2 py-1 rounded-sm uppercase italic">
-                        LIMITED OFFER
+                    {index === 1 && (
+                      <div className="absolute -top-[10px] right-2 bg-[#231b50] text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wide">
+                        Most Popular
+                      </div>
+                    )}
+                    {index === 2 && (
+                      <div className="absolute -top-[10px] right-2 bg-[#C4B5FD] text-[#231b50] text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wide">
+                        Best Value
                       </div>
                     )}
                   </label>
@@ -310,7 +325,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 <button
                   onClick={handleAddToCart}
                   disabled={isLoading || !selectedVariant?.availableForSale}
-                  className={`w-full h-16 bg-[#231b50] text-white font-black text-sm tracking-[0.1em] uppercase rounded-sm shadow-xl shadow-[#231b50]/10 transition-all hover:bg-[#1a1440] active:scale-[0.98] flex items-center justify-center gap-3 ${added ? 'bg-[#21bc64]' : ''
+                  className={`w-full h-16 bg-[#231b50] text-white font-black text-sm tracking-[0.1em] uppercase rounded-full shadow-xl shadow-[#231b50]/10 transition-all hover:bg-[#1a1440] active:scale-[0.98] flex items-center justify-center gap-3 ${added ? 'bg-[#21bc64]' : ''
                     }`}
                 >
                   {isLoading ? (
@@ -351,8 +366,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             {/* TRUST ICONS */}
             <div className="grid grid-cols-3 gap-2 py-8 border-y border-gray-100">
               <div className="flex flex-col items-center text-center space-y-4">
-                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#f9f9f9]">
-                  <Clock className="w-6 h-6 text-black stroke-[1.5]" />
+                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#F5F3FF]">
+                  <Clock className="w-6 h-6 text-[#231b50] stroke-[1.5]" />
                 </div>
                 <div className="space-y-1">
                   <p className="text-[10px] font-black text-black uppercase leading-tight">30-60 Minute Sessions</p>
@@ -360,16 +375,16 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 </div>
               </div>
               <div className="flex flex-col items-center text-center space-y-4 border-x border-gray-100">
-                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#f9f9f9]">
-                  <Truck className="w-6 h-6 text-black stroke-[1.5]" />
+                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#F5F3FF]">
+                  <Truck className="w-6 h-6 text-[#231b50] stroke-[1.5]" />
                 </div>
                 <div className="space-y-1 px-2">
                   <p className="text-[10px] font-black text-black uppercase leading-tight">1-2 Day Free Express Shipping</p>
                 </div>
               </div>
               <div className="flex flex-col items-center text-center space-y-4">
-                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#f9f9f9]">
-                  <RotateCcw className="w-6 h-6 text-black stroke-[1.5]" />
+                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#F5F3FF]">
+                  <RotateCcw className="w-6 h-6 text-[#231b50] stroke-[1.5]" />
                 </div>
                 <div className="space-y-1">
                   <p className="text-[10px] font-black text-black uppercase leading-tight">30 Day Returns</p>
@@ -429,7 +444,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
       <div className="mt-12 lg:mt-20 border-t border-gray-100 pt-12 pb-16">
         <div className="max-w-[1200px] mx-auto px-4 mb-10">
           <h2 className="font-display text-2xl lg:text-3xl font-extrabold uppercase tracking-tight text-center">
-            Can&apos;t STOP SMILING WITH CLINI WHITE
+            CAN&apos;T STOP <span className="text-[#231b50]">SMILING</span> WITH CLINI WHITE
           </h2>
         </div>
 
@@ -447,6 +462,30 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
           <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
           <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
         </div>
+      </div>
+
+      {/* Mobile sticky buy bar */}
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t border-gray-200 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] flex items-center gap-4">
+        <div className="min-w-0">
+          <p className="text-[10px] font-black text-gray-500 uppercase tracking-wider truncate">{product.title}</p>
+          <p className="text-lg font-black text-black leading-tight">{formattedPrice}</p>
+        </div>
+        <button
+          onClick={handleAddToCart}
+          disabled={isLoading || !selectedVariant?.availableForSale}
+          className={`ml-auto flex-1 max-w-[220px] h-12 bg-[#231b50] text-white font-black text-xs tracking-widest uppercase rounded-full flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50 ${added ? 'bg-[#21bc64]' : ''}`}
+        >
+          {isLoading ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : added ? (
+            <>
+              <Check className="w-5 h-5" strokeWidth={3} />
+              Added
+            </>
+          ) : (
+            'Add to cart'
+          )}
+        </button>
       </div>
     </section>
   );
@@ -470,12 +509,17 @@ function Accordion({
     <div className="border-b border-gray-200 last:border-0">
       <button
         onClick={() => onToggle(isOpen ? null : id)}
+        aria-expanded={isOpen}
+        aria-controls={`accordion-panel-${id}`}
         className="w-full py-6 flex items-center justify-between text-left group"
       >
         <span className="text-[13px] font-black uppercase tracking-widest text-black group-hover:text-[#231b50] transition-colors">{title}</span>
         <ChevronDown className={`w-4 h-4 text-black transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
-      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>
+      <div
+        id={`accordion-panel-${id}`}
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}
+      >
         {children}
       </div>
     </div>
