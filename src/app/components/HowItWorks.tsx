@@ -11,7 +11,6 @@ const testimonials = [
     id: 1,
     video: '/videos/video1.mp4',
     views: '32.9K',
-    tag: "Dentist says why people shouldn't use whitening strips... 😩",
     hasPlay: false,
     productName: 'V34 Colour Corrector Strips',
     handle: 'v34-colour-corrector-strips-12-strip',
@@ -20,7 +19,6 @@ const testimonials = [
     id: 2,
     video: '/videos/video2.mp4',
     views: '14.6K',
-    tag: '3 teeth stain hacks 🦷',
     hasPlay: false,
     productName: 'V34 Purple Whitening Toothpaste',
     handle: 'clini-white-v34-purple-whitening-toothpaste',
@@ -29,7 +27,6 @@ const testimonials = [
     id: 3,
     video: '/videos/video3.mp4',
     views: '7.2K',
-    tag: 'GETS RID OF EVERYDAY STAINS FROM COFFEE TO SMOKING',
     hasPlay: true,
     productName: 'V34 Colour Corrector Serum',
     handle: 'v34-colour-corrector-serum',
@@ -38,7 +35,6 @@ const testimonials = [
     id: 4,
     video: '/videos/video4.mp4',
     views: '11K',
-    tag: 'Before:',
     hasPlay: false,
     productName: 'V34 Colour Corrector Foam',
     handle: 'cliniwhite-v34-colour-corrector-foam',
@@ -47,7 +43,6 @@ const testimonials = [
     id: 5,
     video: '/videos/video5.mp4',
     views: '5.5K',
-    tag: '🌟 Glow Up 2025 🌟\nBright white teeth in 34 days',
     hasPlay: false,
     productName: 'V34 Colour Corrector Powder',
     handle: 'cliniwhite-v34-colour-corrector-powder',
@@ -91,13 +86,6 @@ export default function HowItWorks() {
                   <Play className="w-4 h-4 text-white fill-white" />
                 </div>
               )}
-
-              {/* Tag / Quote Overlay */}
-              <div className="absolute top-16 left-0 right-0 px-3 z-10 flex flex-col items-center">
-                <div className="bg-white/95 text-black text-xs font-bold px-3 py-1.5 rounded-md text-center shadow-lg leading-tight whitespace-pre-wrap max-w-[90%]">
-                  {item.tag}
-                </div>
-              </div>
 
               {/* Bottom Gradient and Product Info */}
               <div className="absolute inset-x-0 bottom-0 pt-20 pb-3 px-3 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10 pointer-events-none">
