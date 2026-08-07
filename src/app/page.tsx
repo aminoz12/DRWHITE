@@ -3,7 +3,6 @@ import BestSellers from "./components/BestSellers";
 import WhyCliniWhite from "./components/WhyCliniWhite";
 import HowItWorks from "./components/HowItWorks";
 import Bundles from "./components/Bundles";
-import WhyItWorks from "./components/WhyItWorks";
 import Worldwide from "./components/Worldwide";
 import FAQ from "./components/FAQ";
 import Header from "./components/Header";
@@ -23,7 +22,6 @@ export default async function Home() {
         <HowItWorks />
         <WhyCliniWhite />
         <Bundles />
-        <WhyItWorks />
         <Worldwide />
         <FAQ withSchema />
       </main>
