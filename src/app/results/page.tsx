@@ -10,6 +10,17 @@ export const metadata = {
   description: `See real customer before and after results from CLINI WHITE professional teeth whitening. Over ${SITE_STATS.reviewsLabel} verified reviews and transformations.`,
 };
 
+// Product and customer photography — described honestly (no invented reviews,
+// names or shade claims; those belong to the verified gallery above).
+const REAL_LIFE = [
+  { src: '/images/reviews/teeth/18.png', caption: 'V34 Whitening Strips — 14 strips, 30 minutes a day' },
+  { src: '/images/reviews/teeth/14.png', caption: 'Purple Toothpaste + Whitening Strips' },
+  { src: '/images/reviews/teeth/15.png', caption: 'Toothpaste, Colour Corrector Powder & Pro Toothbrush' },
+  { src: '/images/reviews/teeth/19.png', caption: 'V34 Whitening Strips — whitens after one use' },
+  { src: '/images/reviews/teeth/17.png', caption: 'V34 Colour Corrector Mouthwash, one sachet per glass' },
+  { src: '/images/reviews/teeth/16.png', caption: 'V34 Colour Corrector Mouthwash — 20 sachets' },
+];
+
 const STATS = [
   { value: `${SITE_STATS.reviewsLabel}+`, label: 'Verified Reviews' },
   { value: `${SITE_STATS.ratingLabel}★`, label: 'Average Rating' },
@@ -98,6 +109,45 @@ export default function ResultsPage() {
               </h2>
             </div>
             <ResultsGallery />
+          </div>
+        </section>
+
+        {/* Real-life photo wall */}
+        <section className="py-16 bg-white px-4 border-t border-gray-100">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <p className="text-[#231b50] text-xs font-black tracking-widest uppercase mb-3">
+                STRAIGHT FROM THE BATHROOM SHELF
+              </p>
+              <h2 className="font-display text-3xl md:text-4xl font-extrabold text-black tracking-tight">
+                CLINI WHITE <span className="text-[#231b50]">IN REAL LIFE</span>
+              </h2>
+              <p className="text-gray-600 text-sm md:text-base max-w-xl mx-auto mt-4 leading-relaxed">
+                The routine behind the results — photographed exactly as customers use it.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-5">
+              {REAL_LIFE.map(({ src, caption }) => (
+                <figure
+                  key={src}
+                  className="group relative aspect-[4/5] overflow-hidden rounded-2xl bg-[#F5F3FF] shadow-sm"
+                >
+                  <Image
+                    src={src}
+                    alt={caption}
+                    fill
+                    sizes="(max-width: 768px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent px-4 pt-10 pb-4">
+                    <span className="text-white text-xs font-bold leading-snug">
+                      {caption}
+                    </span>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
           </div>
         </section>
 
