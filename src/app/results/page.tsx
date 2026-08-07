@@ -13,12 +13,15 @@ export const metadata = {
 // Product and customer photography — described honestly (no invented reviews,
 // names or shade claims; those belong to the verified gallery above).
 const REAL_LIFE = [
-  { src: '/images/reviews/teeth/18.png', caption: 'V34 Whitening Strips — 14 strips, 30 minutes a day' },
-  { src: '/images/reviews/teeth/14.png', caption: 'Purple Toothpaste + Whitening Strips' },
-  { src: '/images/reviews/teeth/15.png', caption: 'Toothpaste, Colour Corrector Powder & Pro Toothbrush' },
-  { src: '/images/reviews/teeth/19.png', caption: 'V34 Whitening Strips — whitens after one use' },
-  { src: '/images/reviews/teeth/17.png', caption: 'V34 Colour Corrector Mouthwash, one sachet per glass' },
-  { src: '/images/reviews/teeth/16.png', caption: 'V34 Colour Corrector Mouthwash — 20 sachets' },
+  { src: '/images/reviews/2.png', caption: 'V34 Whitening Strips — 14 strips, 30 minutes a day' },
+  { src: '/images/reviews/5.png', caption: 'Purple Toothpaste, Colour Corrector Serum & Pro Toothbrush' },
+  { src: '/images/reviews/7.png', caption: 'The daily V34 routine — toothpaste, serum and toothbrush' },
+  { src: '/images/reviews/19.png', caption: 'V34 Whitening Strips — whitens after one use' },
+  { src: '/images/reviews/15.png', caption: 'Toothpaste, Colour Corrector Powder & Pro Toothbrush' },
+  { src: '/images/reviews/17.png', caption: 'V34 Colour Corrector Mouthwash, one sachet per glass' },
+  { src: '/images/reviews/3.png', caption: 'Whitening Strips, ready for a 30-minute session' },
+  { src: '/images/reviews/1.png', caption: 'Whitening Pulling Oil — gentle daily care' },
+  { src: '/images/reviews/16.png', caption: 'V34 Colour Corrector Mouthwash — 20 sachets' },
 ];
 
 const STATS = [

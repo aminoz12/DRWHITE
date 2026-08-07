@@ -5,12 +5,12 @@ import { STATS } from "@/lib/siteConfig";
 // Customer photos from the reviews gallery, served through the image
 // optimizer so each 44px avatar costs a few KB, not the full PNG.
 const REVIEW_FACES = [
-  "/images/reviews/teeth/1.png",
-  "/images/reviews/teeth/2.png",
-  "/images/reviews/teeth/3.png",
-  "/images/reviews/teeth/5.png",
-  "/images/reviews/teeth/7.png",
-  "/images/reviews/teeth/9.png",
+  "/images/reviews/1.png",
+  "/images/reviews/2.png",
+  "/images/reviews/3.png",
+  "/images/reviews/5.png",
+  "/images/reviews/7.png",
+  "/images/reviews/19.png",
 ];
 
 const WORLD_STATS = [
