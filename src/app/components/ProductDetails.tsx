@@ -41,19 +41,37 @@ function getProductKind(title: string): ProductKind {
   return 'other';
 }
 
-// What one purchased unit contains, per product type, so the buy box never
-// claims "strips" on a serum. n = number of units in the offer tier.
-function unitLabel(kind: ProductKind, n: number): string {
+// How the buyer counts this product. Liquids in a pump bottle read as
+// "bottles"; everything else — strips, sachets, tubes, jars, sets — is sold
+// and reordered as a "pack".
+function unitNoun(kind: ProductKind): 'Bottle' | 'Pack' {
+  return kind === 'serum' || kind === 'foam' ? 'Bottle' : 'Pack';
+}
+
+// "1 Pack" / "2 Bottles" — the tier's headline.
+function tierLabel(kind: ProductKind, n: number): string {
+  const noun = unitNoun(kind);
+  return `${n} ${noun}${n === 1 ? '' : 's'}`;
+}
+
+// Pack sizes stated in the product title, e.g. "(12-Strip)" or "(12-Pack)",
+// so the sub-label never contradicts the name on the box.
+function packSize(title: string): number | null {
+  const match = title.match(/(\d+)\s*-?\s*(?:strip|pack|sachet|count|ct)\b/i);
+  return match ? Number(match[1]) : null;
+}
+
+// What n units actually contain, so the buy box never claims "strips" on a
+// serum. Returns null when there is nothing useful to add beyond the tier.
+function unitLabel(kind: ProductKind, title: string, n: number): string | null {
+  const size = packSize(title);
   switch (kind) {
     case 'strips':
-      return `${14 * n} STRIPS IN TOTAL`;
+      return size ? `${size * n} STRIPS IN TOTAL` : null;
     case 'mouthwash':
-      return `${12 * n} SACHETS IN TOTAL`;
+      return size ? `${size * n} SACHETS IN TOTAL` : null;
     case 'toothpaste':
       return n === 1 ? '1 TUBE IN TOTAL' : `${n} TUBES IN TOTAL`;
-    case 'serum':
-    case 'foam':
-      return n === 1 ? '1 BOTTLE IN TOTAL' : `${n} BOTTLES IN TOTAL`;
     case 'powder':
       return n === 1 ? '1 JAR IN TOTAL' : `${n} JARS IN TOTAL`;
     case 'toothbrush':
@@ -61,7 +79,7 @@ function unitLabel(kind: ProductKind, n: number): string {
     case 'bundle':
       return n === 1 ? '1 COMPLETE SET' : `${n} COMPLETE SETS`;
     default:
-      return n === 1 ? '1 PACK IN TOTAL' : `${n} PACKS IN TOTAL`;
+      return null;
   }
 }
 
@@ -122,8 +140,9 @@ const HOW_TO: Record<ProductKind, { step: string; text: string }[]> = {
   ],
 };
 
-// Units contained in each offer tier: BUY 1, BUY 1 GET 1, BUY 2 GET 2.
-const TIER_UNITS = [1, 2, 4];
+// Quantity tiers offered in the buy box. Every product in the catalogue has a
+// single Shopify variant, so a tier is just how many of it go in the cart.
+const TIER_QUANTITIES = [1, 2, 3];
 
 interface ProductDetailsProps {
   product: {
@@ -166,11 +185,12 @@ interface ProductDetailsProps {
 }
 
 export default function ProductDetails({ product }: ProductDetailsProps) {
-  const [selectedVariant, setSelectedVariant] = useState(
-    product.variants.edges[0]?.node
-  );
+  // Every catalogue product ships a single Shopify variant; the buy box sells
+  // multiples of it rather than distinct multi-pack variants.
+  const selectedVariant = product.variants.edges[0]?.node;
   const [activeAccordion, setActiveAccordion] = useState<string | null>('desc');
   const [added, setAdded] = useState(false);
+  const [quantity, setQuantity] = useState(1);
   const { addItem, isLoading } = useCartStore();
   const router = useRouter();
 
@@ -178,7 +198,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
   const handleAddToCart = async () => {
     if (!selectedVariant?.id || !selectedVariant.availableForSale) return;
-    await addItem(selectedVariant.id, 1);
+    await addItem(selectedVariant.id, quantity);
     setAdded(true);
     // Redirect to cart page after a short delay to show the "Added" state
     setTimeout(() => {
@@ -197,6 +217,13 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     comparePrice?.currencyCode || price.currencyCode
   );
   const savings = getDiscountPercent(price.amount, comparePrice?.amount);
+
+  const kind = getProductKind(product.title);
+  // Tier pricing is a straight multiple of the variant price — the cart
+  // charges quantity x price, so anything else here would misquote checkout.
+  const tierTotal = (n: number) =>
+    formatMoney(String(Number(price.amount) * n), price.currencyCode);
+  const selectedTotal = tierTotal(quantity);
 
   return (
     <section className="bg-white py-8 lg:py-12 pb-28 lg:pb-12 font-sans antialiased">
@@ -268,57 +295,53 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
             {/* PURCHASE SECTION */}
             <div className="space-y-6 pt-4 border-t border-gray-100">
-              {/* VARIANTS */}
-              <div className="space-y-3">
-                {product.variants.edges.map(({ node }, index) => (
-                  <label
-                    key={node.id}
-                    className={`group relative flex items-center justify-between p-5 rounded-md border-2 cursor-pointer transition-all ${selectedVariant?.id === node.id ? 'border-[#231b50] bg-[#F5F3FF]' : 'border-[#eee] bg-white hover:border-gray-200'}`}
-                  >
-                    <input
-                      type="radio"
-                      name="variant"
-                      className="sr-only"
-                      checked={selectedVariant?.id === node.id}
-                      onChange={() => setSelectedVariant(node)}
-                    />
-                    <div className="flex items-center gap-4">
-                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${selectedVariant?.id === node.id ? 'border-[#231b50] bg-[#231b50]' : 'border-[#ddd]'}`}>
-                        {selectedVariant?.id === node.id && <div className="w-2.5 h-2.5 rounded-full bg-white shadow-sm" />}
+              {/* QUANTITY TIERS */}
+              <fieldset className="space-y-3">
+                <legend className="sr-only">Choose how many {unitNoun(kind).toLowerCase()}s</legend>
+                {TIER_QUANTITIES.map((n) => {
+                  const selected = quantity === n;
+                  const contents = unitLabel(kind, product.title, n);
+                  return (
+                    <label
+                      key={n}
+                      className={`group relative flex items-center justify-between p-5 rounded-md border-2 cursor-pointer transition-all ${selected ? 'border-[#231b50] bg-[#F5F3FF]' : 'border-[#eee] bg-white hover:border-gray-200'}`}
+                    >
+                      <input
+                        type="radio"
+                        name="quantity"
+                        className="sr-only"
+                        checked={selected}
+                        onChange={() => setQuantity(n)}
+                      />
+                      <div className="flex items-center gap-4">
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${selected ? 'border-[#231b50] bg-[#231b50]' : 'border-[#ddd]'}`}>
+                          {selected && <div className="w-2.5 h-2.5 rounded-full bg-white shadow-sm" />}
+                        </div>
+                        <div>
+                          <p className="font-black text-black text-lg leading-none uppercase">
+                            {tierLabel(kind, n)}
+                          </p>
+                          {contents && (
+                            <p className="text-[10px] font-black text-[#231b50] mt-2 uppercase">
+                              {contents}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                      <div>
+                      <div className="text-right">
                         <p className="font-black text-black text-lg leading-none">
-                          {index === 0 ? 'BUY 1' : index === 1 ? 'BUY 1 GET 1' : 'BUY 2 GET 2'}
+                          {tierTotal(n)}
                         </p>
-                        <p className="text-[10px] font-black text-[#231b50] mt-2 uppercase">
-                          {unitLabel(getProductKind(product.title), TIER_UNITS[index] ?? index + 1)}
-                        </p>
+                        {n > 1 && (
+                          <p className="text-[11px] font-bold text-gray-400 mt-1">
+                            {formattedPrice} each
+                          </p>
+                        )}
                       </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-black text-black text-lg leading-none">
-                        {formatMoney(node.price.amount, node.price.currencyCode)}
-                      </p>
-                      {node.compareAtPrice && (
-                        <p className="text-[11px] font-bold text-[#f44336] line-through mt-0.5 opacity-60">
-                          {formatMoney(node.compareAtPrice.amount, node.compareAtPrice.currencyCode)}
-                        </p>
-                      )}
-                    </div>
-
-                    {index === 1 && (
-                      <div className="absolute -top-[10px] right-2 bg-[#231b50] text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wide">
-                        Most Popular
-                      </div>
-                    )}
-                    {index === 2 && (
-                      <div className="absolute -top-[10px] right-2 bg-[#C4B5FD] text-[#231b50] text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wide">
-                        Best Value
-                      </div>
-                    )}
-                  </label>
-                ))}
-              </div>
+                    </label>
+                  );
+                })}
+              </fieldset>
 
               {/* ADD TO CART */}
               <div className="space-y-4">
@@ -467,8 +490,10 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
       {/* Mobile sticky buy bar */}
       <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t border-gray-200 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] flex items-center gap-4">
         <div className="min-w-0">
-          <p className="text-[10px] font-black text-gray-500 uppercase tracking-wider truncate">{product.title}</p>
-          <p className="text-lg font-black text-black leading-tight">{formattedPrice}</p>
+          <p className="text-[10px] font-black text-gray-500 uppercase tracking-wider truncate">
+            {tierLabel(kind, quantity)} · {product.title}
+          </p>
+          <p className="text-lg font-black text-black leading-tight">{selectedTotal}</p>
         </div>
         <button
           onClick={handleAddToCart}
