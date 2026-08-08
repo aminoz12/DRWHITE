@@ -5,6 +5,8 @@ import type { NextConfig } from "next";
 // and ISR so Shopify price/catalog changes go live without a redeploy.
 const nextConfig: NextConfig = {
   images: {
+    // AVIF first (roughly 30% smaller than WebP), WebP for browsers without it.
+    formats: ['image/avif', 'image/webp'],
     qualities: [75, 100],
     remotePatterns: [
       {

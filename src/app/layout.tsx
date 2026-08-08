@@ -5,7 +5,7 @@ import PromoPopup from "./components/PromoPopup";
 import CartDrawer from "./components/CartDrawer";
 import Analytics from "./components/Analytics";
 import RouteTracker from "./components/RouteTracker";
-import { STATS, SOCIALS, CONTACT, COMPANY } from "@/lib/siteConfig";
+import { STATS, SOCIALS, CONTACT, COMPANY, SITE_URL } from "@/lib/siteConfig";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,7 +26,6 @@ const poppins = Poppins({
   display: "swap",
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://cliniwhite.com";
 const SITE_NAME = "CLINI WHITE";
 const SITE_DESCRIPTION =
   `CLINI WHITE — UK's #1 professional at-home teeth whitening brand. Peroxide-free, dentist-grade whitening that delivers up to 8 shades whiter in 7 days with zero sensitivity. Trusted by ${STATS.customers} customers.`;

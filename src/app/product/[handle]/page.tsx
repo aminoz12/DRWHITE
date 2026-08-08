@@ -31,6 +31,21 @@ function cleanDescription(text: string | undefined, fallback: string): string {
   return collapsed.length > 160 ? `${collapsed.slice(0, 157)}…` : collapsed;
 }
 
+// Google truncates <title> around 60 characters. Bundle names blow past that
+// once the "| CLINI WHITE" template is appended, so append the brand only when
+// it fits, then fall back to the bare title, then to a word-boundary trim.
+const TITLE_MAX = 60;
+
+function seoTitle(productTitle: string): string {
+  const branded = `${productTitle} | ${BRAND_NAME}`;
+  if (branded.length <= TITLE_MAX) return branded;
+  if (productTitle.length <= TITLE_MAX) return productTitle;
+
+  const trimmed = productTitle.slice(0, TITLE_MAX);
+  const lastSpace = trimmed.lastIndexOf(' ');
+  return (lastSpace > 30 ? trimmed.slice(0, lastSpace) : trimmed).replace(/[\s–-]+$/, '');
+}
+
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { handle } = await params;
   const product = await getProduct(handle);
@@ -51,7 +66,9 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const image = product.images?.edges?.[0]?.node?.url;
 
   return {
-    title: product.title,
+    // `absolute` so the layout's "%s | CLINI WHITE" template cannot re-append
+    // the brand and push the tag back over 60 characters.
+    title: { absolute: seoTitle(product.title) },
     description,
     alternates: { canonical },
     openGraph: {
@@ -128,7 +145,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <Header />
       <main id="main-content">
         <ProductDetails product={product} />
-        <FAQ />
+        <FAQ productTitle={product.title} />
         <FeaturedCollection />
       </main>
       <Footer />

@@ -118,7 +118,7 @@ export default function ContactPage() {
                             {line}
                           </p>
                         ))}
-                        <p className="text-[11px] text-gray-500 mt-1.5">{sub}</p>
+                        <p className="text-[11px] text-gray-600 mt-1.5">{sub}</p>
                       </div>
                     </div>
                   );
@@ -134,7 +134,7 @@ export default function ContactPage() {
 
               {/* Socials */}
               <div className="mt-10">
-                <p className="text-gray-500 text-[11px] font-black uppercase tracking-widest mb-4">
+                <p className="text-gray-600 text-[11px] font-black uppercase tracking-widest mb-4">
                   Or find us on social
                 </p>
                 <div className="flex items-center gap-3">
@@ -175,7 +175,7 @@ export default function ContactPage() {
                   >
                     Send us a message
                   </h2>
-                  <p className="text-gray-500 text-sm">
+                  <p className="text-gray-600 text-sm">
                     Fill in the form and we&apos;ll get back to you as soon as possible.
                   </p>
                 </div>

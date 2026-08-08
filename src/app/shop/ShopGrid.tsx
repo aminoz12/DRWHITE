@@ -92,7 +92,7 @@ export default function ShopGrid({ products }: { products: Product[] }) {
 
         {/* Sort Dropdown - Refined */}
         <div className="flex items-center gap-1.5 group cursor-pointer">
-          <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Sort by</span>
+          <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Sort by</span>
           <div className="relative flex items-center">
             <select
               value={sortBy}
@@ -116,7 +116,7 @@ export default function ShopGrid({ products }: { products: Product[] }) {
             <Search className="w-8 h-8 text-gray-300" />
           </div>
           <h3 className="text-lg font-bold text-gray-900">No products found</h3>
-          <p className="text-sm text-gray-500 mt-1">Try adjusting your filters</p>
+          <p className="text-sm text-gray-600 mt-1">Try adjusting your filters</p>
           <button
             onClick={() => { setSearchQuery(''); setSortBy('featured'); }}
             className="mt-6 text-sm font-bold text-[#231b50] hover:underline"
@@ -134,7 +134,7 @@ export default function ShopGrid({ products }: { products: Product[] }) {
 
       {/* Results Count */}
       <div className="text-center pt-10 border-t border-gray-100">
-        <p className="text-xs font-medium text-gray-400 tracking-widest uppercase">
+        <p className="text-xs font-medium text-gray-600 tracking-widest uppercase">
           Showing {filteredProducts.length} of {products.length} Products
         </p>
       </div>

@@ -93,7 +93,7 @@ export default function CartPage() {
           <div className="lg:col-span-2 space-y-4">
             <div className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100">
               <h1 className="text-2xl font-black uppercase tracking-tight mb-8 text-[#1a1a1a]">
-                Your cart <span className="text-gray-400 font-medium">({totalQuantity})</span>
+                Your cart <span className="text-gray-600 font-medium">({totalQuantity})</span>
               </h1>
 
               {items.length === 0 ? (
@@ -101,7 +101,7 @@ export default function CartPage() {
                   <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto">
                     <ShoppingBag className="w-10 h-10 text-gray-300" />
                   </div>
-                  <p className="text-gray-500 font-medium uppercase tracking-widest text-sm">Your cart is empty</p>
+                  <p className="text-gray-600 font-medium uppercase tracking-widest text-sm">Your cart is empty</p>
                   <Link 
                     href="/shop"
                     className="inline-block bg-[#231b50] text-white px-8 py-4 rounded-full font-black text-sm uppercase tracking-widest hover:bg-[#1a1440] transition-all"
@@ -130,7 +130,7 @@ export default function CartPage() {
                               {item.title}
                             </h3>
                             {item.variantTitle && item.variantTitle !== 'Default Title' && (
-                              <p className="text-xs text-gray-500 mt-1 uppercase font-bold">{item.variantTitle}</p>
+                              <p className="text-xs text-gray-600 mt-1 uppercase font-bold">{item.variantTitle}</p>
                             )}
                           </div>
                           <button
@@ -139,7 +139,7 @@ export default function CartPage() {
                               setOfferIndex(prev => Math.max(0, prev - 1));
                             }}
                             aria-label={`Remove ${item.title} from cart`}
-                            className="p-2 -m-2 text-gray-500 hover:text-red-500 transition-colors"
+                            className="p-2 -m-2 text-gray-600 hover:text-red-500 transition-colors"
                           >
                             <Trash2 className="w-5 h-5" />
                           </button>
@@ -183,7 +183,7 @@ export default function CartPage() {
             {/* Checkout Card */}
             <div className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100">
               <div className="flex justify-between items-baseline mb-6">
-                <span className="text-sm font-bold text-gray-500 uppercase tracking-widest">Total</span>
+                <span className="text-sm font-bold text-gray-600 uppercase tracking-widest">Total</span>
                 <span className="text-2xl font-black text-[#231b50]">
                   {formatMoney(subtotal, subtotalCurrency)}
                 </span>
@@ -241,7 +241,7 @@ export default function CartPage() {
                     </div>
                   </div>
                 </div>
-                <div className="bg-white px-4 py-2 text-[10px] text-gray-400 font-medium uppercase text-center">
+                <div className="bg-white px-4 py-2 text-[10px] text-gray-600 font-medium uppercase text-center">
                     *Discount applies to this product only. One use per customer.
                 </div>
               </div>

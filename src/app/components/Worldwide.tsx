@@ -5,12 +5,12 @@ import { STATS } from "@/lib/siteConfig";
 // Customer photos from the reviews gallery, served through the image
 // optimizer so each 44px avatar costs a few KB, not the full PNG.
 const REVIEW_FACES = [
-  "/images/reviews/1.png",
-  "/images/reviews/2.png",
-  "/images/reviews/3.png",
-  "/images/reviews/5.png",
-  "/images/reviews/7.png",
-  "/images/reviews/19.png",
+  "/images/reviews/1.webp",
+  "/images/reviews/2.webp",
+  "/images/reviews/3.webp",
+  "/images/reviews/5.webp",
+  "/images/reviews/7.webp",
+  "/images/reviews/19.webp",
 ];
 
 const WORLD_STATS = [
@@ -74,7 +74,7 @@ export default function Worldwide() {
               <p className="font-display text-3xl md:text-4xl font-extrabold text-[#231b50] leading-none">
                 {value}
               </p>
-              <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mt-2.5">
+              <p className="text-[11px] font-bold text-gray-600 uppercase tracking-wider mt-2.5">
                 {label}
               </p>
             </div>

@@ -38,8 +38,9 @@ export default function Header() {
 
   return (
     <>
-      {/* Announcement bar — rotating true perks */}
-      <div className="bg-black text-white py-1.5 overflow-hidden">
+      {/* Announcement bar — rotating true perks. A complementary landmark so
+          the marquee items are not orphaned outside header/main/footer. */}
+      <aside aria-label="Store announcements" className="bg-black text-white py-1.5 overflow-hidden">
         <div className="animate-marquee flex w-max whitespace-nowrap">
           {[...PERKS, ...PERKS].map((perk, i) => (
             <span
@@ -48,11 +49,11 @@ export default function Header() {
               className="text-[10px] sm:text-xs font-bold tracking-wide sm:tracking-wider uppercase mx-5 flex items-center gap-5"
             >
               {perk}
-              <span className="opacity-40">✦</span>
+              <span className="opacity-40" aria-hidden>✦</span>
             </span>
           ))}
         </div>
-      </div>
+      </aside>
 
       {/* Navbar */}
       <header className="sticky top-0 z-50 bg-white border-b border-gray-100">

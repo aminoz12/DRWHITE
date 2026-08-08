@@ -46,7 +46,7 @@ export default async function PolicyPage({ params }: PolicyPageProps) {
           <h1 className="font-display text-3xl md:text-4xl font-extrabold text-black tracking-tight mb-3">
             {policy.title}
           </h1>
-          <p className="text-xs text-gray-400 mb-8">Last updated: {POLICY_LAST_UPDATED}</p>
+          <p className="text-xs text-gray-600 mb-8">Last updated: {POLICY_LAST_UPDATED}</p>
 
           <p className="text-base text-gray-700 leading-relaxed mb-10">{policy.intro}</p>
 

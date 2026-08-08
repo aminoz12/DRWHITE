@@ -121,7 +121,7 @@ export default function AboutPage() {
                     </p>
                     <p
                       className={`text-[10px] font-bold uppercase tracking-wider mt-1.5 ${
-                        dark ? 'text-white/60' : 'text-gray-500'
+                        dark ? 'text-white/60' : 'text-gray-600'
                       }`}
                     >
                       {label}
@@ -150,7 +150,7 @@ export default function AboutPage() {
                   </div>
                   <div>
                     <p className="text-xs font-black text-gray-900 text-center">{label}</p>
-                    <p className="text-[10px] text-gray-500 text-center mt-0.5">{sub}</p>
+                    <p className="text-[10px] text-gray-600 text-center mt-0.5">{sub}</p>
                   </div>
                 </div>
               ))}
@@ -243,7 +243,7 @@ export default function AboutPage() {
             >
               &ldquo;CLINI WHITE CHANGED MY SMILE AND MY CONFIDENCE&rdquo;
             </p>
-            <p className="text-gray-400 text-sm font-bold tracking-widest uppercase mb-12">— Sarah M., Verified Customer</p>
+            <p className="text-gray-600 text-sm font-bold tracking-widest uppercase mb-12">— Sarah M., Verified Customer</p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
               <Link
                 href="/shop"

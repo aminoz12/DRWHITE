@@ -13,15 +13,15 @@ export const metadata = {
 // Product and customer photography — described honestly (no invented reviews,
 // names or shade claims; those belong to the verified gallery above).
 const REAL_LIFE = [
-  { src: '/images/reviews/2.png', caption: 'V34 Whitening Strips — 14 strips, 30 minutes a day' },
-  { src: '/images/reviews/5.png', caption: 'Purple Toothpaste, Colour Corrector Serum & Pro Toothbrush' },
-  { src: '/images/reviews/7.png', caption: 'The daily V34 routine — toothpaste, serum and toothbrush' },
-  { src: '/images/reviews/19.png', caption: 'V34 Whitening Strips — whitens after one use' },
-  { src: '/images/reviews/15.png', caption: 'Toothpaste, Colour Corrector Powder & Pro Toothbrush' },
-  { src: '/images/reviews/17.png', caption: 'V34 Colour Corrector Mouthwash, one sachet per glass' },
-  { src: '/images/reviews/3.png', caption: 'Whitening Strips, ready for a 30-minute session' },
-  { src: '/images/reviews/1.png', caption: 'Whitening Pulling Oil — gentle daily care' },
-  { src: '/images/reviews/16.png', caption: 'V34 Colour Corrector Mouthwash — 20 sachets' },
+  { src: '/images/reviews/2.webp', caption: 'V34 Whitening Strips — 14 strips, 30 minutes a day' },
+  { src: '/images/reviews/5.webp', caption: 'Purple Toothpaste, Colour Corrector Serum & Pro Toothbrush' },
+  { src: '/images/reviews/7.webp', caption: 'The daily V34 routine — toothpaste, serum and toothbrush' },
+  { src: '/images/reviews/19.webp', caption: 'V34 Whitening Strips — whitens after one use' },
+  { src: '/images/reviews/15.webp', caption: 'Toothpaste, Colour Corrector Powder & Pro Toothbrush' },
+  { src: '/images/reviews/17.webp', caption: 'V34 Colour Corrector Mouthwash, one sachet per glass' },
+  { src: '/images/reviews/3.webp', caption: 'Whitening Strips, ready for a 30-minute session' },
+  { src: '/images/reviews/1.webp', caption: 'Whitening Pulling Oil — gentle daily care' },
+  { src: '/images/reviews/16.webp', caption: 'V34 Colour Corrector Mouthwash — 20 sachets' },
 ];
 
 const STATS = [
@@ -39,7 +39,7 @@ export default function ResultsPage() {
         {/* Hero */}
         <section className="relative bg-[#231b50] py-12 px-4 text-center overflow-hidden">
           <Image
-            src="/hero3.png"
+            src="/hero3.webp"
             alt=""
             aria-hidden
             fill
@@ -202,7 +202,7 @@ export default function ResultsPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-xs font-black text-gray-900">{review.name}</p>
-                      <p className="text-[10px] text-gray-400 uppercase tracking-wider">{review.product} · {review.time}</p>
+                      <p className="text-[10px] text-gray-600 uppercase tracking-wider">{review.product} · {review.time}</p>
                     </div>
                     {review.verified && (
                       <span className="text-[10px] bg-green-50 text-green-700 font-bold px-2 py-1 rounded-full border border-green-200">
@@ -224,7 +224,7 @@ export default function ResultsPage() {
             >
               READY FOR YOUR TRANSFORMATION?
             </h2>
-            <p className="text-gray-500 text-sm mb-8 max-w-md mx-auto font-medium">
+            <p className="text-gray-600 text-sm mb-8 max-w-md mx-auto font-medium">
               Join {SITE_STATS.customers} customers who have already changed their smile. 30-day money-back guarantee.
             </p>
             <a

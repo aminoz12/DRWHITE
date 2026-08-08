@@ -27,7 +27,7 @@ export default async function ShopPage() {
             <h1 className="sr-only">Shop All CLINI WHITE Teeth Whitening Products</h1>
             {products.length === 0 ? (
               <div className="bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-xl">
-                <p className="text-gray-500 font-medium">
+                <p className="text-gray-600 font-medium">
                   No products found. Please check your Shopify connection.
                 </p>
               </div>

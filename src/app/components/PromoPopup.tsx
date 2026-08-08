@@ -205,7 +205,7 @@ export default function PromoPopup() {
               <h2 id="promo-popup-title" className="font-display text-3xl font-extrabold text-black leading-tight mb-1">
                 Try your luck
               </h2>
-              <p className="text-base text-gray-500 mb-8">Scratch below to see what you win</p>
+              <p className="text-base text-gray-600 mb-8">Scratch below to see what you win</p>
 
               {/* Scratch card area */}
               <div ref={containerRef} className="relative w-full max-w-[360px] aspect-[3/2] mx-auto rounded-xl overflow-hidden select-none">
@@ -226,7 +226,7 @@ export default function PromoPopup() {
                 />
               </div>
 
-              <p className="text-xs text-gray-500 mt-5">Scratch the golden area to reveal your prize</p>
+              <p className="text-xs text-gray-600 mt-5">Scratch the golden area to reveal your prize</p>
 
               {/* Keyboard/AT-accessible path to the same offer */}
               <button
@@ -246,7 +246,7 @@ export default function PromoPopup() {
                 <span className="text-red-500 font-black text-2xl">-60%</span>
                 <span className="text-gray-600 font-bold text-sm uppercase tracking-wider">OFF</span>
               </div>
-              <p className="text-xs text-gray-500 mb-5">Enter your email to claim your exclusive discount</p>
+              <p className="text-xs text-gray-600 mb-5">Enter your email to claim your exclusive discount</p>
 
               <form onSubmit={handleClaim} className="space-y-3 w-full max-w-xs mx-auto">
                 <input
@@ -274,7 +274,7 @@ export default function PromoPopup() {
                 <Check className="w-8 h-8 text-white" strokeWidth={3} />
               </div>
               <h3 className="text-xl font-black text-black mb-1">Offer Claimed!</h3>
-              <p className="text-sm text-gray-500">Check your inbox for the -60% discount code.</p>
+              <p className="text-sm text-gray-600">Check your inbox for the -60% discount code.</p>
             </div>
           )}
         </div>

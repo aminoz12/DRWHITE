@@ -173,7 +173,7 @@ export const POLICIES: Policy[] = [
   {
     slug: "shipping-policy",
     title: "Shipping Policy",
-    description: `Delivery times, costs, and tracking for ${BRAND_NAME} orders.`,
+    description: `Delivery times, shipping costs and order tracking for ${BRAND_NAME}. We ship worldwide, dispatch within one business day, and send tracking on every order.`,
     intro: `We ship worldwide. This policy explains our delivery times, costs, and how to track your order.`,
     sections: [
       {
@@ -215,7 +215,7 @@ export const POLICIES: Policy[] = [
   {
     slug: "cookie-policy",
     title: "Cookie Policy",
-    description: `How ${BRAND_NAME} uses cookies and how you can control them.`,
+    description: `How ${BRAND_NAME} uses cookies and similar technologies, which categories we set, why we set them, and how to control or withdraw your consent at any time.`,
     intro: `This Cookie Policy explains how ${COMPANY.displayName} uses cookies and similar technologies on ${SITE_URL}.`,
     sections: [
       {

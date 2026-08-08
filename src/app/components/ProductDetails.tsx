@@ -16,30 +16,7 @@ import { useRouter } from 'next/navigation';
 import PaymentIcons from './PaymentIcons';
 import LazyVideo from './LazyVideo';
 import { formatMoney, getDiscountPercent } from '@/lib/money';
-
-type ProductKind =
-  | 'strips'
-  | 'toothpaste'
-  | 'serum'
-  | 'foam'
-  | 'powder'
-  | 'mouthwash'
-  | 'toothbrush'
-  | 'bundle'
-  | 'other';
-
-function getProductKind(title: string): ProductKind {
-  const t = title.toLowerCase();
-  if (t.includes('bundle') || t.includes('kit') || t.includes('7-in-1')) return 'bundle';
-  if (t.includes('strip')) return 'strips';
-  if (t.includes('toothpaste')) return 'toothpaste';
-  if (t.includes('serum')) return 'serum';
-  if (t.includes('foam')) return 'foam';
-  if (t.includes('powder')) return 'powder';
-  if (t.includes('mouthwash')) return 'mouthwash';
-  if (t.includes('toothbrush')) return 'toothbrush';
-  return 'other';
-}
+import { getProductKind, type ProductKind } from '@/lib/productKind';
 
 // How the buyer counts this product. Liquids in a pump bottle read as
 // "bottles"; everything else — strips, sachets, tubes, jars, sets — is sold
@@ -268,7 +245,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
           {/* RIGHT: PRODUCT INFO */}
           <div className="flex flex-col space-y-6">
             <div className="space-y-5">
-              <nav aria-label="Breadcrumb" className="text-[11px] font-bold uppercase tracking-widest text-gray-500">
+              <nav aria-label="Breadcrumb" className="text-[11px] font-bold uppercase tracking-widest text-gray-600">
                 <ol className="flex items-center gap-2">
                   <li><Link href="/" className="hover:text-[#231b50] transition-colors">Home</Link></li>
                   <li aria-hidden>/</li>
@@ -333,7 +310,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                           {tierTotal(n)}
                         </p>
                         {n > 1 && (
-                          <p className="text-[11px] font-bold text-gray-400 mt-1">
+                          <p className="text-[11px] font-bold text-gray-600 mt-1">
                             {formattedPrice} each
                           </p>
                         )}
@@ -366,7 +343,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 {/* Payment Icons */}
                 <div className="flex flex-col items-center gap-3 py-2">
                   <PaymentIcons className="justify-center" />
-                  <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Secure Checkout</div>
+                  <div className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">Secure Checkout</div>
                 </div>
               </div>
             </div>
@@ -394,7 +371,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 </div>
                 <div className="space-y-1">
                   <p className="text-[10px] font-black text-black uppercase leading-tight">30-60 Minute Sessions</p>
-                  <p className="text-[11px] text-gray-500 leading-tight">Apply and go about your day</p>
+                  <p className="text-[11px] text-gray-600 leading-tight">Apply and go about your day</p>
                 </div>
               </div>
               <div className="flex flex-col items-center text-center space-y-4 border-x border-gray-100">
@@ -411,7 +388,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 </div>
                 <div className="space-y-1">
                   <p className="text-[10px] font-black text-black uppercase leading-tight">30 Day Returns</p>
-                  <p className="text-[11px] text-gray-500 leading-tight">Risk-free satisfaction</p>
+                  <p className="text-[11px] text-gray-600 leading-tight">Risk-free satisfaction</p>
                 </div>
               </div>
             </div>
@@ -490,7 +467,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
       {/* Mobile sticky buy bar */}
       <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t border-gray-200 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] flex items-center gap-4">
         <div className="min-w-0">
-          <p className="text-[10px] font-black text-gray-500 uppercase tracking-wider truncate">
+          <p className="text-[10px] font-black text-gray-600 uppercase tracking-wider truncate">
             {tierLabel(kind, quantity)} · {product.title}
           </p>
           <p className="text-lg font-black text-black leading-tight">{selectedTotal}</p>

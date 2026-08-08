@@ -3,30 +3,43 @@
 import { useState } from 'react';
 import { Plus, Minus } from 'lucide-react';
 import { CONTACT } from '@/lib/siteConfig';
+import { getProductKind, USAGE_ANSWER } from '@/lib/productKind';
 
-const faqs = [
-  {
-    question: 'How many shades different should I see?',
-    answer: 'Most customers see a difference of 2-8 shades after a full 14-day treatment. Individual results vary depending on the initial shade of your teeth and your lifestyle habits (like coffee or wine consumption).',
-  },
-  {
-    question: 'How do I use them?',
-    answer: 'Simply peel the strips from the backing, apply to your upper and lower teeth, and leave for 30 minutes. Once finished, peel off and rinse your mouth. For best results, use once daily for 14 days.',
-  },
-  {
-    question: 'Is it safe for sensitive teeth?',
-    answer: 'Yes! Our formula is peroxide-free and specifically designed to be gentle on tooth enamel and gums, meaning zero sensitivity.',
-  },
-  {
-    question: 'Can I use it with crowns or veneers?',
-    answer: 'Our products are safe for dental work, but please note that only natural teeth will whiten. Crowns and veneers will remain their original shade.',
-  },
-];
+// `productTitle` tailors the usage answer to the product being viewed. Without
+// it (homepage) the answer describes the strips, the flagship product.
+function buildFaqs(productTitle?: string) {
+  const kind = getProductKind(productTitle ?? 'strips');
+  return [
+    {
+      question: 'How many shades different should I see?',
+      answer: 'Most customers see a difference of 2-8 shades after a full 14-day treatment. Individual results vary depending on the initial shade of your teeth and your lifestyle habits (like coffee or wine consumption).',
+    },
+    {
+      question: 'How do I use it?',
+      answer: USAGE_ANSWER[kind],
+    },
+    {
+      question: 'Is it safe for sensitive teeth?',
+      answer: 'Yes! Our formula is peroxide-free and specifically designed to be gentle on tooth enamel and gums, meaning zero sensitivity.',
+    },
+    {
+      question: 'Can I use it with crowns or veneers?',
+      answer: 'Our products are safe for dental work, but please note that only natural teeth will whiten. Crowns and veneers will remain their original shade.',
+    },
+  ];
+}
 
 // withSchema: emit the FAQPage JSON-LD only once site-wide (on the homepage) —
 // duplicating the same FAQPage entity on many URLs dilutes it for Google.
-export default function FAQ({ withSchema = false }: { withSchema?: boolean }) {
+export default function FAQ({
+  withSchema = false,
+  productTitle,
+}: {
+  withSchema?: boolean;
+  productTitle?: string;
+}) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const faqs = buildFaqs(productTitle);
 
   const toggleFAQ = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -84,7 +97,7 @@ export default function FAQ({ withSchema = false }: { withSchema?: boolean }) {
                   {faq.question}
                 </span>
                 <div className={`shrink-0 ml-4 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${
-                  openIndex === index ? 'bg-[#231b50] text-white rotate-180' : 'bg-gray-50 text-gray-400 group-hover:bg-[#F5F3FF] group-hover:text-[#231b50]'
+                  openIndex === index ? 'bg-[#231b50] text-white rotate-180' : 'bg-gray-50 text-gray-600 group-hover:bg-[#F5F3FF] group-hover:text-[#231b50]'
                 }`}>
                   <Plus className={`w-4 h-4 transition-transform duration-300 ${openIndex === index ? 'rotate-45' : ''}`} />
                 </div>
@@ -109,7 +122,7 @@ export default function FAQ({ withSchema = false }: { withSchema?: boolean }) {
 
         {/* Support Link */}
         <div className="mt-16 text-center">
-          <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-4">
+          <p className="text-gray-600 text-xs font-bold uppercase tracking-widest mb-4">
             STILL HAVE QUESTIONS?
           </p>
           <a

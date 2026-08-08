@@ -77,7 +77,7 @@ function StarRating({ rating, count, size = 10 }: { rating: number; count?: numb
         <Star key={i} filled={filled} size={size} />
       ))}
       {count !== undefined && (
-        <span className="text-[11px] text-gray-500 ml-1">({count.toLocaleString()})</span>
+        <span className="text-[11px] text-gray-600 ml-1">({count.toLocaleString()})</span>
       )}
     </div>
   );
@@ -164,7 +164,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             sizes="(max-width: 768px) 50vw, 25vw"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+          <div className="w-full h-full flex items-center justify-center text-gray-600 text-xs">
             No Image
           </div>
         )}
@@ -192,7 +192,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               />
             ))}
             {colorOpt.values.length > 4 && (
-              <span className="text-[10px] text-gray-400 font-medium ml-0.5">+{colorOpt.values.length - 4}</span>
+              <span className="text-[10px] text-gray-600 font-medium ml-0.5">+{colorOpt.values.length - 4}</span>
             )}
           </div>
         )}
@@ -201,7 +201,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="flex items-center gap-2">
           <span className="text-[11px] font-black text-black">{formattedPrice}</span>
           {hasDiscount && (
-            <span className="text-[10px] text-gray-400 line-through">{formattedOriginalPrice}</span>
+            <span className="text-[10px] text-gray-600 line-through">{formattedOriginalPrice}</span>
           )}
         </div>
 

@@ -95,7 +95,7 @@ export default function WhyCliniWhite() {
             {/* Right Content - Image */}
             <div className="order-1 lg:order-2 relative w-full aspect-[4/3] lg:aspect-square max-h-[560px] rounded-2xl overflow-hidden shadow-lg">
               <Image
-                src="/pic.png"
+                src="/pic.webp"
                 alt="CLINI WHITE V34 whitening strips applied to teeth"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"

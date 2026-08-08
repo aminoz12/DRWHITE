@@ -13,7 +13,7 @@ const TOPICS = [
 ];
 
 const inputClass =
-  'w-full bg-[#F8FAFC] border border-gray-200 rounded-xl px-5 py-4 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#231b50] focus:bg-white focus:ring-4 focus:ring-violet-100 transition-all';
+  'w-full bg-[#F8FAFC] border border-gray-200 rounded-xl px-5 py-4 text-sm text-gray-900 placeholder:text-gray-600 focus:outline-none focus:border-[#231b50] focus:bg-white focus:ring-4 focus:ring-violet-100 transition-all';
 
 const labelClass =
   'block text-[11px] font-black uppercase tracking-widest text-gray-900 mb-2';
@@ -146,7 +146,7 @@ export default function ContactForm() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
           <label htmlFor="contact-order" className={labelClass}>
-            Order number <span className="text-gray-400 normal-case font-bold">(optional)</span>
+            Order number <span className="text-gray-600 normal-case font-bold">(optional)</span>
           </label>
           <input
             id="contact-order"
@@ -178,7 +178,7 @@ export default function ContactForm() {
               ))}
             </select>
             <svg
-              className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"
+              className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600 pointer-events-none"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -243,7 +243,7 @@ export default function ContactForm() {
         )}
       </button>
 
-      <p className="text-[11px] text-gray-500 text-center leading-relaxed">
+      <p className="text-[11px] text-gray-600 text-center leading-relaxed">
         We typically reply within 24 hours, Monday to Friday. By submitting this form you agree
         to our privacy policy.
       </p>

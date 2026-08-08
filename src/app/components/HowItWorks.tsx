@@ -91,7 +91,8 @@ export default function HowItWorks() {
               <div className="absolute inset-x-0 bottom-0 pt-20 pb-3 px-3 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10 pointer-events-none">
                 <div className="flex items-center gap-2">
                   <div className="relative w-10 h-10 bg-white rounded flex-shrink-0 p-1">
-                    <Image src="/pic.png" alt="Product" fill className="object-contain" />
+                    {/* Decorative — the product name sits right beside it. */}
+                    <Image src="/pic.webp" alt="" aria-hidden fill sizes="40px" className="object-contain" />
                   </div>
                   <div className="flex flex-col">
                     <span className="text-white text-xs font-bold leading-tight">{item.productName}</span>

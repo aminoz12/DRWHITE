@@ -18,7 +18,7 @@ export default function NotFound() {
           <h1 className="font-display text-2xl md:text-3xl font-extrabold text-black uppercase tracking-tight mb-4">
             This page has gone missing
           </h1>
-          <p className="text-gray-500 text-sm md:text-base leading-relaxed mb-10 max-w-md mx-auto">
+          <p className="text-gray-600 text-sm md:text-base leading-relaxed mb-10 max-w-md mx-auto">
             The page you&apos;re looking for doesn&apos;t exist or has been moved. Your brighter
             smile, however, is right where you left it.
           </p>

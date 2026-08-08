@@ -60,7 +60,7 @@ export default async function BestSellers() {
             ))}
           </div>
           <span className="text-sm font-black text-gray-900">{STATS.ratingLabel}</span>
-          <span className="text-sm text-gray-500">· {STATS.reviewsLabel} reviews</span>
+          <span className="text-sm text-gray-600">· {STATS.reviewsLabel} reviews</span>
         </div>
 
         {/* Heading */}
@@ -78,7 +78,7 @@ export default async function BestSellers() {
 
         {/* Products Grid */}
         {products.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-gray-600">
             <p>No products found. Add your Shopify credentials to .env.local</p>
             <p className="text-sm mt-2">SHOPIFY_STORE_DOMAIN and SHOPIFY_STOREFRONT_ACCESS_TOKEN</p>
           </div>

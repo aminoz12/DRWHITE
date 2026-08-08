@@ -14,7 +14,7 @@ const ALL_RESULTS = [
     rating: 5,
     text: 'Incredible results in just 2 weeks. My teeth are so much brighter!',
     shade: '8 shades',
-    image: '/images/teeth/4.png',
+    image: '/images/teeth/4.webp',
     tags: ['No Sensitivity', 'Fast Results'],
   },
   {
@@ -25,7 +25,7 @@ const ALL_RESULTS = [
     rating: 5,
     text: 'No pain or tingling at all. First whitening product that actually worked.',
     shade: '6 shades',
-    image: '/images/teeth/6.png',
+    image: '/images/teeth/6.webp',
     tags: ['No Sensitivity', 'Easy To Use'],
   },
   {
@@ -36,7 +36,7 @@ const ALL_RESULTS = [
     rating: 5,
     text: 'Absolutely love the results. No sensitivity and great taste.',
     shade: '7 shades',
-    image: '/images/teeth/8.png',
+    image: '/images/teeth/8.webp',
     tags: ['No Sensitivity'],
   },
   {
@@ -47,7 +47,7 @@ const ALL_RESULTS = [
     rating: 5,
     text: 'I drink coffee daily and still got amazing results. Strips stay on perfectly.',
     shade: '10 shades',
-    image: '/images/teeth/9.png',
+    image: '/images/teeth/9.webp',
     tags: ['Fast Results', 'Easy To Use'],
   },
   {
@@ -58,7 +58,7 @@ const ALL_RESULTS = [
     rating: 5,
     text: 'TikTok made me buy it and I have zero regrets. Results exceeded my expectations.',
     shade: '9 shades',
-    image: '/images/teeth/10.png',
+    image: '/images/teeth/10.webp',
     tags: ['Fast Results'],
   },
   {
@@ -69,7 +69,7 @@ const ALL_RESULTS = [
     rating: 5,
     text: 'The full bundle is worth every penny. Teeth feel clean and look amazing.',
     shade: '12 shades',
-    image: '/images/teeth/11.png',
+    image: '/images/teeth/11.webp',
     tags: ['Best Value', 'No Sensitivity'],
   },
   {
@@ -80,7 +80,7 @@ const ALL_RESULTS = [
     rating: 5,
     text: 'I was skeptical but these actually work. My smile is so much whiter now.',
     shade: '7 shades',
-    image: '/images/teeth/12.png',
+    image: '/images/teeth/12.webp',
     tags: ['Fast Results'],
   },
   {
@@ -91,7 +91,7 @@ const ALL_RESULTS = [
     rating: 5,
     text: 'The best whitening kit I have ever used. Simple, effective, and painless.',
     shade: '11 shades',
-    image: '/images/teeth/20.png',
+    image: '/images/teeth/20.webp',
     tags: ['Easy To Use', 'No Sensitivity'],
   },
   {
@@ -102,7 +102,7 @@ const ALL_RESULTS = [
     rating: 5,
     text: 'Perfect for maintenance and getting that extra brightness for events.',
     shade: '5 shades',
-    image: '/images/teeth/21.png',
+    image: '/images/teeth/21.webp',
     tags: ['Fast Results'],
   },
 ];
@@ -169,7 +169,7 @@ export default function ResultsGallery() {
               <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                 <div>
                   <p className="text-xs font-black text-gray-900">{result.name}</p>
-                  <p className="text-[10px] text-gray-400 uppercase tracking-wider">
+                  <p className="text-[10px] text-gray-600 uppercase tracking-wider">
                     {result.product} · {result.weeks}w results
                   </p>
                 </div>
@@ -207,7 +207,7 @@ export default function ResultsGallery() {
         >
           See results like these for yourself
         </p>
-        <p className="text-sm text-gray-500 mb-6">
+        <p className="text-sm text-gray-600 mb-6">
           30-day money-back guarantee · Free shipping · No sensitivity formula
         </p>
         <Link

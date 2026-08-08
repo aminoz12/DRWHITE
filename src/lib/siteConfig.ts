@@ -4,8 +4,14 @@
 // so figures can never contradict each other again (see audit: "Écart ×10").
 // ─────────────────────────────────────────────────────────────────────────
 
+/**
+ * Canonical origin. MUST match the host the CDN finally serves: the apex
+ * 301-redirects to www, so www is canonical. Pointing canonical/sitemap at the
+ * apex made every declared URL a redirect hop and split Google's signals.
+ * If you ever flip Vercel to serve the apex as primary, change this too.
+ */
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://cliniwhite.com";
+  process.env.NEXT_PUBLIC_SITE_URL || "https://www.cliniwhite.com";
 
 export const BRAND_NAME = "CLINI WHITE";
 

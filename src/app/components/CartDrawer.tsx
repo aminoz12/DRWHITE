@@ -92,7 +92,7 @@ export default function CartDrawer() {
           </div>
           <button
             onClick={closeCart}
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-500 hover:text-gray-900"
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-600 hover:text-gray-900"
             aria-label="Close cart"
           >
             <X className="w-5 h-5" />
@@ -115,7 +115,7 @@ export default function CartDrawer() {
                 <p className="text-xl font-black text-gray-900 mb-2" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
                   YOUR CART IS EMPTY
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-600">
                   Discover our professional whitening collection.
                 </p>
               </div>
@@ -152,7 +152,7 @@ export default function CartDrawer() {
                       {item.title}
                     </p>
                     {item.variantTitle !== 'Default Title' && (
-                      <p className="text-xs text-gray-500 mt-0.5">{item.variantTitle}</p>
+                      <p className="text-xs text-gray-600 mt-0.5">{item.variantTitle}</p>
                     )}
                     <p className="text-sm font-bold text-[#231b50] mt-1">
                       {formatMoney(item.price, item.currencyCode)}
@@ -182,7 +182,7 @@ export default function CartDrawer() {
                       <button
                         onClick={() => removeItem(item.lineId)}
                         disabled={isLoading}
-                        className="ml-auto p-2.5 rounded-full text-gray-500 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-40"
+                        className="ml-auto p-2.5 rounded-full text-gray-600 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-40"
                         aria-label="Remove item"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -198,12 +198,12 @@ export default function CartDrawer() {
         {items.length > 0 && (
           <div className="border-t border-gray-100 px-6 py-6 space-y-4 bg-white">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-500">Subtotal</span>
+              <span className="text-sm text-gray-600">Subtotal</span>
               <span className="text-xl font-black text-gray-900">
                 {formatMoney(subtotal, subtotalCurrency)}
               </span>
             </div>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-600">
               Shipping and taxes calculated at checkout
             </p>
 
@@ -224,21 +224,21 @@ export default function CartDrawer() {
 
             <button
               onClick={closeCart}
-              className="w-full py-2 text-sm text-gray-500 hover:text-[#231b50] transition-colors font-medium"
+              className="w-full py-2 text-sm text-gray-600 hover:text-[#231b50] transition-colors font-medium"
             >
               Continue Shopping
             </button>
 
             <div className="flex items-center justify-center gap-4 pt-2 border-t border-gray-100">
-              <span className="text-[10px] text-gray-500 flex items-center gap-1">
+              <span className="text-[10px] text-gray-600 flex items-center gap-1">
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
                 Secure Checkout
               </span>
-              <span className="text-[10px] text-gray-500 flex items-center gap-1">
+              <span className="text-[10px] text-gray-600 flex items-center gap-1">
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
                 30-Day Returns
               </span>
-              <span className="text-[10px] text-gray-500 flex items-center gap-1">
+              <span className="text-[10px] text-gray-600 flex items-center gap-1">
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
                 Free Shipping
               </span>

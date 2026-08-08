@@ -1,10 +1,9 @@
 import type { MetadataRoute } from "next";
 import { getProducts } from "@/lib/shopify";
 import { POLICIES } from "@/lib/legalContent";
+import { SITE_URL } from "@/lib/siteConfig";
 
 export const dynamic = "force-static";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://cliniwhite.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();

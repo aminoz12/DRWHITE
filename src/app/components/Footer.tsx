@@ -158,7 +158,7 @@ export default function Footer() {
           <CurrencySwitcher />
 
           {/* Copyright */}
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-600">
             &copy; 2026 {COMPANY.displayName}. All rights reserved.
           </p>
 

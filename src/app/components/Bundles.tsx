@@ -24,13 +24,13 @@ export default async function Bundles() {
           >
             HUGE <span className="text-[#231b50]">SAVINGS</span>
           </h2>
-          <p className="text-gray-500 text-sm font-medium mt-4 max-w-lg mx-auto">
+          <p className="text-gray-600 text-sm font-medium mt-4 max-w-lg mx-auto">
             Bundle your favorite products and unlock professional whitening for less.
           </p>
         </div>
         
         {products.length === 0 ? (
-          <p className="text-center text-gray-500">
+          <p className="text-center text-gray-600">
             No products found. Create a collection named &quot;huge-savings&quot; in your Shopify admin.
           </p>
         ) : (
@@ -49,7 +49,7 @@ export default async function Bundles() {
                 Shop the bundles
                 <ArrowRight className="h-3.5 w-3.5" />
               </Link>
-              <p className="text-gray-500 text-xs mt-4">
+              <p className="text-gray-600 text-xs mt-4">
                 Free shipping · 30-day money-back guarantee
               </p>
             </div>
