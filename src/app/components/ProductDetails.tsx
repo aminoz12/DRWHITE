@@ -121,6 +121,44 @@ const HOW_TO: Record<ProductKind, { step: string; text: string }[]> = {
 // single Shopify variant, so a tier is just how many of it go in the cart.
 const TIER_QUANTITIES = [1, 2, 3];
 
+type PurchaseMode = 'subscription' | 'onetime';
+
+interface SubscriptionOffer {
+  id: string;
+  name: string;
+  /** Per-delivery price straight from Shopify — never a computed discount. */
+  amount: number;
+  currencyCode: string;
+}
+
+/**
+ * The recurring plan Shopify has attached to this variant, if any.
+ *
+ * The saving comes from comparing the plan's own price against the one-off
+ * price, so whatever percentage is configured in Shopify is what the page
+ * shows — and what checkout charges. Returns null until a selling plan exists,
+ * in which case the buy box silently stays one-time only.
+ */
+function getSubscriptionOffer(
+  variant: ProductDetailsProps['product']['variants']['edges'][number]['node'] | undefined
+): SubscriptionOffer | null {
+  const allocation = variant?.sellingPlanAllocations?.edges?.find(
+    (e) => e.node.sellingPlan.recurringDeliveries
+  )?.node;
+  const adjusted = allocation?.priceAdjustments?.[0]?.price;
+  if (!allocation || !adjusted) return null;
+
+  const amount = Number(adjusted.amount);
+  if (!Number.isFinite(amount)) return null;
+
+  return {
+    id: allocation.sellingPlan.id,
+    name: allocation.sellingPlan.name,
+    amount,
+    currencyCode: adjusted.currencyCode,
+  };
+}
+
 interface ProductDetailsProps {
   product: {
     id: string;
@@ -155,6 +193,21 @@ interface ProductDetailsProps {
             currencyCode: string;
           };
           availableForSale: boolean;
+          sellingPlanAllocations?: {
+            edges: Array<{
+              node: {
+                sellingPlan: {
+                  id: string;
+                  name: string;
+                  recurringDeliveries: boolean;
+                };
+                priceAdjustments: Array<{
+                  price: { amount: string; currencyCode: string };
+                  compareAtPrice?: { amount: string; currencyCode: string } | null;
+                }>;
+              };
+            }>;
+          };
         };
       }>;
     };
@@ -168,6 +221,12 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
   const [activeAccordion, setActiveAccordion] = useState<string | null>('desc');
   const [added, setAdded] = useState(false);
   const [quantity, setQuantity] = useState(1);
+
+  const subscription = getSubscriptionOffer(selectedVariant);
+  // Default to the subscription when one exists — it is the cheaper option.
+  const [mode, setMode] = useState<PurchaseMode>(
+    subscription ? 'subscription' : 'onetime'
+  );
   const { addItem, isLoading } = useCartStore();
   const router = useRouter();
 
@@ -175,7 +234,11 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
   const handleAddToCart = async () => {
     if (!selectedVariant?.id || !selectedVariant.availableForSale) return;
-    await addItem(selectedVariant.id, quantity);
+    await addItem(
+      selectedVariant.id,
+      quantity,
+      mode === 'subscription' ? subscription?.id : undefined
+    );
     setAdded(true);
     // Redirect to cart page after a short delay to show the "Added" state
     setTimeout(() => {
@@ -196,11 +259,22 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
   const savings = getDiscountPercent(price.amount, comparePrice?.amount);
 
   const kind = getProductKind(product.title);
-  // Tier pricing is a straight multiple of the variant price — the cart
-  // charges quantity x price, so anything else here would misquote checkout.
+
+  // Per-unit price for the mode the shopper picked. Subscription pricing is
+  // whatever Shopify's selling plan says; one-time is the plain variant price.
+  const unitAmount =
+    mode === 'subscription' && subscription
+      ? subscription.amount
+      : Number(price.amount);
+
+  // Tier pricing is a straight multiple of the unit price — the cart charges
+  // quantity x price, so anything else here would misquote checkout.
   const tierTotal = (n: number) =>
-    formatMoney(String(Number(price.amount) * n), price.currencyCode);
+    formatMoney(String(unitAmount * n), price.currencyCode);
   const selectedTotal = tierTotal(quantity);
+  const formattedUnit = formatMoney(String(unitAmount), price.currencyCode);
+  // RRP when Shopify has a compare-at price, else the plain price.
+  const savingBaseline = comparePrice?.amount ?? price.amount;
 
   return (
     <section className="bg-white py-8 lg:py-12 pb-28 lg:pb-12 font-sans antialiased">
@@ -272,6 +346,74 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
             {/* PURCHASE SECTION */}
             <div className="space-y-6 pt-4 border-t border-gray-100">
+              {/* PURCHASE MODE — only when Shopify actually has a plan */}
+              {subscription && (
+                <fieldset className="space-y-3">
+                  <legend className="sr-only">Choose how to buy</legend>
+                  {([
+                    {
+                      value: 'subscription' as const,
+                      label: 'Subscribe & save',
+                      note: subscription.name,
+                      amount: subscription.amount,
+                    },
+                    {
+                      value: 'onetime' as const,
+                      label: 'One-time purchase',
+                      note: 'Ships once, no commitment',
+                      amount: Number(price.amount),
+                    },
+                  ]).map((option) => {
+                    const selected = mode === option.value;
+                    // Both savings are measured against RRP (compare-at) when
+                    // one is set, so "10% one-time / 20% subscription" reads as
+                    // intended instead of stacking off an already-cut price.
+                    const saving = getDiscountPercent(option.amount, savingBaseline);
+                    return (
+                      <label
+                        key={option.value}
+                        className={`relative flex items-center justify-between gap-3 p-4 rounded-md border-2 cursor-pointer transition-all ${selected ? 'border-[#231b50] bg-[#F5F3FF]' : 'border-[#eee] bg-white hover:border-gray-200'}`}
+                      >
+                        <input
+                          type="radio"
+                          name="purchase-mode"
+                          className="sr-only"
+                          checked={selected}
+                          onChange={() => setMode(option.value)}
+                        />
+                        <span className="flex items-center gap-3 min-w-0">
+                          <span className={`w-5 h-5 shrink-0 rounded-full border-2 flex items-center justify-center transition-colors ${selected ? 'border-[#231b50] bg-[#231b50]' : 'border-[#ddd]'}`}>
+                            {selected && <span className="w-2.5 h-2.5 rounded-full bg-white shadow-sm" />}
+                          </span>
+                          <span className="min-w-0">
+                            <span className="block font-black text-black text-sm leading-tight uppercase">
+                              {option.label}
+                            </span>
+                            <span className="block text-[11px] text-gray-600 mt-0.5 truncate">
+                              {option.note}
+                            </span>
+                          </span>
+                        </span>
+                        <span className="flex items-center gap-2 shrink-0">
+                          {saving > 0 && (
+                            <span className="bg-[#21bc64] text-white text-[10px] font-black px-2 py-0.5 rounded-sm uppercase">
+                              Save {saving}%
+                            </span>
+                          )}
+                          <span className="font-black text-black text-sm">
+                            {formatMoney(String(option.amount), price.currencyCode)}
+                          </span>
+                        </span>
+                      </label>
+                    );
+                  })}
+                  <p className="text-[11px] text-gray-600 leading-relaxed">
+                    Subscriptions renew automatically. Skip, pause or cancel any time from
+                    your account — no fees.
+                  </p>
+                </fieldset>
+              )}
+
               {/* QUANTITY TIERS */}
               <fieldset className="space-y-3">
                 <legend className="sr-only">Choose how many {unitNoun(kind).toLowerCase()}s</legend>
@@ -311,7 +453,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                         </p>
                         {n > 1 && (
                           <p className="text-[11px] font-bold text-gray-600 mt-1">
-                            {formattedPrice} each
+                            {formattedUnit} each
                           </p>
                         )}
                       </div>
@@ -335,6 +477,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                       <Check className="w-6 h-6" strokeWidth={3} />
                       Added to bag
                     </>
+                  ) : mode === 'subscription' && subscription ? (
+                    `Subscribe — ${selectedTotal}`
                   ) : (
                     'Add to cart'
                   )}
@@ -468,6 +612,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
       <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t border-gray-200 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] flex items-center gap-4">
         <div className="min-w-0">
           <p className="text-[10px] font-black text-gray-600 uppercase tracking-wider truncate">
+            {mode === 'subscription' && subscription ? 'Monthly · ' : ''}
             {tierLabel(kind, quantity)} · {product.title}
           </p>
           <p className="text-lg font-black text-black leading-tight">{selectedTotal}</p>

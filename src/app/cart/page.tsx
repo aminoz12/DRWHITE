@@ -129,6 +129,11 @@ export default function CartPage() {
                             <h3 className="font-black text-black uppercase text-sm md:text-base leading-tight">
                               {item.title}
                             </h3>
+                            {item.sellingPlanName && (
+                              <p className="text-[10px] font-black text-[#231b50] bg-[#F5F3FF] inline-block px-2 py-0.5 rounded-full mt-1 uppercase tracking-wide">
+                                ↻ {item.sellingPlanName}
+                              </p>
+                            )}
                             {item.variantTitle && item.variantTitle !== 'Default Title' && (
                               <p className="text-xs text-gray-600 mt-1 uppercase font-bold">{item.variantTitle}</p>
                             )}

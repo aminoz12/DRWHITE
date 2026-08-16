@@ -25,6 +25,8 @@ export interface CartItem {
   quantity: number;
   price: string;
   currencyCode: string;
+  /** Set on subscription lines — the Shopify selling plan's display name. */
+  sellingPlanName?: string;
 }
 
 interface CartState {
@@ -40,7 +42,8 @@ interface CartState {
   // Actions
   openCart: () => void;
   closeCart: () => void;
-  addItem: (variantId: string, quantity?: number) => Promise<void>;
+  /** `sellingPlanId` makes the line a recurring subscription. */
+  addItem: (variantId: string, quantity?: number, sellingPlanId?: string) => Promise<void>;
   removeItem: (lineId: string) => Promise<void>;
   updateQuantity: (lineId: string, quantity: number) => Promise<void>;
   setCountry: (country: string) => Promise<void>;
@@ -59,6 +62,7 @@ function cartToItems(cart: Cart): CartItem[] {
     quantity: node.quantity,
     price: node.cost.totalAmount.amount,
     currencyCode: node.cost.totalAmount.currencyCode,
+    sellingPlanName: node.sellingPlanAllocation?.sellingPlan?.name,
   }));
 }
 
@@ -77,11 +81,14 @@ export const useCartStore = create<CartState>()(
       openCart: () => set({ isOpen: true }),
       closeCart: () => set({ isOpen: false }),
 
-      addItem: async (variantId: string, quantity = 1) => {
+      addItem: async (variantId: string, quantity = 1, sellingPlanId?: string) => {
         set({ isLoading: true });
         try {
           const { cartId } = get();
-          const line = { merchandiseId: variantId, quantity };
+          // Only send sellingPlanId when there is one — Shopify rejects null.
+          const line = sellingPlanId
+            ? { merchandiseId: variantId, quantity, sellingPlanId }
+            : { merchandiseId: variantId, quantity };
 
           let cart: Cart | null;
           if (cartId) {

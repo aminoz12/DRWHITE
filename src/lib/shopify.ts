@@ -302,6 +302,25 @@ export async function getProduct(handle: string, country: string = DEFAULT_COUNT
                 currencyCode
               }
               availableForSale
+              # Subscription offers attached to this variant. Empty until a
+              # selling plan exists in Shopify — see docs/subscriptions.md.
+              # The allocation carries the real recurring price, so we never
+              # compute a discount the checkout would not honour.
+              sellingPlanAllocations(first: 10) {
+                edges {
+                  node {
+                    sellingPlan {
+                      id
+                      name
+                      recurringDeliveries
+                    }
+                    priceAdjustments {
+                      price { amount currencyCode }
+                      compareAtPrice { amount currencyCode }
+                    }
+                  }
+                }
+              }
             }
           }
         }
@@ -314,6 +333,14 @@ export async function getProduct(handle: string, country: string = DEFAULT_COUNT
 }
 
 // ─── CART MUTATIONS ────────────────────────────────────────────────────────
+
+/** A line to add to the cart. `sellingPlanId` turns it into a subscription. */
+export interface CartLineInput {
+  merchandiseId: string;
+  quantity: number;
+  sellingPlanId?: string;
+}
+
 export interface CartLine {
   id: string;
   quantity: number;
@@ -329,6 +356,14 @@ export interface CartLine {
       altText: string | null;
     };
   };
+  /** Present only on subscription lines — carries the plan's display name. */
+  sellingPlanAllocation?: {
+    sellingPlan: {
+      id: string;
+      name: string;
+      recurringDeliveries: boolean;
+    };
+  } | null;
   cost: {
     totalAmount: {
       amount: string;
@@ -373,6 +408,9 @@ const CART_FRAGMENT = `
           cost {
             totalAmount { amount currencyCode }
           }
+          sellingPlanAllocation {
+            sellingPlan { id name recurringDeliveries }
+          }
           merchandise {
             ... on ProductVariant {
               id
@@ -394,7 +432,7 @@ const CART_FRAGMENT = `
 `;
 
 export async function createCart(
-  lines: { merchandiseId: string; quantity: number }[]
+  lines: CartLineInput[]
 ): Promise<Cart | null> {
   const query = `
     mutation cartCreate($input: CartInput!, $country: CountryCode) @inContext(country: $country) {
@@ -422,7 +460,7 @@ export async function createCart(
 
 export async function addCartLines(
   cartId: string,
-  lines: { merchandiseId: string; quantity: number }[]
+  lines: CartLineInput[]
 ): Promise<Cart | null> {
   const query = `
     mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!, $country: CountryCode) @inContext(country: $country) {

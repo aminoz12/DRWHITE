@@ -151,6 +151,11 @@ export default function CartDrawer() {
                     <p className="text-sm font-black text-gray-900 truncate uppercase tracking-wide" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
                       {item.title}
                     </p>
+                    {item.sellingPlanName && (
+                      <p className="text-[10px] font-black text-[#231b50] bg-[#F5F3FF] inline-block px-2 py-0.5 rounded-full mt-0.5 uppercase tracking-wide">
+                        ↻ {item.sellingPlanName}
+                      </p>
+                    )}
                     {item.variantTitle !== 'Default Title' && (
                       <p className="text-xs text-gray-600 mt-0.5">{item.variantTitle}</p>
                     )}
