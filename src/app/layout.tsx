@@ -28,13 +28,13 @@ const poppins = Poppins({
 
 const SITE_NAME = "CLINI WHITE";
 const SITE_DESCRIPTION =
-  "Want a brighter smile without harsh peroxide? Explore CLINI WHITE at-home whitening and colour-correcting products, designed for a gentle routine.";
+  "At-home teeth whitening and colour-correcting oral care for a brighter-looking smile. Explore CLINI WHITE products worldwide.";
 const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Sensitive Teeth? Whiten Gently at Home | CLINI WHITE",
+    default: "Stained Teeth? Get a Brighter Smile at Home | CLINI WHITE",
     template: "%s | CLINI WHITE",
   },
   description: SITE_DESCRIPTION,
@@ -69,20 +69,20 @@ export const metadata: Metadata = {
     locale: "en_GB",
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: "Sensitive Teeth? Whiten Gently at Home | CLINI WHITE",
+    title: "Stained Teeth? Get a Brighter Smile at Home | CLINI WHITE",
     description: SITE_DESCRIPTION,
     images: [
       {
         url: "/hero.jpeg",
         width: 1200,
         height: 630,
-        alt: "CLINI WHITE gentle at-home teeth whitening",
+        alt: "CLINI WHITE at-home teeth whitening for a brighter smile",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Sensitive Teeth? Whiten Gently at Home | CLINI WHITE",
+    title: "Stained Teeth? Get a Brighter Smile at Home | CLINI WHITE",
     description: SITE_DESCRIPTION,
     images: ["/hero.jpeg"],
     creator: "@cliniwhite",
