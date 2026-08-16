@@ -6,7 +6,9 @@ import Script from "next/script";
 //   NEXT_PUBLIC_GA_ID            e.g. G-XXXXXXXXXX   (Google Analytics 4)
 //   NEXT_PUBLIC_META_PIXEL_ID    e.g. 123456789012   (Meta / Facebook Pixel)
 //   NEXT_PUBLIC_TIKTOK_PIXEL_ID  e.g. CXXXXXXXXXXXX  (TikTok Pixel)
-const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+// The supplied GA4 measurement ID is the production default. Deployments can
+// override it through NEXT_PUBLIC_GA_ID if the analytics property changes.
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID ?? "G-Y37NEJXMJM";
 const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 const TIKTOK_PIXEL_ID = process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID;
 
