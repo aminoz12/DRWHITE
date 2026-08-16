@@ -1,13 +1,15 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { X, Check, Loader2, Sparkles } from 'lucide-react';
+import { X, Check, Loader2 } from 'lucide-react';
 
 export default function PromoPopup() {
   const [isVisible, setIsVisible] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
   const [isScratched, setIsScratched] = useState(false);
-  const [scratchedPercent, setScratchedPercent] = useState(0);
+  // Number of completed scratch strokes (press → drag → release). The prize
+  // only shows after the third one so the interaction feels earned.
+  const [strokes, setStrokes] = useState(0);
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -15,6 +17,8 @@ export default function PromoPopup() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const isDrawing = useRef(false);
+  const strokeMoved = useRef(false);
+  const strokeCount = useRef(0);
 
   useEffect(() => {
     const hasSeenPromo = localStorage.getItem('clini_white_promo_dismissed');
@@ -40,13 +44,13 @@ export default function PromoPopup() {
     canvas.height = rect.height * dpr;
     ctx.scale(dpr, dpr);
 
-    // Fill with gold gradient
+    // Fill with metallic purple foil
     const gradient = ctx.createLinearGradient(0, 0, rect.width, rect.height);
-    gradient.addColorStop(0, '#D4AF37');
-    gradient.addColorStop(0.3, '#FFD700');
-    gradient.addColorStop(0.5, '#F0E68C');
-    gradient.addColorStop(0.7, '#FFD700');
-    gradient.addColorStop(1, '#B8860B');
+    gradient.addColorStop(0, '#5B21B6');
+    gradient.addColorStop(0.3, '#8B5CF6');
+    gradient.addColorStop(0.5, '#C4B5FD');
+    gradient.addColorStop(0.7, '#8B5CF6');
+    gradient.addColorStop(1, '#4C1D95');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, rect.width, rect.height);
 
@@ -70,28 +74,14 @@ export default function PromoPopup() {
 
     // "SCRATCH HERE" text
     ctx.font = 'bold 28px system-ui, sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('SCRATCH HERE', rect.width / 2, rect.height / 2);
 
-    // Track scratched area
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const totalPixels = imageData.data.length / 4;
-
-    const checkScratched = () => {
-      const current = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      let transparent = 0;
-      for (let i = 3; i < current.data.length; i += 4) {
-        if (current.data[i] === 0) transparent++;
-      }
-      const percent = (transparent / totalPixels) * 100;
-      setScratchedPercent(percent);
-      if (percent > 35 && !isScratched) {
-        setIsScratched(true);
-        // Fade out remaining scratch layer
-        ctx.clearRect(0, 0, rect.width, rect.height);
-      }
+    const reveal = () => {
+      setIsScratched(true);
+      ctx.clearRect(0, 0, rect.width, rect.height);
     };
 
     const handleMove = (clientX: number, clientY: number) => {
@@ -102,17 +92,30 @@ export default function PromoPopup() {
       ctx.beginPath();
       ctx.arc(x, y, 30, 0, Math.PI * 2);
       ctx.fill();
-      checkScratched();
+      strokeMoved.current = true;
     };
 
-    const onMouseDown = () => { isDrawing.current = true; };
-    const onMouseUp = () => { isDrawing.current = false; };
+    // A stroke counts once the pointer lifts after actually scratching.
+    // The third completed stroke reveals the prize.
+    const endStroke = () => {
+      if (!isDrawing.current) return;
+      isDrawing.current = false;
+      if (!strokeMoved.current) return;
+      strokeMoved.current = false;
+      strokeCount.current += 1;
+      setStrokes(strokeCount.current);
+      if (strokeCount.current >= 3) reveal();
+    };
+
+    const onMouseDown = () => { isDrawing.current = true; strokeMoved.current = false; };
+    const onMouseUp = () => { endStroke(); };
     const onMouseMove = (e: MouseEvent) => {
       if (!isDrawing.current) return;
       handleMove(e.clientX, e.clientY);
     };
     const onTouchStart = (e: TouchEvent) => {
       isDrawing.current = true;
+      strokeMoved.current = false;
       const touch = e.touches[0];
       handleMove(touch.clientX, touch.clientY);
     };
@@ -122,7 +125,7 @@ export default function PromoPopup() {
       const touch = e.touches[0];
       handleMove(touch.clientX, touch.clientY);
     };
-    const onTouchEnd = () => { isDrawing.current = false; };
+    const onTouchEnd = () => { endStroke(); };
 
     canvas.addEventListener('mousedown', onMouseDown);
     canvas.addEventListener('mouseup', onMouseUp);
@@ -143,6 +146,14 @@ export default function PromoPopup() {
     };
   }, [shouldRender, isScratched]);
 
+  const handleDismiss = useCallback(() => {
+    setIsVisible(false);
+    setTimeout(() => {
+      setShouldRender(false);
+      localStorage.setItem('clini_white_promo_dismissed', 'true');
+    }, 300);
+  }, []);
+
   // Escape closes the dialog; page scroll is locked while it is open.
   useEffect(() => {
     if (!shouldRender) return;
@@ -155,16 +166,7 @@ export default function PromoPopup() {
       document.removeEventListener('keydown', onKey);
       document.body.style.overflow = '';
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shouldRender]);
-
-  const handleDismiss = useCallback(() => {
-    setIsVisible(false);
-    setTimeout(() => {
-      setShouldRender(false);
-      localStorage.setItem('clini_white_promo_dismissed', 'true');
-    }, 300);
-  }, []);
+  }, [shouldRender, handleDismiss]);
 
   const handleClaim = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -212,7 +214,7 @@ export default function PromoPopup() {
               {/* Scratch card area */}
               <div ref={containerRef} className="relative w-full max-w-[360px] aspect-[3/2] mx-auto rounded-xl overflow-hidden select-none">
                 {/* Hidden prize */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-red-500 to-pink-600">
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-[#231b50] to-[#6d28d9]">
                   <div className="text-white font-black text-5xl leading-none drop-shadow-lg">
                     -60%
                   </div>
@@ -228,7 +230,11 @@ export default function PromoPopup() {
                 />
               </div>
 
-              <p className="text-xs text-gray-600 mt-5">Scratch the golden area to reveal your prize</p>
+              <p className="text-xs text-gray-600 mt-5">
+                {strokes === 0
+                  ? 'Scratch the purple area to reveal your prize'
+                  : `${strokes} of 3 scratches — keep going!`}
+              </p>
 
               {/* Keyboard/AT-accessible path to the same offer */}
               <button
@@ -245,7 +251,7 @@ export default function PromoPopup() {
                 Congratulations!!
               </h2>
               <div className="flex items-center justify-center gap-1 mb-4">
-                <span className="text-red-500 font-black text-2xl">-60%</span>
+                <span className="text-[#6d28d9] font-black text-2xl">-60%</span>
                 <span className="text-gray-600 font-bold text-sm uppercase tracking-wider">OFF</span>
               </div>
               <p className="text-xs text-gray-600 mb-5">Enter your email to claim your exclusive discount</p>
@@ -264,7 +270,7 @@ export default function PromoPopup() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-3.5 bg-black text-white font-black uppercase tracking-widest text-xs rounded-lg hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3.5 bg-[#231b50] text-white font-black uppercase tracking-widest text-xs rounded-lg hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Claim'}
                 </button>
@@ -272,7 +278,7 @@ export default function PromoPopup() {
             </div>
           ) : (
             <div className="animate-in fade-in zoom-in duration-500 py-8">
-              <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-[#6d28d9] rounded-full flex items-center justify-center mx-auto mb-4">
                 <Check className="w-8 h-8 text-white" strokeWidth={3} />
               </div>
               <h3 className="text-xl font-black text-black mb-1">Offer Claimed!</h3>
