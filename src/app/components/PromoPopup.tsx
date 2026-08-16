@@ -216,7 +216,7 @@ export default function PromoPopup() {
                 {/* Hidden prize */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-[#231b50] to-[#6d28d9]">
                   <div className="text-white font-black text-5xl leading-none drop-shadow-lg">
-                    -60%
+                    -10%
                   </div>
                   <div className="text-white/90 font-bold text-sm uppercase tracking-wider mt-1">
                     OFFERED
@@ -251,7 +251,7 @@ export default function PromoPopup() {
                 Congratulations!!
               </h2>
               <div className="flex items-center justify-center gap-1 mb-4">
-                <span className="text-[#6d28d9] font-black text-2xl">-60%</span>
+                <span className="text-[#6d28d9] font-black text-2xl">-10%</span>
                 <span className="text-gray-600 font-bold text-sm uppercase tracking-wider">OFF</span>
               </div>
               <p className="text-xs text-gray-600 mb-5">Enter your email to claim your exclusive discount</p>
@@ -282,7 +282,7 @@ export default function PromoPopup() {
                 <Check className="w-8 h-8 text-white" strokeWidth={3} />
               </div>
               <h3 className="text-xl font-black text-black mb-1">Offer Claimed!</h3>
-              <p className="text-sm text-gray-600">Check your inbox for the -60% discount code.</p>
+              <p className="text-sm text-gray-600">Check your inbox for the -10% discount code.</p>
             </div>
           )}
         </div>
