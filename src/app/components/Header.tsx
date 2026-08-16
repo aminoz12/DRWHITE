@@ -69,8 +69,8 @@ export default function Header() {
             </nav>
 
             {/* Center Logo */}
-            <Link href="/" className="lg:absolute lg:left-1/2 lg:-translate-x-1/2 flex items-center">
-              <span className="text-2xl font-black tracking-tight" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', color: '#231b50' }}>
+            <Link href="/" className="lg:absolute lg:left-1/2 lg:-translate-x-1/2 flex items-center min-w-0">
+              <span className="text-lg sm:text-xl lg:text-2xl font-black tracking-tight whitespace-nowrap" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', color: '#231b50' }}>
                 CLINIWHITE
               </span>
             </Link>
@@ -108,7 +108,9 @@ export default function Header() {
               <button
                 className="p-1.5 text-black hover:opacity-60 transition-opacity lg:hidden"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                aria-label="Open menu"
+                aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+                aria-expanded={mobileMenuOpen}
+                aria-controls="mobile-menu"
               >
                 {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
@@ -118,17 +120,21 @@ export default function Header() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-gray-100 bg-white">
-            <div className="px-4 py-3 space-y-2">
+          <div id="mobile-menu" className="lg:hidden border-t border-gray-100 bg-white">
+            <nav className="px-4 py-2">
               {leftNav.map((item) => (
-                <Link key={item.label} href={item.href} className="block py-2 text-sm font-bold text-black tracking-wider uppercase" onClick={() => setMobileMenuOpen(false)}>
+                <Link key={item.label} href={item.href} className="block py-3 text-sm font-bold text-black tracking-wider uppercase" onClick={() => setMobileMenuOpen(false)}>
                   {item.label}
                 </Link>
               ))}
-              <Link href="/contact" className="block py-2 text-sm font-bold text-black tracking-wider uppercase" onClick={() => setMobileMenuOpen(false)}>
+              <Link href="/contact" className="block py-3 text-sm font-bold text-black tracking-wider uppercase" onClick={() => setMobileMenuOpen(false)}>
                 CONTACT
               </Link>
-            </div>
+              {/* The account icon is desktop-only, so phones need it here. */}
+              <a href={SHOPIFY_ACCOUNT} className="block py-3 text-sm font-bold text-black tracking-wider uppercase border-t border-gray-100 mt-1">
+                MY ACCOUNT
+              </a>
+            </nav>
           </div>
         )}
       </header>
