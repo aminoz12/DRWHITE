@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getProduct, getProducts } from '@/lib/shopify';
+import { getProduct, getProducts, type ShopifyProductEdge } from '@/lib/shopify';
 import ProductDetails from '@/app/components/ProductDetails';
 import FAQ from '@/app/components/FAQ';
 import FeaturedCollection from '@/app/components/FeaturedCollection';
@@ -11,10 +11,10 @@ import { getServerCountry } from '@/lib/market-server';
 export async function generateStaticParams() {
   try {
     const products = await getProducts();
-    return products.map((product: any) => ({
+    return products.map((product: ShopifyProductEdge) => ({
       handle: product.node.handle,
     }));
-  } catch (error) {
+  } catch {
     console.log('generateStaticParams: Shopify fetch failed, returning empty array');
     return [];
   }
@@ -29,6 +29,11 @@ function cleanDescription(text: string | undefined, fallback: string): string {
   const collapsed = text.replace(/\s+/g, ' ').trim();
   if (!collapsed) return fallback;
   return collapsed.length > 160 ? `${collapsed.slice(0, 157)}…` : collapsed;
+}
+
+function schemaDescription(text: string | undefined, fallback: string): string {
+  const collapsed = text?.replace(/\s+/g, ' ').trim();
+  return collapsed || fallback;
 }
 
 // Google truncates <title> around 60 characters. Bundle names blow past that
@@ -61,7 +66,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const title = `${product.title} | ${BRAND_NAME}`;
   const description = cleanDescription(
     product.description,
-    `Shop ${product.title} from ${BRAND_NAME} — professional, peroxide-free teeth whitening with zero sensitivity.`
+    `Shop ${product.title} from ${BRAND_NAME}. See product-specific directions, ingredients, price, and availability.`
   );
   const image = product.images?.edges?.[0]?.node?.url;
 
@@ -110,18 +115,20 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   const price = product.priceRange?.minVariantPrice;
+  const firstVariant = product.variants?.edges?.[0]?.node;
   const anyAvailable = product.variants?.edges?.some(
-    (e: any) => e.node.availableForSale
+    (e: { node: { availableForSale: boolean } }) => e.node.availableForSale
   );
 
   const productSchema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.title,
-    description: cleanDescription(product.description, product.title),
-    image: product.images?.edges?.map((e: any) => e.node.url) ?? [],
+    description: schemaDescription(product.description, product.title),
+    image: product.images?.edges?.map((e: { node: { url: string } }) => e.node.url) ?? [],
     brand: { '@type': 'Brand', name: BRAND_NAME },
     url: `${SITE_URL}/product/${handle}`,
+    ...(firstVariant?.sku ? { sku: firstVariant.sku } : {}),
     offers: {
       '@type': 'Offer',
       price: price?.amount,
@@ -129,6 +136,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       availability: anyAvailable
         ? 'https://schema.org/InStock'
         : 'https://schema.org/OutOfStock',
+      itemCondition: 'https://schema.org/NewCondition',
       url: `${SITE_URL}/product/${handle}`,
     },
     // NOTE: no aggregateRating/review markup until a real reviews platform

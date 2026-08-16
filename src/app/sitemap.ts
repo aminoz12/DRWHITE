@@ -6,15 +6,13 @@ import { SITE_URL } from "@/lib/siteConfig";
 export const dynamic = "force-static";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const now = new Date();
-
   const routes: MetadataRoute.Sitemap = [
-    { url: SITE_URL, lastModified: now, changeFrequency: "weekly", priority: 1 },
-    { url: `${SITE_URL}/shop`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
-    { url: `${SITE_URL}/bundles`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
-    { url: `${SITE_URL}/results`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
-    { url: `${SITE_URL}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
-    { url: `${SITE_URL}/contact`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: SITE_URL, changeFrequency: "weekly", priority: 1 },
+    { url: `${SITE_URL}/shop`, changeFrequency: "daily", priority: 0.9 },
+    { url: `${SITE_URL}/bundles`, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${SITE_URL}/results`, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${SITE_URL}/about`, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${SITE_URL}/contact`, changeFrequency: "monthly", priority: 0.5 },
   ];
 
   // Product pages — previously missing, which kept the catalogue out of Google.
@@ -23,9 +21,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const edge of products) {
       const handle = edge?.node?.handle;
       if (!handle) continue;
+      const updatedAt = edge.node.updatedAt;
+      const lastModified = updatedAt && !Number.isNaN(Date.parse(updatedAt))
+        ? new Date(updatedAt)
+        : undefined;
       routes.push({
         url: `${SITE_URL}/product/${handle}`,
-        lastModified: now,
+        ...(lastModified ? { lastModified } : {}),
         changeFrequency: "weekly",
         priority: 0.8,
       });
@@ -36,10 +38,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Legal / policy pages.
   for (const policy of POLICIES) {
-    routes.push({
-      url: `${SITE_URL}/policies/${policy.slug}`,
-      lastModified: now,
-      changeFrequency: "yearly",
+      routes.push({
+        url: `${SITE_URL}/policies/${policy.slug}`,
+        changeFrequency: "yearly",
       priority: 0.3,
     });
   }

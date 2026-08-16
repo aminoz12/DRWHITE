@@ -5,7 +5,7 @@ import PromoPopup from "./components/PromoPopup";
 import CartDrawer from "./components/CartDrawer";
 import Analytics from "./components/Analytics";
 import RouteTracker from "./components/RouteTracker";
-import { STATS, SOCIALS, CONTACT, COMPANY, SITE_URL } from "@/lib/siteConfig";
+import { SOCIALS, CONTACT, COMPANY, SITE_URL } from "@/lib/siteConfig";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,12 +28,13 @@ const poppins = Poppins({
 
 const SITE_NAME = "CLINI WHITE";
 const SITE_DESCRIPTION =
-  `CLINI WHITE — UK's #1 professional at-home teeth whitening brand. Peroxide-free, dentist-grade whitening that delivers up to 8 shades whiter in 7 days with zero sensitivity. Trusted by ${STATS.customers} customers.`;
+  "CLINI WHITE offers peroxide-free at-home teeth whitening and colour-correcting oral care. Explore product-specific directions, ingredients and support.";
+const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "CLINI WHITE | UK's #1 Professional At-Home Teeth Whitening",
+    default: "CLINI WHITE | Peroxide-Free At-Home Teeth Whitening",
     template: "%s | CLINI WHITE",
   },
   description: SITE_DESCRIPTION,
@@ -44,7 +45,7 @@ export const metadata: Metadata = {
     "at-home teeth whitening",
     "peroxide-free whitening",
     "professional teeth whitening",
-    "dentist-grade whitening",
+    "PAP whitening",
     "whitening kit",
     "whitening strips",
     "whitening pen",
@@ -52,7 +53,6 @@ export const metadata: Metadata = {
     "sensitive teeth whitening",
     "CLINI WHITE",
     "UK teeth whitening",
-    "8 shades whiter",
     "cosmetic dentistry",
   ],
   authors: [{ name: SITE_NAME, url: SITE_URL }],
@@ -69,20 +69,20 @@ export const metadata: Metadata = {
     locale: "en_GB",
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: "CLINI WHITE | UK's #1 Professional At-Home Teeth Whitening",
+    title: "CLINI WHITE | Peroxide-Free At-Home Teeth Whitening",
     description: SITE_DESCRIPTION,
     images: [
       {
         url: "/hero.jpeg",
         width: 1200,
         height: 630,
-        alt: "CLINI WHITE — Professional At-Home Teeth Whitening",
+        alt: "CLINI WHITE — Peroxide-Free At-Home Teeth Whitening",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "CLINI WHITE | UK's #1 Professional At-Home Teeth Whitening",
+    title: "CLINI WHITE | Peroxide-Free At-Home Teeth Whitening",
     description: SITE_DESCRIPTION,
     images: ["/hero.jpeg"],
     creator: "@cliniwhite",
@@ -122,11 +122,14 @@ export const viewport: Viewport = {
 
 const organizationSchema = {
   "@context": "https://schema.org",
-  "@type": "Organization",
+  "@type": "OnlineStore",
+  "@id": ORGANIZATION_ID,
   name: SITE_NAME,
+  legalName: COMPANY.legalName,
   url: SITE_URL,
   logo: `${SITE_URL}/favicon.ico`,
   description: SITE_DESCRIPTION,
+  email: CONTACT.email,
   sameAs: [SOCIALS.facebook, SOCIALS.instagram, SOCIALS.tiktok],
   contactPoint: {
     "@type": "ContactPoint",
@@ -141,18 +144,25 @@ const organizationSchema = {
     postalCode: COMPANY.postalCode,
     addressCountry: COMPANY.country,
   },
+  hasMerchantReturnPolicy: {
+    "@type": "MerchantReturnPolicy",
+    applicableCountry: "GB",
+    returnPolicyCountry: "GB",
+    returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+    merchantReturnDays: 30,
+    returnMethod: "https://schema.org/ReturnByMail",
+    returnFees: "https://schema.org/ReturnFeesCustomerResponsibility",
+    refundType: "https://schema.org/FullRefund",
+  },
 };
 
 const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
+  "@id": `${SITE_URL}/#website`,
   name: SITE_NAME,
   url: SITE_URL,
-  potentialAction: {
-    "@type": "SearchAction",
-    target: `${SITE_URL}/shop?q={search_term_string}`,
-    "query-input": "required name=search_term_string",
-  },
+  publisher: { "@id": ORGANIZATION_ID },
 };
 
 export default function RootLayout({

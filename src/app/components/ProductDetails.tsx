@@ -495,10 +495,9 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             {/* CHECKLIST */}
             <div className="space-y-4 pt-4">
               {[
-                'Peroxide-free formula',
-                'Made in FDA-registered facilities',
-                'PAP formula',
-                '30-day money back guarantee'
+                'Product-specific directions',
+                'Secure checkout',
+                '30-day money-back guarantee'
               ].map((text, i) => (
                 <div key={i} className="flex items-center gap-4">
                   <Check className="w-5 h-5 text-[#231b50]" strokeWidth={4} />
@@ -514,8 +513,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                   <Clock className="w-6 h-6 text-[#231b50] stroke-[1.5]" />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-[10px] font-black text-black uppercase leading-tight">30-60 Minute Sessions</p>
-                  <p className="text-[11px] text-gray-600 leading-tight">Apply and go about your day</p>
+                  <p className="text-[10px] font-black text-black uppercase leading-tight">Product Directions</p>
+                  <p className="text-[11px] text-gray-600 leading-tight">Use as shown on the pack</p>
                 </div>
               </div>
               <div className="flex flex-col items-center text-center space-y-4 border-x border-gray-100">
@@ -523,7 +522,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                   <Truck className="w-6 h-6 text-[#231b50] stroke-[1.5]" />
                 </div>
                 <div className="space-y-1 px-2">
-                  <p className="text-[10px] font-black text-black uppercase leading-tight">1-2 Day Free Express Shipping</p>
+                  <p className="text-[10px] font-black text-black uppercase leading-tight">Worldwide Delivery</p>
+                  <p className="text-[11px] text-gray-600 leading-tight">Times and cost at checkout</p>
                 </div>
               </div>
               <div className="flex flex-col items-center text-center space-y-4">
@@ -531,8 +531,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                   <RotateCcw className="w-6 h-6 text-[#231b50] stroke-[1.5]" />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-[10px] font-black text-black uppercase leading-tight">30 Day Returns</p>
-                  <p className="text-[11px] text-gray-600 leading-tight">Risk-free satisfaction</p>
+                  <p className="text-[10px] font-black text-black uppercase leading-tight">30-Day Guarantee</p>
+                  <p className="text-[11px] text-gray-600 leading-tight">See return-policy terms</p>
                 </div>
               </div>
             </div>
@@ -546,7 +546,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
               </Accordion>
               <Accordion title="Key Benefits" id="benefits" activeId={activeAccordion} onToggle={setActiveAccordion}>
                 <ul className="pb-6 space-y-3">
-                  {['Professional level results', 'Peroxide-free for zero sensitivity', 'Safe for enamel', 'Clinically proven results'].map((item, i) => (
+                  {['Product-specific directions', 'Designed for an at-home oral-care routine', '30-day money-back guarantee'].map((item, i) => (
                     <li key={i} className="flex items-center gap-3 text-sm text-[#4a4a4a]">
                       <div className="w-1 h-1 rounded-full bg-black" />
                       {item}
@@ -563,19 +563,21 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                   ))}
                 </div>
               </Accordion>
-              <Accordion title="What is PAP" id="pap" activeId={activeAccordion} onToggle={setActiveAccordion}>
-                <div className="pb-6 text-sm leading-relaxed text-[#4a4a4a]">
-                  Phthalimidoperoxycaproic acid (PAP) is a non-peroxide whitening agent that is clinically proven to whiten teeth without sensitivity or damage to enamel.
-                </div>
-              </Accordion>
-              <Accordion title="Premium Ingredients" id="ingredients" activeId={activeAccordion} onToggle={setActiveAccordion}>
+              {kind === 'strips' && (
+                <Accordion title="What is PAP" id="pap" activeId={activeAccordion} onToggle={setActiveAccordion}>
+                  <div className="pb-6 text-sm leading-relaxed text-[#4a4a4a]">
+                    PAP is a peroxide-free whitening ingredient used in selected CLINI WHITE products. Check the product packaging for the exact formula and directions for use.
+                  </div>
+                </Accordion>
+              )}
+              <Accordion title="Ingredients & Safety" id="ingredients" activeId={activeAccordion} onToggle={setActiveAccordion}>
                 <div className="pb-6 text-[11px] font-mono leading-relaxed text-[#666]">
-                  Glycerin, Aqua/Water, Cellulose Gum, Hydroxypropyl Methylcellulose, Phthalimidoperoxycaproic Acid, Disodium EDTA, Sodium Hydroxide, Menthol, Monosodium Citrate, Xanthan Gum, PVM/MA Copolymer.
+                  Ingredients and suitability vary by product. Refer to the ingredient panel and directions on this product&apos;s packaging before use. If irritation occurs, discontinue use and consult a dental professional.
                 </div>
               </Accordion>
               <Accordion title="Guarantee & Support" id="guarantee" activeId={activeAccordion} onToggle={setActiveAccordion}>
                 <div className="pb-6 text-sm leading-relaxed text-[#4a4a4a]">
-                  We offer a 30-day money back guarantee. If you&apos;re not satisfied with your results, contact our support team.
+                  We offer a 30-day money-back guarantee. If you&apos;re not satisfied with your order, review our <Link href="/policies/refund-policy" className="font-semibold underline">return-policy terms</Link> or contact our support team.
                 </div>
               </Accordion>
             </div>

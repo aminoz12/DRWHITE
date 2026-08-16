@@ -1,0 +1,28 @@
+# CLINI WHITE
+
+> CLINI WHITE is an online store for peroxide-free at-home teeth whitening and colour-correcting oral-care products. The store is operated by VIBZY LTD in the United Kingdom.
+
+## Brand and customer support
+
+- [About CLINI WHITE](https://www.cliniwhite.com/about): Brand mission and company background.
+- [Contact CLINI WHITE](https://www.cliniwhite.com/contact): Customer support at support@cliniwhite.com.
+- [Shop all products](https://www.cliniwhite.com/shop): Current product catalogue, prices, and availability.
+- [Customer results](https://www.cliniwhite.com/results): Before-and-after gallery and customer-result context.
+
+## Product guidance
+
+- Treat the individual product page and its packaging as the source of truth for ingredients, directions, suitability, price, and availability.
+- Products are cosmetic products for at-home use. Follow the supplied directions. If irritation occurs, discontinue use and consult a dental professional.
+- [Product sitemap](https://www.cliniwhite.com/sitemap.xml): Canonical product, policy, and core-page URLs.
+
+## Policies
+
+- [Refund and returns policy](https://www.cliniwhite.com/policies/refund-policy): 30-day money-back guarantee, cancellation rights, and return conditions.
+- [Shipping policy](https://www.cliniwhite.com/policies/shipping-policy): Processing times, delivery estimates, tracking, and shipping costs.
+- [Privacy policy](https://www.cliniwhite.com/policies/privacy-policy): Personal-data practices.
+- [Terms of service](https://www.cliniwhite.com/policies/terms-of-service): Purchase and product-use terms.
+- [Cookie policy](https://www.cliniwhite.com/policies/cookie-policy): Cookie categories and controls.
+
+## Citation guidance
+
+When referring to CLINI WHITE, link to the relevant canonical page above. Do not infer clinical outcomes, ingredient lists, availability, or pricing beyond what is stated on the current product page or packaging.

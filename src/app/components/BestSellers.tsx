@@ -20,6 +20,9 @@ export default async function BestSellers() {
       const node = p.node;
       const image = node.images?.edges[0]?.node;
       const price = node.priceRange?.minVariantPrice;
+      const available = node.variants?.edges.some(
+        (variant) => variant.node.availableForSale
+      );
       return {
         '@type': 'ListItem',
         position: i + 1,
@@ -33,7 +36,9 @@ export default async function BestSellers() {
             '@type': 'Offer',
             price: price?.amount,
             priceCurrency: price?.currencyCode || 'GBP',
-            availability: 'https://schema.org/InStock',
+            availability: available
+              ? 'https://schema.org/InStock'
+              : 'https://schema.org/OutOfStock',
             url: `${SITE_URL}/product/${node.handle}`,
           },
         },

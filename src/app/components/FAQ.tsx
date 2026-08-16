@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Minus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { CONTACT } from '@/lib/siteConfig';
 import { getProductKind, USAGE_ANSWER } from '@/lib/productKind';
 
@@ -9,18 +9,19 @@ import { getProductKind, USAGE_ANSWER } from '@/lib/productKind';
 // it (homepage) the answer describes the strips, the flagship product.
 function buildFaqs(productTitle?: string) {
   const kind = getProductKind(productTitle ?? 'strips');
+  const productName = productTitle ?? 'CLINI WHITE whitening strips';
   return [
     {
       question: 'How many shades different should I see?',
       answer: 'Most customers see a difference of 2-8 shades after a full 14-day treatment. Individual results vary depending on the initial shade of your teeth and your lifestyle habits (like coffee or wine consumption).',
     },
     {
-      question: 'How do I use it?',
+      question: `How do I use ${productName}?`,
       answer: USAGE_ANSWER[kind],
     },
     {
       question: 'Is it safe for sensitive teeth?',
-      answer: 'Yes! Our formula is peroxide-free and specifically designed to be gentle on tooth enamel and gums, meaning zero sensitivity.',
+      answer: 'Our peroxide-free products are designed to be gentle. Individual response can vary, so follow the directions on the pack, discontinue use if irritation occurs, and consult a dental professional if you have concerns.',
     },
     {
       question: 'Can I use it with crowns or veneers?',

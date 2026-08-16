@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import { ShoppingBag, Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { useCartStore } from '@/lib/cartStore';
@@ -8,14 +8,15 @@ import { SHOPIFY_ACCOUNT_URL } from '@/lib/shopify';
 import { STATS } from '@/lib/siteConfig';
 
 const SHOPIFY_ACCOUNT = SHOPIFY_ACCOUNT_URL;
+const subscribeToHydration = () => () => {};
 
 // True, verifiable perks rotated in the announcement bar — never a fake offer.
 const PERKS = [
-  '100% Money-Back Guarantee',
+  '30-Day Money-Back Guarantee',
   'Peroxide-Free PAP Formula',
   `Rated ${STATS.ratingLabel} by ${STATS.customers} Customers`,
   'Worldwide Tracked Shipping',
-  'Zero Sensitivity — Clinically Tested',
+  'Product Directions Included',
 ];
 
 const leftNav = [
@@ -31,8 +32,11 @@ export default function Header() {
 
   // The cart count comes from localStorage (zustand persist); rendering it
   // before hydration completes would mismatch the server HTML (React #418).
-  const [hydrated, setHydrated] = useState(false);
-  useEffect(() => setHydrated(true), []);
+  const hydrated = useSyncExternalStore(
+    subscribeToHydration,
+    () => true,
+    () => false
+  );
 
   const linkClass = "text-xs font-bold text-black hover:opacity-60 tracking-[0.15em] uppercase transition-opacity";
 

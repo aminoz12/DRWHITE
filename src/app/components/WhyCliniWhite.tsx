@@ -5,11 +5,11 @@ import Image from 'next/image';
 import PhotoSoftEdge from './PhotoSoftEdge';
 
 const PERKS = [
-  '100% Money-Back Guarantee',
+  '30-Day Money-Back Guarantee',
   'Peroxide-Free PAP Formula',
-  'Zero Sensitivity',
+  'Designed for Everyday Routines',
   'Free Tracked Shipping',
-  'Clinically Tested',
+  'Product Directions Included',
 ];
 
 const benefits = [

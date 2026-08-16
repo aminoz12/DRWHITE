@@ -57,6 +57,7 @@ export interface ShopifyProductImage {
 export interface ShopifyProductVariant {
   id: string;
   title?: string;
+  sku?: string | null;
   availableForSale: boolean;
   price: ShopifyMoney;
   compareAtPrice?: ShopifyMoney | null;
@@ -66,6 +67,7 @@ export interface ShopifyProductNode {
   id: string;
   title: string;
   handle: string;
+  updatedAt?: string;
   description: string;
   tags?: string[];
   priceRange: {
@@ -148,6 +150,7 @@ export async function getProducts(country: string = DEFAULT_COUNTRY) {
             id
             title
             handle
+            updatedAt
             description
             priceRange {
               minVariantPrice {
@@ -177,9 +180,10 @@ export async function getProducts(country: string = DEFAULT_COUNTRY) {
             variants(first: 1) {
               edges {
                 node {
-                  id
-                  availableForSale
-                  price {
+              id
+              availableForSale
+              sku
+              price {
                     amount
                     currencyCode
                   }
@@ -205,10 +209,11 @@ export async function getProductsByCollection(handle: string, country: string = 
         products(first: 10) {
           edges {
             node {
-              id
-              title
-              handle
-              description
+            id
+            title
+            handle
+            updatedAt
+            description
               priceRange {
                 minVariantPrice {
                   amount
@@ -237,9 +242,10 @@ export async function getProductsByCollection(handle: string, country: string = 
               variants(first: 1) {
                 edges {
                   node {
-                    id
-                    availableForSale
-                    price {
+              id
+              availableForSale
+              sku
+              price {
                       amount
                       currencyCode
                     }
@@ -273,6 +279,7 @@ export async function getProduct(handle: string, country: string = DEFAULT_COUNT
         id
         title
         handle
+        updatedAt
         description
         priceRange {
           minVariantPrice {
@@ -291,9 +298,10 @@ export async function getProduct(handle: string, country: string = DEFAULT_COUNT
         variants(first: 10) {
           edges {
             node {
-              id
-              title
-              price {
+          id
+          title
+          sku
+          price {
                 amount
                 currencyCode
               }

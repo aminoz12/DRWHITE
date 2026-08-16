@@ -9,9 +9,10 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        // Static export serves extensionless URLs without trailing slashes,
-        // so list both forms to be safe.
-        disallow: ["/api/", "/account", "/account/", "/cart", "/cart/", "/checkout", "/checkout/"],
+        // Keep noindex pages crawlable: Google must be able to fetch /account
+        // and /cart to see their page-level noindex directives. Checkout and
+        // API endpoints have no indexable public content.
+        disallow: ["/api/", "/checkout", "/checkout/"],
       },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,

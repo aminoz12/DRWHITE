@@ -71,7 +71,7 @@ export default function Hero() {
             </h1>
 
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-[#3a3852]">
-              Say goodbye to sensitivity. Say hello to 8 shades whiter in 7 days.
+              Peroxide-free whitening and colour-correcting oral care, designed to fit your routine.
             </p>
 
             {/* CTA — full width on phones so the tap target is never cramped */}
