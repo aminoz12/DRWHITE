@@ -28,13 +28,13 @@ const poppins = Poppins({
 
 const SITE_NAME = "CLINI WHITE";
 const SITE_DESCRIPTION =
-  "CLINI WHITE offers peroxide-free at-home teeth whitening and colour-correcting oral care. Explore product-specific directions, ingredients and support.";
+  "Shop CLINI WHITE worldwide for peroxide-free at-home teeth whitening and colour-correcting oral care. Explore product-specific directions, ingredients and support.";
 const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "CLINI WHITE | Peroxide-Free At-Home Teeth Whitening",
+    default: "CLINI WHITE | Worldwide At-Home Teeth Whitening",
     template: "%s | CLINI WHITE",
   },
   description: SITE_DESCRIPTION,
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     "whitening toothpaste",
     "sensitive teeth whitening",
     "CLINI WHITE",
-    "UK teeth whitening",
+    "worldwide teeth whitening",
     "cosmetic dentistry",
   ],
   authors: [{ name: SITE_NAME, url: SITE_URL }],
@@ -69,20 +69,20 @@ export const metadata: Metadata = {
     locale: "en_GB",
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: "CLINI WHITE | Peroxide-Free At-Home Teeth Whitening",
+    title: "CLINI WHITE | Worldwide At-Home Teeth Whitening",
     description: SITE_DESCRIPTION,
     images: [
       {
         url: "/hero.jpeg",
         width: 1200,
         height: 630,
-        alt: "CLINI WHITE — Peroxide-Free At-Home Teeth Whitening",
+        alt: "CLINI WHITE — Worldwide At-Home Teeth Whitening",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "CLINI WHITE | Peroxide-Free At-Home Teeth Whitening",
+    title: "CLINI WHITE | Worldwide At-Home Teeth Whitening",
     description: SITE_DESCRIPTION,
     images: ["/hero.jpeg"],
     creator: "@cliniwhite",
