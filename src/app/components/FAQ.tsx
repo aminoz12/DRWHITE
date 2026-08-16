@@ -56,7 +56,7 @@ export default function FAQ({
   };
 
   return (
-    <section className="py-16 bg-[#F8FAFC]" aria-labelledby="faq-heading">
+    <section className="py-10 sm:py-16 bg-[#F8FAFC]" aria-labelledby="faq-heading">
       {withSchema && (
         <script
           type="application/ld+json"

@@ -184,17 +184,19 @@ export default function PromoPopup() {
       role="dialog"
       aria-modal="true"
       aria-labelledby="promo-popup-title"
-      className={`fixed inset-0 z-[100] flex items-center justify-center p-4 transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+      className={`fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto p-4 transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
     >
       <div aria-hidden className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={handleDismiss} />
 
-      <div className={`relative w-full max-w-xl bg-white rounded-2xl overflow-hidden shadow-2xl transition-transform duration-500 ease-out ${isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-8'}`}>
+      {/* my-auto + max-h keeps the panel reachable on short viewports (small
+          phones, landscape) instead of overflowing past the screen edge. */}
+      <div className={`relative my-auto max-h-[92svh] w-full max-w-xl overflow-y-auto bg-white rounded-2xl shadow-2xl transition-transform duration-500 ease-out ${isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-8'}`}>
         {/* Close */}
         <button onClick={handleDismiss} className="absolute top-3 left-3 z-20 p-1.5 text-black hover:opacity-60 transition-opacity" aria-label="Close">
           <X className="w-5 h-5" />
         </button>
 
-        <div className="pt-10 pb-8 px-8 flex flex-col items-center text-center">
+        <div className="pt-9 pb-7 px-5 sm:pt-10 sm:pb-8 sm:px-8 flex flex-col items-center text-center">
           {/* Brand */}
           <h3 className="text-black font-black text-xl tracking-tighter italic mb-2" style={{ fontFamily: 'Georgia, serif' }}>
             CLINI WHITE

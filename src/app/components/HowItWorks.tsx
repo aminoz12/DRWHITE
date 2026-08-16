@@ -88,7 +88,7 @@ export default function HowItWorks() {
               )}
 
               {/* Bottom Gradient and Product Info */}
-              <div className="absolute inset-x-0 bottom-0 pt-20 pb-3 px-3 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10 pointer-events-none">
+              <div className="absolute inset-x-0 bottom-0 pt-12 sm:pt-20 pb-3 px-3 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10 pointer-events-none">
                 <div className="flex items-center gap-2">
                   <div className="relative w-10 h-10 bg-white rounded flex-shrink-0 p-1">
                     {/* Decorative — the product name sits right beside it. */}

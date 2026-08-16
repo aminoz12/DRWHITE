@@ -22,7 +22,7 @@ export default async function ShopPage() {
       
       <main id="main-content">
         {/* Product Listing Section */}
-        <section className="pt-16 pb-24 relative z-10">
+        <section className="pt-10 sm:pt-16 pb-14 sm:pb-24 relative z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h1 className="sr-only">Shop All CLINI WHITE Teeth Whitening Products</h1>
             {products.length === 0 ? (

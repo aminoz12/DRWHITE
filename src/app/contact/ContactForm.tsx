@@ -70,7 +70,7 @@ export default function ContactForm() {
 
   if (status === 'sent') {
     return (
-      <div className="text-center py-16 px-6">
+      <div className="text-center py-10 sm:py-16 px-6">
         <div className="w-20 h-20 rounded-full bg-[#231b50] flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-violet-200">
           <CheckCircle2 className="w-10 h-10 text-white" />
         </div>

@@ -51,7 +51,7 @@ export default async function BundlesPage() {
       <Header />
       <main id="main-content">
         {/* Page head — compact, no hero */}
-        <section className="pt-16 pb-10 px-4 text-center">
+        <section className="pt-10 sm:pt-16 pb-10 px-4 text-center">
           <div className="max-w-3xl mx-auto">
             <p className="text-[#231b50] text-xs font-black tracking-[0.3em] uppercase mb-4">
               Curated Combinations
@@ -79,7 +79,7 @@ export default async function BundlesPage() {
         </section>
 
         {/* Bundles Grid — client component for cart */}
-        <section className="pb-16 bg-white px-4">
+        <section className="pb-10 sm:pb-16 bg-white px-4">
           <div className="max-w-7xl mx-auto">
             <BundlesGrid products={allProducts} />
           </div>

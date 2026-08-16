@@ -31,7 +31,7 @@ export default function AboutPage() {
       <Header />
       <main id="main-content">
         {/* Mission */}
-        <section className="py-20 px-4 bg-white">
+        <section className="py-12 sm:py-20 px-4 bg-white">
           <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
             <div className="lg:col-span-1">
               <p className="text-[#231b50] text-xs font-black tracking-[0.3em] uppercase mb-6">
@@ -134,7 +134,7 @@ export default function AboutPage() {
         </section>
 
         {/* Certifications */}
-        <section className="py-16 px-4 bg-white border-t border-gray-100">
+        <section className="py-10 sm:py-16 px-4 bg-white border-t border-gray-100">
           <div className="max-w-5xl mx-auto text-center">
             <p className="text-[#231b50] text-xs font-black tracking-widest uppercase mb-10">
               TRUSTED &amp; CERTIFIED
@@ -159,7 +159,7 @@ export default function AboutPage() {
         </section>
 
         {/* Timeline */}
-        <section className="py-24 px-4 bg-white relative overflow-hidden">
+        <section className="py-14 sm:py-24 px-4 bg-white relative overflow-hidden">
           {/* Subtle background decoration */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full opacity-[0.03] pointer-events-none">
             <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#231b50_1px,transparent_1px)] [background-size:40px_40px]" />
@@ -230,7 +230,7 @@ export default function AboutPage() {
         </section>
 
         {/* Social proof + CTA */}
-        <section className="py-24 px-4 bg-white text-center border-t border-gray-100">
+        <section className="py-14 sm:py-24 px-4 bg-white text-center border-t border-gray-100">
           <div className="max-w-3xl mx-auto">
             {/* Stars */}
             <div className="flex justify-center gap-1 mb-8">

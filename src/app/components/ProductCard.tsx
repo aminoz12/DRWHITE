@@ -176,7 +176,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <StarRating rating={STATS.rating} size={10} />
 
         {/* Product name */}
-        <h3 className="text-[11px] font-black text-black uppercase tracking-wide leading-tight line-clamp-2">
+        <h3 className="text-xs sm:text-[13px] font-black text-black uppercase tracking-wide leading-tight line-clamp-2">
           {product.title}
         </h3>
 
@@ -198,10 +198,10 @@ export default function ProductCard({ product }: ProductCardProps) {
         )}
 
         {/* Price */}
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] font-black text-black">{formattedPrice}</span>
+        <div className="flex flex-wrap items-baseline gap-x-2">
+          <span className="text-sm font-black text-black">{formattedPrice}</span>
           {hasDiscount && (
-            <span className="text-[10px] text-gray-600 line-through">{formattedOriginalPrice}</span>
+            <span className="text-xs text-gray-600 line-through">{formattedOriginalPrice}</span>
           )}
         </div>
 

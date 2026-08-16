@@ -111,7 +111,7 @@ export default function ShopGrid({ products }: { products: Product[] }) {
 
       {/* Grid */}
       {filteredProducts.length === 0 ? (
-        <div className="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
+        <div className="text-center py-12 sm:py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
           <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
             <Search className="w-8 h-8 text-gray-300" />
           </div>

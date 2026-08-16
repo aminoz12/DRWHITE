@@ -88,7 +88,7 @@ export default function ContactPage() {
       <Header />
       <main id="main-content">
         {/* Contact info + form */}
-        <section className="py-20 px-4 bg-white">
+        <section className="py-12 sm:py-20 px-4 bg-white">
           <div className="max-w-6xl mx-auto grid lg:grid-cols-5 gap-10 lg:gap-16 items-start">
             {/* Info column */}
             <div className="lg:col-span-2">
@@ -186,7 +186,7 @@ export default function ContactPage() {
         </section>
 
         {/* Quick help */}
-        <section className="py-20 px-4 bg-[#F5F3FF]">
+        <section className="py-12 sm:py-20 px-4 bg-[#F5F3FF]">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-14">
               <p className="text-[#231b50] text-xs font-black tracking-widest uppercase mb-3">

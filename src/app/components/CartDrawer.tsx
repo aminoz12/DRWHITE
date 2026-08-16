@@ -167,7 +167,7 @@ export default function CartDrawer() {
                       <button
                         onClick={() => updateQuantity(item.lineId, item.quantity - 1)}
                         disabled={isLoading}
-                        className="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center hover:border-[#231b50] hover:text-[#231b50] transition-colors disabled:opacity-40"
+                        className="w-11 h-11 sm:w-9 sm:h-9 shrink-0 rounded-full border border-gray-200 flex items-center justify-center hover:border-[#231b50] hover:text-[#231b50] transition-colors disabled:opacity-40"
                         aria-label="Decrease quantity"
                       >
                         <Minus className="w-3 h-3" />
@@ -178,7 +178,7 @@ export default function CartDrawer() {
                       <button
                         onClick={() => updateQuantity(item.lineId, item.quantity + 1)}
                         disabled={isLoading}
-                        className="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center hover:border-[#231b50] hover:text-[#231b50] transition-colors disabled:opacity-40"
+                        className="w-11 h-11 sm:w-9 sm:h-9 shrink-0 rounded-full border border-gray-200 flex items-center justify-center hover:border-[#231b50] hover:text-[#231b50] transition-colors disabled:opacity-40"
                         aria-label="Increase quantity"
                       >
                         <Plus className="w-3 h-3" />

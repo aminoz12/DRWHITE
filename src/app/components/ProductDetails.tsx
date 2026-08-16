@@ -585,7 +585,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
       </div>
 
       {/* REELS SECTION */}
-      <div className="mt-12 lg:mt-20 border-t border-gray-100 pt-12 pb-16">
+      <div className="mt-12 lg:mt-20 border-t border-gray-100 pt-12 pb-10 sm:pb-16">
         <div className="max-w-[1200px] mx-auto px-4 mb-10">
           <h2 className="font-display text-2xl lg:text-3xl font-extrabold uppercase tracking-tight text-center">
             CAN&apos;T STOP <span className="text-[#231b50]">SMILING</span> WITH CLINI WHITE

@@ -21,7 +21,7 @@ const WORLD_STATS = [
 
 export default function Worldwide() {
   return (
-    <section className="py-16 bg-[#F3F6F9] overflow-hidden">
+    <section className="py-10 sm:py-16 bg-[#F3F6F9] overflow-hidden">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <p className="text-[#231b50] text-xs font-black tracking-[0.3em] uppercase mb-4">

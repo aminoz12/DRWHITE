@@ -165,7 +165,7 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
   // Show an honest empty state rather than placeholder bundles — invented
   // names, prices and review counts would be live on the page as fact.
   return (
-    <div className="max-w-md mx-auto text-center py-16">
+    <div className="max-w-md mx-auto text-center py-10 sm:py-16">
       <div className="w-16 h-16 mx-auto mb-5 bg-[#F5F3FF] rounded-full flex items-center justify-center">
         <ShoppingBag className="w-7 h-7 text-[#231b50]" />
       </div>

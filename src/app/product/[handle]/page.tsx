@@ -96,7 +96,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     return (
       <div className="min-h-screen bg-white text-gray-900">
         <Header />
-        <main id="main-content" className="py-16">
+        <main id="main-content" className="py-10 sm:py-16">
           <div className="max-w-7xl mx-auto px-4 text-center">
             <h1 className="text-2xl font-bold">Product Not Found</h1>
             <p className="text-gray-600 mt-4">

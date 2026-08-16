@@ -30,7 +30,7 @@ export default function FeaturedCollection() {
   if (products.length === 0) return null;
 
   return (
-    <section className="py-24 bg-white border-t border-gray-100">
+    <section className="py-14 sm:py-24 bg-white border-t border-gray-100">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-12 text-center lg:text-left">
           <p className="text-[#231b50] text-xs font-black tracking-[0.3em] uppercase mb-4">

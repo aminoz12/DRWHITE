@@ -100,7 +100,7 @@ export default function ResultsPage() {
         </section>
 
         {/* Gallery */}
-        <section className="py-16 bg-white px-4">
+        <section className="py-10 sm:py-16 bg-white px-4">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
               <p className="text-[#231b50] text-xs font-black tracking-widest uppercase mb-3">
@@ -117,7 +117,7 @@ export default function ResultsPage() {
         </section>
 
         {/* Real-life photo wall */}
-        <section className="py-16 bg-white px-4 border-t border-gray-100">
+        <section className="py-10 sm:py-16 bg-white px-4 border-t border-gray-100">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
               <p className="text-[#231b50] text-xs font-black tracking-widest uppercase mb-3">
@@ -159,7 +159,7 @@ export default function ResultsPage() {
         </section>
 
         {/* Trustpilot-style social proof */}
-        <section className="bg-[#F5F3FF] py-16 px-4">
+        <section className="bg-[#F5F3FF] py-10 sm:py-16 px-4">
           <div className="max-w-5xl mx-auto text-center">
             <p className="text-[#231b50] text-xs font-black tracking-widest uppercase mb-3">
               WHAT THEY&apos;RE SAYING
@@ -221,7 +221,7 @@ export default function ResultsPage() {
         </section>
 
         {/* CTA */}
-        <section className="bg-white py-24 px-4 text-center border-t border-gray-100">
+        <section className="bg-white py-14 sm:py-24 px-4 text-center border-t border-gray-100">
           <div className="max-w-2xl mx-auto">
             <h2
               className="font-display text-3xl font-extrabold text-black mb-4 tracking-tight"
