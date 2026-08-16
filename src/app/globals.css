@@ -109,3 +109,10 @@ canvas {
   background-color: #fafbfc;
 }
 
+
+/* Hide scrollbars on horizontal strips (thumbnails) while keeping them scrollable. */
+@utility scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar { display: none; }
+}

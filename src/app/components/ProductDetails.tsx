@@ -232,6 +232,18 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
   const images = product.images.edges.map(e => e.node);
 
+  // Reels strip: alternate a video with one of this product's images.
+  const reelItems: Array<
+    | { type: 'video'; src: string }
+    | { type: 'image'; src: string; alt: string }
+  > = [1, 2, 3, 4, 5].flatMap((id, i) => {
+    const img = images[i % Math.max(images.length, 1)];
+    return [
+      { type: 'video' as const, src: `/videos/video${id}.mp4` },
+      ...(img ? [{ type: 'image' as const, src: img.url, alt: img.altText || product.title }] : []),
+    ];
+  });
+
   const handleAddToCart = async () => {
     if (!selectedVariant?.id || !selectedVariant.availableForSale) return;
     await addItem(
@@ -273,16 +285,19 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     formatMoney(String(unitAmount * n), price.currencyCode);
   const selectedTotal = tierTotal(quantity);
   const formattedUnit = formatMoney(String(unitAmount), price.currencyCode);
-  // RRP when Shopify has a compare-at price, else the plain price.
-  const savingBaseline = comparePrice?.amount ?? price.amount;
+  // Subscription discount versus the one-time price — what the customer
+  // actually saves by subscribing, read from Shopify's plan price.
+  const subscriptionSaving = subscription
+    ? getDiscountPercent(subscription.amount, price.amount)
+    : 0;
 
   return (
     <section className="bg-white py-8 lg:py-12 pb-28 lg:pb-12 font-sans antialiased">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-start">
 
           {/* LEFT: IMAGE GALLERY */}
-          <div className="space-y-6">
+          <div className="space-y-3 lg:space-y-6">
             <div className="relative aspect-square flex items-center justify-center bg-white border border-gray-100 rounded-2xl overflow-hidden">
               <Image
                 src={images[activeImage]?.url || images[0]?.url || ''}
@@ -293,14 +308,16 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 priority
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            {/* Thumbnails: a swipeable strip on mobile so the buy box is one
+                short scroll away; a 2-up grid on desktop where there is room. */}
+            <div className="flex gap-2.5 overflow-x-auto snap-x px-0.5 py-1 -mx-0.5 scrollbar-none lg:grid lg:grid-cols-2 lg:gap-4 lg:overflow-visible lg:mx-0 lg:px-0 lg:py-0">
               {images.slice(1, 5).map((img, i) => (
                 <button
                   key={i}
                   type="button"
                   onClick={() => setActiveImage(activeImage === i + 1 ? 0 : i + 1)}
                   aria-label={`View product image ${i + 2}`}
-                  className={`relative aspect-square group overflow-hidden rounded-xl border transition-all ${
+                  className={`relative shrink-0 snap-start w-[22%] lg:w-auto aspect-square group overflow-hidden rounded-xl border transition-all ${
                     activeImage === i + 1 ? 'border-[#231b50] ring-2 ring-[#231b50] ring-offset-2' : 'border-gray-100 hover:border-gray-300'
                   }`}
                 >
@@ -308,7 +325,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                     src={img.url}
                     alt={img.altText || product.title}
                     fill
-                    sizes="(max-width: 1024px) 50vw, 25vw"
+                    sizes="(max-width: 1024px) 25vw, 25vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </button>
@@ -350,63 +367,57 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
               {subscription && (
                 <fieldset className="space-y-3">
                   <legend className="sr-only">Choose how to buy</legend>
-                  {([
-                    {
-                      value: 'subscription' as const,
-                      label: 'Subscribe & save',
-                      note: subscription.name,
-                      amount: subscription.amount,
-                    },
-                    {
-                      value: 'onetime' as const,
-                      label: 'One-time purchase',
-                      note: 'Ships once, no commitment',
-                      amount: Number(price.amount),
-                    },
-                  ]).map((option) => {
-                    const selected = mode === option.value;
-                    // Both savings are measured against RRP (compare-at) when
-                    // one is set, so "10% one-time / 20% subscription" reads as
-                    // intended instead of stacking off an already-cut price.
-                    const saving = getDiscountPercent(option.amount, savingBaseline);
-                    return (
-                      <label
-                        key={option.value}
-                        className={`relative flex items-center justify-between gap-3 p-4 rounded-md border-2 cursor-pointer transition-all ${selected ? 'border-[#231b50] bg-[#F5F3FF]' : 'border-[#eee] bg-white hover:border-gray-200'}`}
-                      >
-                        <input
-                          type="radio"
-                          name="purchase-mode"
-                          className="sr-only"
-                          checked={selected}
-                          onChange={() => setMode(option.value)}
-                        />
-                        <span className="flex items-center gap-3 min-w-0">
-                          <span className={`w-5 h-5 shrink-0 rounded-full border-2 flex items-center justify-center transition-colors ${selected ? 'border-[#231b50] bg-[#231b50]' : 'border-[#ddd]'}`}>
-                            {selected && <span className="w-2.5 h-2.5 rounded-full bg-white shadow-sm" />}
-                          </span>
-                          <span className="min-w-0">
-                            <span className="block font-black text-black text-sm leading-tight uppercase">
+                  <div className="grid grid-cols-2 gap-3">
+                    {([
+                      {
+                        value: 'subscription' as const,
+                        label: subscriptionSaving > 0
+                          ? `Subscribe & Save ${subscriptionSaving}%`
+                          : 'Subscribe & Save',
+                        note: 'Monthly delivery',
+                        amount: subscription.amount,
+                      },
+                      {
+                        value: 'onetime' as const,
+                        label: 'One-time purchase',
+                        note: 'Ships once, no commitment',
+                        amount: Number(price.amount),
+                      },
+                    ]).map((option) => {
+                      const selected = mode === option.value;
+                      return (
+                        <label
+                          key={option.value}
+                          className={`relative flex flex-col gap-1 sm:gap-1.5 p-2.5 sm:p-4 rounded-md border-2 cursor-pointer transition-all ${selected ? 'border-[#231b50] bg-[#F5F3FF]' : 'border-[#eee] bg-white hover:border-gray-200'}`}
+                        >
+                          <input
+                            type="radio"
+                            name="purchase-mode"
+                            className="sr-only"
+                            checked={selected}
+                            onChange={() => setMode(option.value)}
+                          />
+                          <span className="flex items-start gap-2 min-w-0">
+                            <span className={`mt-0.5 w-4 h-4 shrink-0 rounded-full border-2 flex items-center justify-center transition-colors ${selected ? 'border-[#231b50] bg-[#231b50]' : 'border-[#ddd]'}`}>
+                              {selected && <span className="w-2 h-2 rounded-full bg-white shadow-sm" />}
+                            </span>
+                            <span className="block font-black text-black text-[12px] sm:text-[13px] leading-tight uppercase">
                               {option.label}
                             </span>
-                            <span className="block text-[11px] text-gray-600 mt-0.5 truncate">
-                              {option.note}
-                            </span>
                           </span>
-                        </span>
-                        <span className="flex items-center gap-2 shrink-0">
-                          {saving > 0 && (
-                            <span className="bg-[#21bc64] text-white text-[10px] font-black px-2 py-0.5 rounded-sm uppercase">
-                              Save {saving}%
-                            </span>
-                          )}
-                          <span className="font-black text-black text-sm">
+                          <span className="block text-[10px] sm:text-[11px] text-gray-600 leading-tight">
+                            {option.note}
+                          </span>
+                          <span className="block font-black text-black text-sm mt-auto">
                             {formatMoney(String(option.amount), price.currencyCode)}
+                            <span className="font-normal text-gray-500 text-[11px]">
+                              {option.value === 'subscription' ? ' / month' : ''}
+                            </span>
                           </span>
-                        </span>
-                      </label>
-                    );
-                  })}
+                        </label>
+                      );
+                    })}
+                  </div>
                   <p className="text-[11px] text-gray-600 leading-relaxed">
                     Subscriptions renew automatically. Skip, pause or cancel any time from
                     your account — no fees.
@@ -596,10 +607,28 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
         <div className="relative overflow-hidden group">
           <div className="flex w-fit animate-marquee hover:[animation-play-state:paused] py-4">
-            {[1, 2, 3, 4, 5, 1, 2, 3, 4, 5].map((id, i) => (
-              <div key={i} className="flex-none w-[200px] sm:w-[250px] aspect-[9/16] mx-3 rounded-2xl overflow-hidden bg-gray-100 relative shadow-md">
-                <LazyVideo src={`/videos/video${id}.mp4`} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black/10 pointer-events-none" />
+            {/* Videos interleaved with this product's own images. The list is
+                rendered twice so the marquee loops seamlessly. */}
+            {[...reelItems, ...reelItems].map((item, i) => (
+              <div
+                key={i}
+                aria-hidden={i >= reelItems.length}
+                className={`flex-none w-[200px] sm:w-[250px] aspect-[9/16] mx-3 rounded-2xl overflow-hidden relative shadow-md ${item.type === 'video' ? 'bg-gray-100' : 'bg-[#F5F3FF]'}`}
+              >
+                {item.type === 'video' ? (
+                  <>
+                    <LazyVideo src={item.src} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black/10 pointer-events-none" />
+                  </>
+                ) : (
+                  <Image
+                    src={item.src}
+                    alt={item.alt}
+                    fill
+                    sizes="250px"
+                    className="object-contain p-3"
+                  />
+                )}
               </div>
             ))}
           </div>
@@ -611,18 +640,23 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
       </div>
 
       {/* Mobile sticky buy bar */}
-      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t border-gray-200 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] flex items-center gap-4">
-        <div className="min-w-0">
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t border-gray-200 px-4 py-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] flex items-center gap-3">
+        <div className="flex-1 min-w-0">
           <p className="text-[10px] font-black text-gray-600 uppercase tracking-wider truncate">
             {mode === 'subscription' && subscription ? 'Monthly · ' : ''}
-            {tierLabel(kind, quantity)} · {product.title}
+            {tierLabel(kind, quantity)}
           </p>
-          <p className="text-lg font-black text-black leading-tight">{selectedTotal}</p>
+          <p className="text-lg font-black text-black leading-tight whitespace-nowrap">
+            {selectedTotal}
+            {mode === 'subscription' && subscription && (
+              <span className="text-[11px] font-bold text-gray-500"> / month</span>
+            )}
+          </p>
         </div>
         <button
           onClick={handleAddToCart}
           disabled={isLoading || !selectedVariant?.availableForSale}
-          className={`ml-auto flex-1 max-w-[220px] h-12 bg-[#231b50] text-white font-black text-xs tracking-widest uppercase rounded-full flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50 ${added ? 'bg-[#21bc64]' : ''}`}
+          className={`shrink-0 h-12 px-6 min-w-[150px] bg-[#231b50] text-white font-black text-xs tracking-widest uppercase rounded-full flex items-center justify-center gap-2 whitespace-nowrap transition-all active:scale-[0.98] disabled:opacity-50 ${added ? 'bg-[#21bc64]' : ''}`}
         >
           {isLoading ? (
             <Loader2 className="w-5 h-5 animate-spin" />
@@ -631,6 +665,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
               <Check className="w-5 h-5" strokeWidth={3} />
               Added
             </>
+          ) : mode === 'subscription' && subscription ? (
+            'Subscribe'
           ) : (
             'Add to cart'
           )}
