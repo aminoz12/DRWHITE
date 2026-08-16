@@ -2,6 +2,7 @@ import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
 import Image from 'next/image';
 import ResultsGallery from './ResultsGallery';
+import PhotoSoftEdge from '@/app/components/PhotoSoftEdge';
 import { STATS as SITE_STATS } from '@/lib/siteConfig';
 
 export const metadata = {
@@ -143,7 +144,10 @@ export default function ResultsPage() {
                     sizes="(max-width: 768px) 50vw, 33vw"
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent px-4 pt-10 pb-4">
+                  <PhotoSoftEdge />
+                  {/* z-10 keeps the caption above the soft-edge overlay, which
+                      sits on top of everything declared before it. */}
+                  <figcaption className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/75 via-black/30 to-transparent px-4 pt-10 pb-4">
                     <span className="text-white text-xs font-bold leading-snug">
                       {caption}
                     </span>

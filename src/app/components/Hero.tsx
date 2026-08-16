@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, Star } from 'lucide-react';
 import { STATS } from '@/lib/siteConfig';
+import PhotoSoftEdge from './PhotoSoftEdge';
 
 // The hero photograph is 2.08:1 with the model and bottle centre-right and an
 // empty backdrop on the left. Two layouts, one <Image>:
@@ -36,6 +37,7 @@ export default function Hero() {
           quality={75}
           className="object-cover object-center"
         />
+        <PhotoSoftEdge />
         {/* Scrim only where the copy actually overlaps the photo */}
         <div
           className="absolute inset-0 hidden lg:block"

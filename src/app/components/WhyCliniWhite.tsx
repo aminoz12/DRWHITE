@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import PhotoSoftEdge from './PhotoSoftEdge';
 
 const PERKS = [
   '100% Money-Back Guarantee',
@@ -101,6 +102,7 @@ export default function WhyCliniWhite() {
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover"
               />
+              <PhotoSoftEdge />
             </div>
           </div>
         </div>
