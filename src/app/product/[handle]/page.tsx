@@ -3,10 +3,13 @@ import { getProduct, getProducts, type ShopifyProductEdge } from '@/lib/shopify'
 import ProductDetails from '@/app/components/ProductDetails';
 import FAQ from '@/app/components/FAQ';
 import FeaturedCollection from '@/app/components/FeaturedCollection';
+import RealResults from '@/app/components/RealResults';
+import UgcReels from '@/app/components/UgcReels';
 import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
 import { SITE_URL, BRAND_NAME } from '@/lib/siteConfig';
 import { getServerCountry } from '@/lib/market-server';
+import { displayTitle, shortTitle } from '@/lib/productTitle';
 
 export async function generateStaticParams() {
   try {
@@ -37,7 +40,7 @@ function schemaDescription(text: string | undefined, fallback: string): string {
 }
 
 // Google truncates <title> around 60 characters. Bundle names blow past that
-// once the "| CLINI WHITE" template is appended, so append the brand only when
+// once the "| CLINIWHITE" template is appended, so append the brand only when
 // it fits, then fall back to the bare title, then to a word-boundary trim.
 const TITLE_MAX = 60;
 
@@ -63,17 +66,18 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     };
   }
 
-  const title = `${product.title} | ${BRAND_NAME}`;
+  const name = displayTitle(product.title);
+  const title = `${name} | ${BRAND_NAME}`;
   const description = cleanDescription(
     product.description,
-    `Shop ${product.title} from ${BRAND_NAME}. See product-specific directions, ingredients, price, and availability.`
+    `Shop ${name} from ${BRAND_NAME}. See product-specific directions, ingredients, price, and availability.`
   );
   const image = product.images?.edges?.[0]?.node?.url;
 
   return {
-    // `absolute` so the layout's "%s | CLINI WHITE" template cannot re-append
+    // `absolute` so the layout's "%s | CLINIWHITE" template cannot re-append
     // the brand and push the tag back over 60 characters.
-    title: { absolute: seoTitle(product.title) },
+    title: { absolute: seoTitle(name) },
     description,
     alternates: { canonical },
     openGraph: {
@@ -81,7 +85,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
       title,
       description,
       url: canonical,
-      images: image ? [{ url: image, alt: product.title }] : undefined,
+      images: image ? [{ url: image, alt: name }] : undefined,
     },
     twitter: {
       card: 'summary_large_image',
@@ -99,8 +103,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-white text-gray-900">
-        <Header />
+      <div className="min-h-screen bg-white">
+        <Header country={country} />
         <main id="main-content" className="py-10 sm:py-16">
           <div className="max-w-7xl mx-auto px-4 text-center">
             <h1 className="text-2xl font-bold">Product Not Found</h1>
@@ -109,7 +113,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </p>
           </div>
         </main>
-        <Footer />
+        <Footer country={country} />
       </div>
     );
   }
@@ -123,7 +127,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const productSchema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name: product.title,
+    name: displayTitle(product.title),
     description: schemaDescription(product.description, product.title),
     image: product.images?.edges?.map((e: { node: { url: string } }) => e.node.url) ?? [],
     brand: { '@type': 'Brand', name: BRAND_NAME },
@@ -145,18 +149,20 @@ export default async function ProductPage({ params }: ProductPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="min-h-screen bg-white">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
       />
-      <Header />
+      <Header country={country} />
       <main id="main-content">
         <ProductDetails product={product} />
-        <FAQ productTitle={product.title} />
-        <FeaturedCollection />
+        <RealResults />
+        <UgcReels />
+        <FAQ productTitle={shortTitle(product.title)} />
+        <FeaturedCollection excludeHandle={handle} />
       </main>
-      <Footer />
+      <Footer country={country} />
     </div>
   );
 }

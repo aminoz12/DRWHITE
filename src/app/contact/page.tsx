@@ -1,6 +1,8 @@
 import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
 import FAQ from '@/app/components/FAQ';
+import SectionHeading from '@/app/components/SectionHeading';
+import Marker from '@/app/components/Marker';
 import Link from 'next/link';
 import { Mail, MapPin, Clock, Package, HelpCircle, RotateCcw } from 'lucide-react';
 import ContactForm from './ContactForm';
@@ -10,7 +12,7 @@ export const metadata = {
   title: 'Contact Us',
   alternates: { canonical: '/contact' },
   description:
-    'Get in touch with the CLINI WHITE team. Questions about your order, our PAP whitening products, or partnerships — we reply within 24 hours.',
+    'Get in touch with the CLINIWHITE team. Questions about your order, our PAP whitening products, or partnerships — we reply within 24 hours.',
 };
 
 const CONTACT_CARDS = [
@@ -53,7 +55,7 @@ const QUICK_HELP = [
   {
     icon: RotateCcw,
     title: 'RETURNS & REFUNDS',
-    desc: 'Every order is covered by our 30-day money-back guarantee. No questions, no hassle.',
+    desc: "Every order is covered by our 30-day money-back guarantee. Contact us within 30 days of delivery and we'll guide you through it.",
     href: '/policies/refund-policy',
     cta: 'See our guarantee',
   },
@@ -62,11 +64,11 @@ const QUICK_HELP = [
 const contactSchema = {
   '@context': 'https://schema.org',
   '@type': 'ContactPage',
-  name: 'Contact CLINI WHITE',
+  name: 'Contact CLINIWHITE',
   url: `${SITE_URL}/contact`,
   mainEntity: {
     '@type': 'Organization',
-    name: 'CLINI WHITE',
+    name: 'CLINIWHITE',
     email: CONTACT.email,
     address: {
       '@type': 'PostalAddress',
@@ -88,19 +90,22 @@ export default function ContactPage() {
       <Header />
       <main id="main-content">
         {/* Contact info + form */}
-        <section className="py-12 sm:py-20 px-4 bg-white">
+        <section className="py-12 sm:py-20 px-4">
           <div className="max-w-6xl mx-auto grid lg:grid-cols-5 gap-10 lg:gap-16 items-start">
             {/* Info column */}
             <div className="lg:col-span-2">
-              <p className="text-[#231b50] text-xs font-black tracking-[0.3em] uppercase mb-6">
-                CONTACT DETAILS
-              </p>
-              <h1
-                className="font-display text-3xl md:text-4xl font-extrabold text-black mb-10 leading-[1.05] tracking-tight"
-              >
-                TALK TO A<br />
-                <span className="text-[#231b50]">REAL HUMAN</span>
-              </h1>
+              <SectionHeading
+                as="h1"
+                align="left"
+                eyebrow="Contact details"
+                title={
+                  <>
+                    Talk to a
+                    <br />
+                    <Marker>real human</Marker>
+                  </>
+                }
+              />
 
               <div className="space-y-4">
                 {CONTACT_CARDS.map(({ icon: Icon, title, lines, sub, href }) => {
@@ -110,7 +115,7 @@ export default function ContactPage() {
                         <Icon className="w-5 h-5 text-white" />
                       </div>
                       <div>
-                        <h3 className="text-xs font-black text-[#231b50] uppercase tracking-widest mb-1.5">
+                        <h3 className="type-eyebrow mb-1.5 text-grape">
                           {title}
                         </h3>
                         {lines.map((line) => (
@@ -134,7 +139,7 @@ export default function ContactPage() {
 
               {/* Socials */}
               <div className="mt-10">
-                <p className="text-gray-600 text-[11px] font-black uppercase tracking-widest mb-4">
+                <p className="type-eyebrow mb-4 text-gray-600">
                   Or find us on social
                 </p>
                 <div className="flex items-center gap-3">
@@ -171,7 +176,7 @@ export default function ContactPage() {
               <div className="bg-white rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-12 shadow-[0_20px_60px_rgba(35,27,80,0.08)] border border-violet-50">
                 <div className="mb-8">
                   <h2
-                    className="font-display text-2xl font-extrabold text-black uppercase tracking-tight mb-2"
+                    className="font-display font-wide text-2xl font-extrabold text-grape uppercase tracking-tight mb-2"
                   >
                     Send us a message
                   </h2>
@@ -188,16 +193,15 @@ export default function ContactPage() {
         {/* Quick help */}
         <section className="py-12 sm:py-20 px-4 bg-[#F5F3FF]">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-14">
-              <p className="text-[#231b50] text-xs font-black tracking-widest uppercase mb-3">
-                NEED A FASTER ANSWER?
-              </p>
-              <h2
-                className="font-display text-3xl md:text-4xl font-extrabold text-black tracking-tight"
-              >
-                QUICK HELP
-              </h2>
-            </div>
+            <SectionHeading
+              eyebrow="Need a faster answer?"
+              className="mb-14"
+              title={
+                <>
+                  Quick <Marker>help</Marker>
+                </>
+              }
+            />
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {QUICK_HELP.map(({ icon: Icon, title, desc, href, cta }) => (
                 <Link
@@ -208,11 +212,11 @@ export default function ContactPage() {
                   <div className="w-12 h-12 rounded-full bg-[#231b50] flex items-center justify-center mb-5">
                     <Icon className="w-5 h-5 text-white" />
                   </div>
-                  <h3 className="text-sm font-black text-[#231b50] uppercase tracking-wide mb-3">
+                  <h3 className="type-eyebrow mb-3 text-[13px] text-grape">
                     {title}
                   </h3>
                   <p className="text-xs text-gray-600 leading-relaxed mb-6 flex-1">{desc}</p>
-                  <span className="inline-flex items-center gap-2 text-xs font-black text-gray-900 uppercase tracking-widest group-hover:gap-3 group-hover:text-[#231b50] transition-all">
+                  <span className="type-eyebrow inline-flex items-center gap-2 text-gray-900 transition-all group-hover:gap-3 group-hover:text-violet">
                     {cta}
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                   </span>

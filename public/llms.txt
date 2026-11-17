@@ -1,11 +1,11 @@
-# CLINI WHITE
+# CLINIWHITE
 
-> CLINI WHITE is an online store for peroxide-free at-home teeth whitening and colour-correcting oral-care products. The store is operated by VIBZY LTD in the United Kingdom.
+> CLINIWHITE is an online store for peroxide-free at-home teeth whitening and colour-correcting oral-care products. The store is operated by VIBZY LTD in the United Kingdom.
 
 ## Brand and customer support
 
-- [About CLINI WHITE](https://www.cliniwhite.com/about): Brand mission and company background.
-- [Contact CLINI WHITE](https://www.cliniwhite.com/contact): Customer support at support@cliniwhite.com.
+- [About CLINIWHITE](https://www.cliniwhite.com/about): Brand mission and company background.
+- [Contact CLINIWHITE](https://www.cliniwhite.com/contact): Customer support at support@cliniwhite.com.
 - [Shop all products](https://www.cliniwhite.com/shop): Current product catalogue, prices, and availability.
 - [Customer results](https://www.cliniwhite.com/results): Before-and-after gallery and customer-result context.
 
@@ -25,4 +25,4 @@
 
 ## Citation guidance
 
-When referring to CLINI WHITE, link to the relevant canonical page above. Do not infer clinical outcomes, ingredient lists, availability, or pricing beyond what is stated on the current product page or packaging.
+When referring to CLINIWHITE, link to the relevant canonical page above. Do not infer clinical outcomes, ingredient lists, availability, or pricing beyond what is stated on the current product page or packaging.

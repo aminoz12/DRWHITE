@@ -27,18 +27,34 @@ export const MARKETS: Market[] = [
   { country: 'US', currency: 'USD', symbol: '$', label: 'United States (USD $)' },
 ];
 
+/**
+ * EU members Shopify's Europe market prices in their own currency rather than
+ * in euros. Their @inContext prices come back in these currencies, so the
+ * switcher pill must say so instead of claiming "EUR €" next to a CZK price.
+ */
+const LOCAL_CURRENCY_EU: Record<string, { currency: string; symbol: string; label: string }> = {
+  CZ: { currency: 'CZK', symbol: 'Kč', label: 'Czechia (CZK Kč)' },
+  DK: { currency: 'DKK', symbol: 'kr', label: 'Denmark (DKK kr)' },
+  HU: { currency: 'HUF', symbol: 'Ft', label: 'Hungary (HUF Ft)' },
+  PL: { currency: 'PLN', symbol: 'zł', label: 'Poland (PLN zł)' },
+  RO: { currency: 'RON', symbol: 'lei', label: 'Romania (RON lei)' },
+  SE: { currency: 'SEK', symbol: 'kr', label: 'Sweden (SEK kr)' },
+};
+
 /** Map any ISO country code to a supported pricing country. */
 export function normalizeCountry(code: string | null | undefined): string {
   const c = (code || '').toUpperCase().trim();
   if (!c) return DEFAULT_COUNTRY;
   if (c === 'GB' || c === 'UK') return 'GB';
-  if (EU_COUNTRIES.has(c)) return c; // any EU member prices in EUR
+  if (EU_COUNTRIES.has(c)) return c; // EU members price through the Europe market
   if (c === 'US') return 'US';
   return DEFAULT_COUNTRY;
 }
 
 export function marketForCountry(country: string): Market {
   const c = normalizeCountry(country);
+  const local = LOCAL_CURRENCY_EU[c];
+  if (local) return { country: c, ...local };
   if (EU_COUNTRIES.has(c)) return MARKETS[1];
   if (c === 'US') return MARKETS[2];
   return MARKETS[0];

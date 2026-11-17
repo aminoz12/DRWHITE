@@ -8,6 +8,7 @@ import {
   updateCartLines,
   removeCartLines,
   updateCartBuyerCountry,
+  updateCartDiscountCodes,
   normalizeCheckoutUrl,
   type Cart,
   type CartLine,
@@ -38,15 +39,24 @@ interface CartState {
   subtotalCurrency: string;
   isOpen: boolean;
   isLoading: boolean;
+  /** Discount code the shopper claimed (welcome offer); applied to every cart. */
+  discountCode: string | null;
+  /** The claimed code once Shopify has accepted it for the current cart. */
+  appliedDiscountCode: string | null;
 
   // Actions
   openCart: () => void;
   closeCart: () => void;
-  /** `sellingPlanId` makes the line a recurring subscription. */
-  addItem: (variantId: string, quantity?: number, sellingPlanId?: string) => Promise<void>;
+  /**
+   * `sellingPlanId` makes the line a recurring subscription. Resolves to
+   * false when Shopify rejected the line, so callers never show "Added".
+   */
+  addItem: (variantId: string, quantity?: number, sellingPlanId?: string) => Promise<boolean>;
   removeItem: (lineId: string) => Promise<void>;
   updateQuantity: (lineId: string, quantity: number) => Promise<void>;
   setCountry: (country: string) => Promise<void>;
+  /** Remember a code and apply it to the cart now (or to the next cart created). */
+  applyDiscountCode: (code: string) => Promise<void>;
   clearCart: () => void;
 }
 
@@ -66,6 +76,17 @@ function cartToItems(cart: Cart): CartItem[] {
   }));
 }
 
+// State every cart mutation refreshes from Shopify's response.
+function cartSnapshot(cart: Cart) {
+  return {
+    items: cartToItems(cart),
+    totalQuantity: cart.totalQuantity,
+    subtotal: cart.cost.subtotalAmount.amount,
+    subtotalCurrency: cart.cost.subtotalAmount.currencyCode,
+    appliedDiscountCode: cart.discountCodes?.find((d) => d.applicable)?.code ?? null,
+  };
+}
+
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
@@ -77,6 +98,8 @@ export const useCartStore = create<CartState>()(
       subtotalCurrency: 'GBP',
       isOpen: false,
       isLoading: false,
+      discountCode: null,
+      appliedDiscountCode: null,
 
       openCart: () => set({ isOpen: true }),
       closeCart: () => set({ isOpen: false }),
@@ -84,28 +107,32 @@ export const useCartStore = create<CartState>()(
       addItem: async (variantId: string, quantity = 1, sellingPlanId?: string) => {
         set({ isLoading: true });
         try {
-          const { cartId } = get();
+          const { cartId, discountCode } = get();
           // Only send sellingPlanId when there is one — Shopify rejects null.
           const line = sellingPlanId
             ? { merchandiseId: variantId, quantity, sellingPlanId }
             : { merchandiseId: variantId, quantity };
 
-          let cart: Cart | null;
+          let cart: Cart | null = null;
           if (cartId) {
             cart = await addCartLines(cartId, [line]);
-          } else {
-            cart = await createCart([line]);
+          }
+          // No cart yet, or the persisted one is gone (Shopify drops a cart
+          // once its checkout completes, and expires idle carts after ~10
+          // days). Either way, start a fresh cart rather than failing silently.
+          if (!cart) {
+            cart = await createCart([line], discountCode ? [discountCode] : []);
           }
 
+          if (!cart) return false;
+
           if (cart) {
-            const items = cartToItems(cart);
+            const snapshot = cartSnapshot(cart);
+            const { items } = snapshot;
             set({
               cartId: cart.id,
               checkoutUrl: normalizeCheckoutUrl(cart.checkoutUrl),
-              items,
-              totalQuantity: cart.totalQuantity,
-              subtotal: cart.cost.subtotalAmount.amount,
-              subtotalCurrency: cart.cost.subtotalAmount.currencyCode,
+              ...snapshot,
               isOpen: true,
             });
 
@@ -121,8 +148,10 @@ export const useCartStore = create<CartState>()(
               });
             }
           }
+          return true;
         } catch (err) {
           console.error('addItem error:', err);
+          return false;
         } finally {
           set({ isLoading: false });
         }
@@ -134,14 +163,7 @@ export const useCartStore = create<CartState>()(
         set({ isLoading: true });
         try {
           const cart = await removeCartLines(cartId, [lineId]);
-          if (cart) {
-            set({
-              items: cartToItems(cart),
-              totalQuantity: cart.totalQuantity,
-              subtotal: cart.cost.subtotalAmount.amount,
-              subtotalCurrency: cart.cost.subtotalAmount.currencyCode,
-            });
-          }
+          if (cart) set(cartSnapshot(cart));
         } catch (err) {
           console.error('removeItem error:', err);
         } finally {
@@ -158,14 +180,7 @@ export const useCartStore = create<CartState>()(
         set({ isLoading: true });
         try {
           const cart = await updateCartLines(cartId, [{ id: lineId, quantity }]);
-          if (cart) {
-            set({
-              items: cartToItems(cart),
-              totalQuantity: cart.totalQuantity,
-              subtotal: cart.cost.subtotalAmount.amount,
-              subtotalCurrency: cart.cost.subtotalAmount.currencyCode,
-            });
-          }
+          if (cart) set(cartSnapshot(cart));
         } catch (err) {
           console.error('updateQuantity error:', err);
         } finally {
@@ -183,14 +198,27 @@ export const useCartStore = create<CartState>()(
           if (cart) {
             set({
               checkoutUrl: normalizeCheckoutUrl(cart.checkoutUrl),
-              items: cartToItems(cart),
-              totalQuantity: cart.totalQuantity,
-              subtotal: cart.cost.subtotalAmount.amount,
-              subtotalCurrency: cart.cost.subtotalAmount.currencyCode,
+              ...cartSnapshot(cart),
             });
           }
         } catch (err) {
           console.error('setCountry error:', err);
+        } finally {
+          set({ isLoading: false });
+        }
+      },
+
+      applyDiscountCode: async (code: string) => {
+        set({ discountCode: code });
+        const { cartId } = get();
+        // No cart yet — addItem passes the code when it creates one.
+        if (!cartId) return;
+        set({ isLoading: true });
+        try {
+          const cart = await updateCartDiscountCodes(cartId, [code]);
+          if (cart) set(cartSnapshot(cart));
+        } catch (err) {
+          console.error('applyDiscountCode error:', err);
         } finally {
           set({ isLoading: false });
         }
@@ -204,6 +232,7 @@ export const useCartStore = create<CartState>()(
           totalQuantity: 0,
           subtotal: '0',
           subtotalCurrency: 'GBP',
+          appliedDiscountCode: null,
           isOpen: false,
         }),
     }),
@@ -217,6 +246,8 @@ export const useCartStore = create<CartState>()(
         totalQuantity: state.totalQuantity,
         subtotal: state.subtotal,
         subtotalCurrency: state.subtotalCurrency,
+        discountCode: state.discountCode,
+        appliedDiscountCode: state.appliedDiscountCode,
       }),
     }
   )

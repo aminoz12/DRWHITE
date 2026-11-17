@@ -3,88 +3,25 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Check, Loader2 } from 'lucide-react';
 import { useCartStore } from '@/lib/cartStore';
 import { formatMoney, getDiscountPercent } from '@/lib/money';
-import { STATS } from '@/lib/siteConfig';
+import { productTagline } from '@/lib/productStyle';
+import { displayTitle, shortTitle } from '@/lib/productTitle';
 
-// ─── Deterministic mock data from product handle ─────────────────────────
-function hashString(str: string): number {
-  let h = 0;
-  for (let i = 0; i < str.length; i++) h = ((h << 5) - h + str.charCodeAt(i)) | 0;
-  return Math.abs(h);
+// Merchandising badge. Only explicit tags count — never a guessed offer and
+// never a raw internal tag.
+function getBadge(tags?: string[]): string | null {
+  const t = (tags ?? []).map((x) => x.toLowerCase().trim());
+  if (t.includes('sale')) return 'Sale';
+  if (t.includes('bestseller') || t.includes('best seller')) return 'Bestseller';
+  if (t.includes('new')) return 'New';
+  return null;
 }
 
-// ─── Badge helpers ───────────────────────────────────────────────────────
-interface BadgeInfo {
-  label: string;
-  bg: string;
-  text: string;
-}
-
-function getBadge(tags?: string[]): BadgeInfo | null {
-  if (!tags || tags.length === 0) return null;
-  const t = tags.map((x) => x.toLowerCase().trim());
-  if (t.includes('sale')) return { label: 'SALE', bg: 'bg-[#E85D75]', text: 'text-white' };
-  if (t.includes('bestseller') || t.includes('best seller')) return { label: 'BESTSELLER', bg: 'bg-[#4A90D9]', text: 'text-white' };
-  if (t.includes('viral')) return { label: 'VIRAL', bg: 'bg-[#E85D75]', text: 'text-white' };
-  if (t.includes('2+1 free') || t.includes('2+1') || t.includes('bundle')) return { label: '2+1 FREE', bg: 'bg-[#7C5CFC]', text: 'text-white' };
-  // fallback: use first tag as badge
-  return { label: tags[0].toUpperCase(), bg: 'bg-gray-400', text: 'text-white' };
-}
-
-// ─── Color swatch helper ─────────────────────────────────────────────────
-function getColorOption(options?: Array<{ name: string; values: string[] }>) {
-  return options?.find((o) => /color|colour/i.test(o.name));
-}
-
-// Map common color names to approximate hex values
-function colorNameToHex(name: string): string {
-  const map: Record<string, string> = {
-    red: '#ef4444', pink: '#ec4899', rose: '#fb7185',
-    orange: '#f97316', amber: '#f59e0b', yellow: '#eab308',
-    green: '#22c55e', emerald: '#10b981', teal: '#14b8a6',
-    cyan: '#06b6d4', blue: '#3b82f6', indigo: '#6366f1',
-    violet: '#8b5cf6', purple: '#a855f7', fuchsia: '#d946ef',
-    white: '#f9fafb', black: '#111827', gray: '#9ca3af',
-    grey: '#9ca3af', brown: '#92400e', beige: '#fde68a',
-    nude: '#fde68a', mint: '#a7f3d0', peach: '#fed7aa',
-    coral: '#ff7f50', burgundy: '#7f1d1d', navy: '#1e3a8a',
-    lavender: '#c4b5fd', cream: '#fef3c7', ivory: '#fffbeb',
-    gold: '#fbbf24', silver: '#e5e7eb',
-  };
-  const key = name.toLowerCase().trim();
-  for (const [k, v] of Object.entries(map)) if (key.includes(k)) return v;
-  // Hash-based fallback
-  const h = hashString(key);
-  const hue = h % 360;
-  return `hsl(${hue}, 65%, 60%)`;
-}
-
-// ─── Star component ────────────────────────────────────────────────────────
-function Star({ filled, size = 10 }: { filled: boolean; size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" className={filled ? 'text-[#231b50]' : 'text-gray-300'}>
-      <path fill="currentColor" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-    </svg>
-  );
-}
-
-function StarRating({ rating, count, size = 10 }: { rating: number; count?: number; size?: number }) {
-  const stars = Array.from({ length: 5 }, (_, i) => i < Math.round(rating));
-  return (
-    <div className="flex items-center gap-0.5">
-      {stars.map((filled, i) => (
-        <Star key={i} filled={filled} size={size} />
-      ))}
-      {count !== undefined && (
-        <span className="text-[11px] text-gray-600 ml-1">({count.toLocaleString()})</span>
-      )}
-    </div>
-  );
-}
-
-// ─── Types ───────────────────────────────────────────────────────────────
 interface ProductCardProps {
+  /** Tile behind the packshot: tinted on white sections, white on tinted ones. */
+  tile?: 'tint' | 'white';
   product: {
     id: string;
     title: string;
@@ -102,7 +39,6 @@ interface ProductCardProps {
         node: { url: string; altText: string | null };
       }>;
     };
-    options?: Array<{ name: string; values: string[] }>;
     variants?: {
       edges: Array<{
         node: {
@@ -115,105 +51,101 @@ interface ProductCardProps {
   };
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, tile = 'tint' }: ProductCardProps) {
   const image = product.images.edges[0]?.node;
   const price = product.priceRange.minVariantPrice;
   const comparePrice = product.compareAtPriceRange?.minVariantPrice;
   const firstVariant = product.variants?.edges[0]?.node;
   const badge = getBadge(product.tags);
-  const colorOpt = getColorOption(product.options);
 
+  const [adding, setAdding] = useState(false);
   const [added, setAdded] = useState(false);
   const { addItem, isLoading } = useCartStore();
 
-  const handleQuickAdd = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!firstVariant?.id || !firstVariant.availableForSale) return;
-    await addItem(firstVariant.id, 1);
+  const available = Boolean(firstVariant?.id && firstVariant.availableForSale);
+  const handleAdd = async () => {
+    if (!firstVariant?.id || !available) return;
+    setAdding(true);
+    const ok = await addItem(firstVariant.id, 1);
+    setAdding(false);
+    if (!ok) return;
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
 
   const discountPercent = getDiscountPercent(price.amount, comparePrice?.amount);
-  const hasDiscount = discountPercent > 0;
-  const formattedPrice = formatMoney(price.amount, price.currencyCode);
-  const formattedOriginalPrice = formatMoney(comparePrice?.amount, comparePrice?.currencyCode || price.currencyCode);
-  const canQuickAdd = Boolean(firstVariant?.id && firstVariant.availableForSale);
+  const href = `/product/${product.handle}`;
+  const fullName = displayTitle(product.title);
 
+  // The card is clickable through the title link's ::after overlay; the badges
+  // and the Add to cart button sit above it (z-10) so nothing nests.
   return (
-    <Link href={`/product/${product.handle}`} className="group block">
-      {/* Image area — no cadre, product directly */}
-      <div className="relative aspect-square overflow-hidden mb-3">
-        {/* Badge — positioned at top-left of image */}
-        {badge && (
-          <div className="absolute top-2 left-2 z-10">
-            <span className={`inline-block ${badge.bg} ${badge.text} text-[10px] font-black tracking-widest uppercase px-2 py-1 rounded-md`}>
-              {badge.label}
-            </span>
-          </div>
-        )}
-
-        {/* Product image */}
-        {image ? (
-          <Image
-            src={image.url}
-            alt={image.altText || product.title}
-            fill
-            className="object-contain transition-transform duration-500 group-hover:scale-105"
-            sizes="(max-width: 768px) 50vw, 25vw"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-600 text-xs">
-            No Image
-          </div>
-        )}
-      </div>
-
-      {/* Info below image — no card padding */}
-      <div className="space-y-1.5">
-        {/* Star rating */}
-        <StarRating rating={STATS.rating} size={10} />
-
-        {/* Product name */}
-        <h3 className="text-xs sm:text-[13px] font-black text-black uppercase tracking-wide leading-tight line-clamp-2">
-          {product.title}
-        </h3>
-
-        {/* Color swatches */}
-        {colorOpt && colorOpt.values.length > 0 && (
-          <div className="flex items-center gap-1">
-            {colorOpt.values.slice(0, 4).map((val, i) => (
-              <span
-                key={i}
-                className="w-3 h-3 rounded-full border border-gray-200"
-                style={{ backgroundColor: colorNameToHex(val) }}
-                title={val}
-              />
-            ))}
-            {colorOpt.values.length > 4 && (
-              <span className="text-[10px] text-gray-600 font-medium ml-0.5">+{colorOpt.values.length - 4}</span>
+    <div className="group relative flex h-full flex-col">
+      <div
+        className={`relative aspect-square overflow-hidden rounded-[1.25rem] ${
+          tile === 'tint' ? 'bg-lavender' : 'bg-white'
+        }`}
+      >
+        {(badge || discountPercent > 0) && (
+          <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-1.5">
+            {badge && <span className="tag bg-white px-2.5 py-1.5 text-[10px] text-grape">{badge}</span>}
+            {discountPercent > 0 && (
+              <span className="tag bg-violet px-2.5 py-1.5 text-[10px] text-white">Save {discountPercent}%</span>
             )}
           </div>
         )}
 
-        {/* Price */}
-        <div className="flex flex-wrap items-baseline gap-x-2">
-          <span className="text-sm font-black text-black">{formattedPrice}</span>
-          {hasDiscount && (
-            <span className="text-xs text-gray-600 line-through">{formattedOriginalPrice}</span>
+        {image ? (
+          <Image
+            src={image.url}
+            alt={image.altText || fullName}
+            fill
+            className="object-contain p-6 mix-blend-multiply transition-transform duration-500 group-hover:scale-[1.04]"
+            sizes="(max-width: 768px) 50vw, 25vw"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-xs text-gray-600">No Image</div>
+        )}
+      </div>
+
+      <div className="flex flex-1 flex-col px-0.5 pt-4">
+        <h3 className="line-clamp-2 text-[15px] font-semibold leading-snug text-grape sm:text-base">
+          <Link href={href} className="after:absolute after:inset-0">
+            {shortTitle(product.title)}
+          </Link>
+        </h3>
+        <p className="mt-1 text-[13px] leading-snug text-gray-500">{productTagline(product.title)}</p>
+        <div className="mt-2 flex flex-wrap items-baseline gap-x-2">
+          <span className="text-base font-bold text-grape">{formatMoney(price.amount, price.currencyCode)}</span>
+          {discountPercent > 0 && (
+            <span className="text-sm text-gray-500 line-through">
+              {formatMoney(comparePrice?.amount, comparePrice?.currencyCode || price.currencyCode)}
+            </span>
           )}
         </div>
 
-        {/* Bottom black stars */}
-        <div className="flex items-center gap-0.5 pt-0.5">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <svg key={i} width={9} height={9} viewBox="0 0 24 24" className="text-black">
-              <path fill="currentColor" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-            </svg>
-          ))}
-        </div>
+        {/* Spacer keeps every card's button on the same baseline in a row. */}
+        <div className="min-h-4 flex-1" aria-hidden />
+        <button
+          type="button"
+          onClick={handleAdd}
+          disabled={!available || isLoading}
+          aria-label={available ? `Add ${fullName} to cart` : `${fullName} is sold out`}
+          className={`btn-primary relative z-10 min-h-11 w-full px-3 text-[11px] ${added ? 'bg-[#1d8f50]! hover:bg-[#1d8f50]!' : ''}`}
+        >
+          {adding ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : added ? (
+            <>
+              <Check className="h-4 w-4" strokeWidth={3} /> Added
+            </>
+          ) : available ? (
+            'Add to cart'
+          ) : (
+            'Sold out'
+          )}
+        </button>
       </div>
-    </Link>
+    </div>
   );
 }

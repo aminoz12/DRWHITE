@@ -3,6 +3,8 @@ import { getProducts } from '@/lib/shopify';
 import { getServerCountry } from '@/lib/market-server';
 import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
+import SectionHeading from '@/app/components/SectionHeading';
+import Marker from '@/app/components/Marker';
 import ShopGrid from './ShopGrid';
 
 
@@ -18,13 +20,22 @@ export default async function ShopPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Header />
+      <Header country={country} />
       
       <main id="main-content">
         {/* Product Listing Section */}
-        <section className="pt-10 sm:pt-16 pb-14 sm:pb-24 relative z-10">
+        <section className="relative z-10 pb-14 pt-10 sm:pb-24 sm:pt-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 className="sr-only">Shop All CLINI WHITE Teeth Whitening Products</h1>
+            <SectionHeading
+              as="h1"
+              eyebrow="Peroxide-free, every one"
+              className="mb-8"
+              title={
+                <>
+                  Shop <Marker>all</Marker>
+                </>
+              }
+            />
             {products.length === 0 ? (
               <div className="bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-xl">
                 <p className="text-gray-600 font-medium">
@@ -38,7 +49,7 @@ export default async function ShopPage() {
         </section>
       </main>
 
-      <Footer />
+      <Footer country={country} />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Header from "@/app/components/Header";
 import Footer from "@/app/components/Footer";
+import SectionHeading from "@/app/components/SectionHeading";
 import { POLICIES, getPolicy, POLICY_LAST_UPDATED } from "@/lib/legalContent";
 import { SITE_URL } from "@/lib/siteConfig";
 
@@ -23,7 +24,7 @@ export async function generateMetadata({ params }: PolicyPageProps): Promise<Met
     description: policy.description,
     alternates: { canonical },
     openGraph: {
-      title: `${policy.title} | CLINI WHITE`,
+      title: `${policy.title} | CLINIWHITE`,
       description: policy.description,
       url: canonical,
     },
@@ -40,12 +41,7 @@ export default async function PolicyPage({ params }: PolicyPageProps) {
       <Header />
       <main id="main-content" className="py-10 sm:py-16 md:py-24 px-4">
         <article className="max-w-3xl mx-auto">
-          <p className="text-[#231b50] text-xs font-black tracking-[0.3em] uppercase mb-4">
-            Legal
-          </p>
-          <h1 className="font-display text-3xl md:text-4xl font-extrabold text-black tracking-tight mb-3">
-            {policy.title}
-          </h1>
+          <SectionHeading as="h1" align="left" eyebrow="Legal" className="mb-3" title={policy.title} />
           <p className="text-xs text-gray-600 mb-8">Last updated: {POLICY_LAST_UPDATED}</p>
 
           <p className="text-base text-gray-700 leading-relaxed mb-10">{policy.intro}</p>
@@ -53,7 +49,7 @@ export default async function PolicyPage({ params }: PolicyPageProps) {
           <div className="space-y-10">
             {policy.sections.map((section) => (
               <section key={section.heading}>
-                <h2 className="font-display text-lg font-extrabold text-[#231b50] uppercase tracking-wide mb-3">
+                <h2 className="font-display font-wide text-lg font-extrabold text-grape uppercase tracking-wide mb-3">
                   {section.heading}
                 </h2>
                 <div className="space-y-3">

@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { COUNTRY_COOKIE, normalizeCountry } from './lib/market';
 
-// First visit: default the pricing country from Vercel's geo header
+// Next 16 "proxy" (formerly middleware). First visit: default the pricing country from Vercel's geo header
 // (x-vercel-ip-country). The footer currency switcher overwrites the
 // cookie afterwards, and we never override an existing choice.
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const response = NextResponse.next();
   if (!request.cookies.get(COUNTRY_COOKIE)) {
     const geo = request.headers.get('x-vercel-ip-country');

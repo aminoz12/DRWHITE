@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Poppins } from "next/font/google";
+import { Mona_Sans } from "next/font/google";
 import "./globals.css";
 import PromoPopup from "./components/PromoPopup";
 import CartDrawer from "./components/CartDrawer";
@@ -7,35 +7,26 @@ import Analytics from "./components/Analytics";
 import RouteTracker from "./components/RouteTracker";
 import { SOCIALS, CONTACT, COMPANY, SITE_URL } from "@/lib/siteConfig";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// One variable family for the whole site: its wide cut (wdth 125) sets the
+// wordmark and uppercase headlines, the regular cut sets everything you read.
+// The hero keeps its original fonts (loaded in Hero.tsx).
+const monaSans = Mona_Sans({
+  variable: "--font-mona",
   subsets: ["latin"],
+  axes: ["wdth"],
   display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const poppins = Poppins({
-  variable: "--font-poppins",
-  subsets: ["latin"],
-  weight: ["600", "700", "800"],
-  display: "swap",
-});
-
-const SITE_NAME = "CLINI WHITE";
+const SITE_NAME = "CLINIWHITE";
 const SITE_DESCRIPTION =
-  "At-home teeth whitening and colour-correcting oral care for a brighter-looking smile. Explore CLINI WHITE products worldwide.";
+  "At-home teeth whitening and colour-correcting oral care for a brighter-looking smile. Explore CLINIWHITE products worldwide.";
 const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Stained Teeth? Get a Brighter Smile at Home | CLINI WHITE",
-    template: "%s | CLINI WHITE",
+    default: "Stained Teeth? Get a Brighter Smile at Home | CLINIWHITE",
+    template: "%s | CLINIWHITE",
   },
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
@@ -51,7 +42,7 @@ export const metadata: Metadata = {
     "whitening pen",
     "whitening toothpaste",
     "sensitive teeth whitening",
-    "CLINI WHITE",
+    "CLINIWHITE",
     "worldwide teeth whitening",
     "cosmetic dentistry",
   ],
@@ -69,22 +60,24 @@ export const metadata: Metadata = {
     locale: "en_GB",
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: "Stained Teeth? Get a Brighter Smile at Home | CLINI WHITE",
+    title: "Stained Teeth? Get a Brighter Smile at Home | CLINIWHITE",
     description: SITE_DESCRIPTION,
     images: [
       {
-        url: "/hero.jpeg",
+        // Pre-cropped 1200x630 share image (hero.jpeg itself is 2752x1321;
+        // declaring the wrong size made link previews crop unpredictably).
+        url: "/og.jpg",
         width: 1200,
         height: 630,
-        alt: "CLINI WHITE at-home teeth whitening for a brighter smile",
+        alt: "CLINIWHITE at-home teeth whitening for a brighter smile",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Stained Teeth? Get a Brighter Smile at Home | CLINI WHITE",
+    title: "Stained Teeth? Get a Brighter Smile at Home | CLINIWHITE",
     description: SITE_DESCRIPTION,
-    images: ["/hero.jpeg"],
+    images: ["/og.jpg"],
     creator: "@cliniwhite",
   },
   robots: {
@@ -127,7 +120,9 @@ const organizationSchema = {
   name: SITE_NAME,
   legalName: COMPANY.legalName,
   url: SITE_URL,
-  logo: `${SITE_URL}/favicon.ico`,
+  // Google requires a crawlable raster logo of at least 112x112px; an .ico
+  // is ignored for the Organization/OnlineStore knowledge panel.
+  logo: `${SITE_URL}/logo.png`,
   description: SITE_DESCRIPTION,
   email: CONTACT.email,
   sameAs: [SOCIALS.facebook, SOCIALS.instagram, SOCIALS.tiktok],
@@ -173,7 +168,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} h-full antialiased`}
+      className={`${monaSans.variable} h-full antialiased`}
     >
       <head>
         <script
@@ -188,7 +183,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[200] focus:bg-[#231b50] focus:text-white focus:px-4 focus:py-2 focus:rounded-md focus:text-sm focus:font-bold"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[200] focus:bg-grape focus:text-white focus:px-4 focus:py-2 focus:rounded-md focus:text-sm focus:font-bold"
         >
           Skip to content
         </a>

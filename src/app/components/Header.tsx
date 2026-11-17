@@ -27,7 +27,8 @@ const leftNav = [
   { label: 'ABOUT', href: '/about' },
 ];
 
-export default function Header() {
+/** `country`: the pricing country of a page that shows prices (see CurrencySwitcher). */
+export default function Header({ country }: { country?: string } = {}) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { totalQuantity, openCart } = useCartStore();
 
@@ -39,33 +40,33 @@ export default function Header() {
     () => false
   );
 
-  const linkClass = "text-xs font-bold text-black hover:opacity-60 tracking-[0.15em] uppercase transition-opacity";
+  const linkClass = "type-eyebrow text-grape transition-colors hover:text-violet";
 
   return (
     <>
       {/* Announcement bar — rotating true perks. A complementary landmark so
           the marquee items are not orphaned outside header/main/footer. */}
-      <aside aria-label="Store announcements" className="bg-black text-white py-1.5 overflow-hidden">
+      <aside aria-label="Store announcements" className="overflow-hidden bg-grape-deep py-2 text-white">
         <div className="animate-marquee flex w-max whitespace-nowrap">
           {[...PERKS, ...PERKS].map((perk, i) => (
             <span
               key={i}
               aria-hidden={i >= PERKS.length}
-              className="text-[10px] sm:text-xs font-bold tracking-wide sm:tracking-wider uppercase mx-5 flex items-center gap-5"
+              className="type-eyebrow mx-5 flex items-center gap-5 text-[10px] text-white/85 sm:text-[11px]"
             >
               {perk}
-              <span className="opacity-40" aria-hidden>✦</span>
+              <span className="h-1 w-1 rounded-full bg-lilac" aria-hidden />
             </span>
           ))}
         </div>
       </aside>
 
       {/* Navbar */}
-      <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
+      <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/85">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-14">
+          <div className="flex h-16 items-center justify-between">
             {/* Left Nav */}
-            <nav className="hidden lg:flex items-center space-x-6">
+            <nav className="hidden items-center gap-7 lg:flex">
               {leftNav.map((item) => (
                 <Link key={item.label} href={item.href} className={linkClass}>
                   {item.label}
@@ -75,7 +76,7 @@ export default function Header() {
 
             {/* Center Logo */}
             <Link href="/" className="lg:absolute lg:left-1/2 lg:-translate-x-1/2 flex items-center min-w-0">
-              <span className="text-lg sm:text-xl lg:text-2xl font-black tracking-tight whitespace-nowrap" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', color: '#231b50' }}>
+              <span className="whitespace-nowrap font-display font-wide text-xl font-black tracking-[-0.02em] text-grape sm:text-2xl lg:text-[1.65rem]">
                 CLINIWHITE
               </span>
             </Link>
@@ -88,7 +89,7 @@ export default function Header() {
 
               <a
                 href={SHOPIFY_ACCOUNT}
-                className="p-1.5 text-black hover:opacity-60 transition-opacity hidden sm:flex items-center"
+                className="hidden items-center p-1.5 text-grape transition-colors hover:text-violet sm:flex"
                 aria-label="My Account"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
@@ -96,24 +97,24 @@ export default function Header() {
                 </svg>
               </a>
 
-              <CurrencySwitcher />
+              <CurrencySwitcher initialCountry={country} />
 
               <button
                 type="button"
                 onClick={openCart}
-                className="p-1.5 text-black hover:opacity-60 transition-opacity relative"
+                className="relative p-1.5 text-grape transition-colors hover:text-violet"
                 aria-label="Open cart"
               >
                 <ShoppingBag className="w-5 h-5" />
                 {hydrated && totalQuantity > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center w-4 h-4 rounded-full bg-black text-white text-[10px] font-bold">
+                  <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-violet px-1 text-[10px] font-bold text-white">
                     {totalQuantity > 9 ? '9+' : totalQuantity}
                   </span>
                 )}
               </button>
 
               <button
-                className="p-1.5 text-black hover:opacity-60 transition-opacity lg:hidden"
+                className="p-1.5 text-grape transition-colors hover:text-violet lg:hidden"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
                 aria-expanded={mobileMenuOpen}
@@ -127,18 +128,18 @@ export default function Header() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div id="mobile-menu" className="lg:hidden border-t border-gray-100 bg-white">
-            <nav className="px-4 py-2">
+          <div id="mobile-menu" className="border-t border-gray-200 bg-white lg:hidden">
+            <nav className="px-4 py-3">
               {leftNav.map((item) => (
-                <Link key={item.label} href={item.href} className="block py-3 text-sm font-bold text-black tracking-wider uppercase" onClick={() => setMobileMenuOpen(false)}>
+                <Link key={item.label} href={item.href} className="type-eyebrow block py-3.5 text-[13px] text-grape" onClick={() => setMobileMenuOpen(false)}>
                   {item.label}
                 </Link>
               ))}
-              <Link href="/contact" className="block py-3 text-sm font-bold text-black tracking-wider uppercase" onClick={() => setMobileMenuOpen(false)}>
+              <Link href="/contact" className="type-eyebrow block py-3.5 text-[13px] text-grape" onClick={() => setMobileMenuOpen(false)}>
                 CONTACT
               </Link>
               {/* The account icon is desktop-only, so phones need it here. */}
-              <a href={SHOPIFY_ACCOUNT} className="block py-3 text-sm font-bold text-black tracking-wider uppercase border-t border-gray-100 mt-1">
+              <a href={SHOPIFY_ACCOUNT} className="type-eyebrow mt-1 block border-t border-gray-200 py-3.5 text-[13px] text-grape">
                 MY ACCOUNT
               </a>
             </nav>

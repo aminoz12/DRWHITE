@@ -28,7 +28,7 @@ export function getProductKind(title: string): ProductKind {
 /** Answer to the "How do I use it?" FAQ, written per product type. */
 export const USAGE_ANSWER: Record<ProductKind, string> = {
   strips:
-    'Peel the strip from its backing, press it onto clean, dry upper and lower teeth, and leave it for 30 minutes. Peel it off and rinse. Use once daily for best results.',
+    'Peel the strip from its backing, press it onto clean, dry upper and lower teeth, and leave it for 30 minutes. Peel it off and rinse. Use once daily for 14 days — one pack is a full treatment.',
   toothpaste:
     'Squeeze a pea-sized amount onto a dry toothbrush and brush gently for 2-3 minutes so the V34 pigments can neutralise yellow tones, then rinse thoroughly. Use once or twice daily.',
   serum:
@@ -42,7 +42,7 @@ export const USAGE_ANSWER: Record<ProductKind, string> = {
   toothbrush:
     'Charge the toothbrush fully before first use, then brush for the full 2-minute timer using your preferred mode. Rinse the head afterwards and replace it every 3 months.',
   bundle:
-    'Start with the core whitening product in your set, then layer in the colour-correcting products as part of your daily routine. Each item includes its own directions — use as directed and stay consistent for 7-14 days.',
+    'Start with the core whitening product in your set, then layer in the colour-correcting products as part of your daily routine. Each item includes its own directions — use as directed and stay consistent for 14 days.',
   other:
-    'Use as directed on the packaging, once daily for best results. Every CLINI WHITE product is designed to work alongside the rest of the V34 range.',
+    'Use as directed on the packaging, once daily for best results. Every CLINIWHITE product is designed to work alongside the rest of the V34 range.',
 };

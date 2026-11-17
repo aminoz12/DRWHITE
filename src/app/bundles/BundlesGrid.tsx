@@ -3,9 +3,10 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShoppingBag, Loader2, Tag } from 'lucide-react';
+import { ShoppingBag, Loader2, Check, ArrowRight } from 'lucide-react';
 import { useCartStore } from '@/lib/cartStore';
 import { formatMoney } from '@/lib/money';
+import { shortTitle } from '@/lib/productTitle';
 
 function calculateDiscount(price: number, comparePrice: number): number {
   if (!comparePrice || comparePrice <= price) return 0;
@@ -38,10 +39,15 @@ interface BundleProduct {
 
 export default function BundlesGrid({ products }: { products: BundleProduct[] }) {
   const { addItem, isLoading } = useCartStore();
+  const [addingId, setAddingId] = useState<string | null>(null);
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
 
   const handleAdd = async (variantId: string) => {
-    await addItem(variantId, 1);
+    setAddingId(variantId);
+    const ok = await addItem(variantId, 1);
+    setAddingId(null);
+    // Only confirm when Shopify actually accepted the line.
+    if (!ok) return;
     setAddedIds((prev) => new Set(prev).add(variantId));
     setTimeout(() => {
       setAddedIds((prev) => {
@@ -54,7 +60,7 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
 
   if (products.length > 0) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
         {products.map(({ node }) => {
           const price = parseFloat(node.priceRange.minVariantPrice.amount);
           const comparePrice = node.compareAtPriceRange?.minVariantPrice?.amount
@@ -64,51 +70,48 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
           const image = node.images.edges[0]?.node;
           const variant = node.variants?.edges[0]?.node;
           const currency = node.priceRange.minVariantPrice.currencyCode;
+          const added = variant ? addedIds.has(variant.id) : false;
 
           return (
             <div
               key={node.id}
-              className="relative bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col"
+              className="group relative flex flex-col overflow-hidden rounded-[1.75rem] border border-gray-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_60px_-35px_rgba(35,27,80,0.35)]"
             >
               {discount > 0 && (
-                <div className="absolute top-4 left-4 z-10 bg-[#231b50] text-white text-xs font-black px-3 py-1.5 rounded-full flex items-center gap-1">
-                  <Tag className="w-3 h-3" />
-                  SAVE {discount}%
-                </div>
+                <span className="tag absolute left-4 top-4 z-10 bg-violet text-white">Save {discount}%</span>
               )}
 
-              {/* White image area with a light frame ("cadre") */}
-              <div className="relative aspect-square bg-white p-4">
-                <div className="relative w-full h-full rounded-xl border border-gray-100 bg-white overflow-hidden">
+              {/* Lavender tile, the same as the product cards */}
+              <Link href={`/product/${node.handle}`} className="relative block aspect-square p-3">
+                <div className="relative h-full w-full overflow-hidden rounded-[1.25rem] bg-lavender">
                   {image ? (
                     <Image
                       src={image.url}
                       alt={image.altText || node.title}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-contain p-5"
+                      className="object-contain p-6 mix-blend-multiply transition-transform duration-500 group-hover:scale-[1.04]"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-600">
-                      <ShoppingBag className="w-12 h-12 opacity-20" />
+                    <div className="flex h-full w-full items-center justify-center text-gray-600">
+                      <ShoppingBag className="h-12 w-12 opacity-20" />
                     </div>
                   )}
                 </div>
-              </div>
+              </Link>
 
-              <div className="p-6 flex flex-col flex-1">
-                <h3
-                  className="text-lg font-black text-black uppercase tracking-wide mb-1"
-                  style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
-                >
-                  {node.title}
+              <div className="flex flex-1 flex-col p-6">
+                <h3 className="mb-1 text-lg font-semibold leading-snug text-grape">
+                  <Link href={`/product/${node.handle}`} className="hover:text-violet">
+                    {shortTitle(node.title)}
+                  </Link>
                 </h3>
                 {node.description && (
-                  <p className="text-xs text-gray-600 mb-4 line-clamp-2">{node.description}</p>
+                  <p className="mb-4 line-clamp-2 text-xs text-gray-600">{node.description}</p>
                 )}
 
-                <div className="flex items-baseline gap-3 mb-5 mt-auto">
-                  <span className="text-2xl font-black text-[#231b50]">
+                <div className="mb-5 mt-auto flex items-baseline gap-3">
+                  <span className="text-2xl font-bold text-grape">
                     {formatMoney(node.priceRange.minVariantPrice.amount, currency)}
                   </span>
                   {comparePrice && comparePrice > price && (
@@ -125,32 +128,25 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
                   <button
                     onClick={() => handleAdd(variant.id)}
                     disabled={isLoading || !variant.availableForSale}
-                    className={`w-full py-3 rounded-full text-xs font-black tracking-wider flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-60 ${
-                      addedIds.has(variant.id)
-                        ? 'bg-green-600 text-white'
-                        : 'bg-[#231b50] text-white hover:bg-[#1a1440]'
-                    }`}
-                    style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+                    className={`btn-primary w-full ${added ? 'bg-green-600! hover:bg-green-600!' : ''}`}
                   >
-                    {isLoading ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : addedIds.has(variant.id) ? (
-                      'ADDED TO CART'
+                    {addingId === variant.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : added ? (
+                      <>
+                        <Check className="h-4 w-4" strokeWidth={3} /> Added to cart
+                      </>
                     ) : variant.availableForSale ? (
                       <>
-                        <ShoppingBag className="w-4 h-4" /> ADD TO CART
+                        <ShoppingBag className="h-4 w-4" /> Add to cart
                       </>
                     ) : (
-                      'SOLD OUT'
+                      'Sold out'
                     )}
                   </button>
                 ) : (
-                  <Link
-                    href={`/product/${node.handle}`}
-                    className="w-full py-3 rounded-full text-xs font-black tracking-wider text-center bg-[#231b50] text-white hover:bg-[#1a1440] transition-colors block"
-                    style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
-                  >
-                    VIEW BUNDLE
+                  <Link href={`/product/${node.handle}`} className="btn-primary w-full">
+                    View bundle <ArrowRight className="h-4 w-4" />
                   </Link>
                 )}
               </div>
@@ -165,22 +161,17 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
   // Show an honest empty state rather than placeholder bundles — invented
   // names, prices and review counts would be live on the page as fact.
   return (
-    <div className="max-w-md mx-auto text-center py-10 sm:py-16">
-      <div className="w-16 h-16 mx-auto mb-5 bg-[#F5F3FF] rounded-full flex items-center justify-center">
-        <ShoppingBag className="w-7 h-7 text-[#231b50]" />
+    <div className="mx-auto max-w-md py-10 text-center sm:py-16">
+      <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-lavender">
+        <ShoppingBag className="h-7 w-7 text-grape" />
       </div>
-      <h3 className="font-display text-lg font-extrabold uppercase tracking-tight text-black mb-2">
-        Bundles are loading
-      </h3>
-      <p className="text-sm text-gray-600 mb-6">
+      <h3 className="mb-2 font-display font-wide text-lg font-extrabold uppercase tracking-tight text-grape">Bundles are loading</h3>
+      <p className="mb-6 text-sm text-gray-600">
         We couldn&apos;t reach the store just now. Refresh in a moment, or browse the full
         range in the meantime.
       </p>
-      <Link
-        href="/shop"
-        className="inline-flex items-center justify-center gap-2 h-11 px-8 rounded-full bg-[#231b50] text-white text-[11px] font-black uppercase tracking-widest hover:bg-[#1a1440] transition-colors"
-      >
-        <ShoppingBag className="w-4 h-4" /> Shop all products
+      <Link href="/shop" className="btn-primary">
+        <ShoppingBag className="h-4 w-4" /> Shop all products
       </Link>
     </div>
   );

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { Geist, Poppins } from 'next/font/google';
 import { ArrowRight, Star } from 'lucide-react';
 import { STATS } from '@/lib/siteConfig';
 import PhotoSoftEdge from './PhotoSoftEdge';
@@ -18,10 +19,15 @@ import PhotoSoftEdge from './PhotoSoftEdge';
 // #d8dbe2 is sampled from the photo's backdrop so the stacked band is seamless.
 const BACKDROP = '#d8dbe2';
 
+// The hero is signed off as it is, so it keeps the fonts it was designed in
+// while the rest of the site uses Mona Sans. Only pages with a hero load them.
+const heroBody = Geist({ subsets: ['latin'], display: 'swap' });
+const heroDisplay = Poppins({ subsets: ['latin'], weight: '800', display: 'swap' });
+
 export default function Hero() {
   return (
     <section
-      className="relative w-full overflow-hidden lg:h-[100svh] lg:min-h-[600px] lg:max-h-[900px]"
+      className={`${heroBody.className} relative w-full overflow-hidden lg:h-[100svh] lg:min-h-[600px] lg:max-h-[900px]`}
       style={{ backgroundColor: BACKDROP }}
     >
       {/* Visual — a sized band on mobile, the full backdrop from lg up */}
@@ -29,7 +35,7 @@ export default function Hero() {
         {/* LCP element — priority-loaded, optimized by next/image */}
         <Image
           src="/hero.jpeg"
-          alt="A customer holding the CLINI WHITE V34 Colour Corrector Serum beside her smile"
+          alt="A customer holding the CLINIWHITE V34 Colour Corrector Serum beside her smile"
           fill
           priority
           fetchPriority="high"
@@ -64,7 +70,7 @@ export default function Hero() {
             </div>
 
             {/* Headline */}
-            <h1 className="font-display text-[clamp(1.9rem,7.5vw,3.25rem)] font-extrabold leading-[1.08] tracking-tight text-[#231b50]">
+            <h1 className={`${heroDisplay.className} text-[clamp(1.9rem,7.5vw,3.25rem)] font-extrabold leading-[1.08] tracking-tight text-[#231b50]`}>
               <span className="block">Teeth Whitening</span>
               <span className="block">that adapts</span>
               <span className="block">to you</span>

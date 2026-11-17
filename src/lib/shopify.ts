@@ -7,16 +7,28 @@ const storefrontAccessToken = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN || pro
 export const SHOPIFY_DOMAIN = domain;
 
 // Domain that actually serves a working Shopify checkout. The Storefront API
-// returns checkoutUrl on the store's *primary* domain, which for this store is
-// a dead Vercel deployment (drwhitecare.com → 404). We rewrite the host to the
-// canonical myshopify.com domain (always serves checkout), or to an explicit
-// override if one is configured (e.g. shop.cliniwhite.com once that subdomain
-// is connected in Shopify admin — see .env.example).
+// returns checkoutUrl on the store's *primary* domain, which historically was
+// a dead Vercel deployment (drwhitecare.com → 404). We rewrite unknown hosts to
+// the canonical myshopify.com domain (always serves checkout), or to an
+// explicit override if one is configured (shop.cliniwhite.com — see
+// .env.example).
 const CHECKOUT_DOMAIN = (
   process.env.NEXT_PUBLIC_SHOPIFY_CHECKOUT_DOMAIN || domain
 )
   .replace(/^https?:\/\//, '')
   .replace(/\/+$/, '');
+
+// The brand's own registrable domain (cliniwhite.com). Any Shopify host under
+// it — e.g. shop.cliniwhite.com, the store's current primary domain — is a
+// branded checkout we must never downgrade to the myshopify.com URL.
+const SITE_ROOT_DOMAIN = (() => {
+  try {
+    const host = new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.cliniwhite.com').hostname;
+    return host.split('.').slice(-2).join('.');
+  } catch {
+    return 'cliniwhite.com';
+  }
+})();
 
 // Customer-facing Shopify pages (checkout, account login) live on the branded
 // storefront domain when one is configured, else on the myshopify.com domain.
@@ -32,7 +44,12 @@ export function normalizeCheckoutUrl(url: string | null | undefined): string | n
   try {
     const parsed = new URL(url);
     // Already on a known-good Shopify host → leave it alone.
-    if (parsed.hostname === CHECKOUT_DOMAIN || parsed.hostname.endsWith('.myshopify.com')) {
+    if (
+      parsed.hostname === CHECKOUT_DOMAIN ||
+      parsed.hostname.endsWith('.myshopify.com') ||
+      parsed.hostname === SITE_ROOT_DOMAIN ||
+      parsed.hostname.endsWith(`.${SITE_ROOT_DOMAIN}`)
+    ) {
       return url;
     }
     parsed.hostname = CHECKOUT_DOMAIN;
@@ -144,7 +161,7 @@ export async function shopifyClientFetch({ query, variables }: { query: string; 
 export async function getProducts(country: string = DEFAULT_COUNTRY) {
   const query = `
     query getProducts($country: CountryCode) @inContext(country: $country) {
-      products(first: 10) {
+      products(first: 50) {
         edges {
           node {
             id
@@ -206,7 +223,7 @@ export async function getProductsByCollection(handle: string, country: string = 
       collection(handle: $handle) {
         id
         title
-        products(first: 10) {
+        products(first: 50) {
           edges {
             node {
             id
@@ -397,6 +414,8 @@ export interface Cart {
   lines: {
     edges: Array<{ node: CartLine }>;
   };
+  /** Codes entered on the cart; `applicable` is false when Shopify rejects one. */
+  discountCodes: Array<{ code: string; applicable: boolean }>;
 }
 
 const CART_FRAGMENT = `
@@ -404,6 +423,7 @@ const CART_FRAGMENT = `
     id
     checkoutUrl
     totalQuantity
+    discountCodes { code applicable }
     cost {
       totalAmount { amount currencyCode }
       subtotalAmount { amount currencyCode }
@@ -440,7 +460,8 @@ const CART_FRAGMENT = `
 `;
 
 export async function createCart(
-  lines: CartLineInput[]
+  lines: CartLineInput[],
+  discountCodes: string[] = []
 ): Promise<Cart | null> {
   const query = `
     mutation cartCreate($input: CartInput!, $country: CountryCode) @inContext(country: $country) {
@@ -455,7 +476,7 @@ export async function createCart(
   const country = getClientCountry();
   const response = await shopifyClientFetch({
     query,
-    variables: { input: { lines, buyerIdentity: { countryCode: country } }, country },
+    variables: { input: { lines, discountCodes, buyerIdentity: { countryCode: country } }, country },
   });
 
   if (response.errors || response.data?.cartCreate?.userErrors?.length) {
@@ -569,6 +590,37 @@ export async function updateCartBuyerCountry(
   }
 
   return response.data?.cartBuyerIdentityUpdate?.cart ?? null;
+}
+
+/** Replace the cart's discount codes (e.g. apply the welcome-offer code). */
+export async function updateCartDiscountCodes(
+  cartId: string,
+  discountCodes: string[]
+): Promise<Cart | null> {
+  const query = `
+    mutation cartDiscountCodesUpdate($cartId: ID!, $discountCodes: [String!], $country: CountryCode) @inContext(country: $country) {
+      cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) {
+        cart { ...CartFields }
+        userErrors { field message }
+      }
+    }
+    ${CART_FRAGMENT}
+  `;
+
+  const response = await shopifyClientFetch({
+    query,
+    variables: { cartId, discountCodes, country: getClientCountry() },
+  });
+
+  if (response.errors || response.data?.cartDiscountCodesUpdate?.userErrors?.length) {
+    console.error(
+      'Cart discount code errors:',
+      response.errors || response.data?.cartDiscountCodesUpdate?.userErrors
+    );
+    return null;
+  }
+
+  return response.data?.cartDiscountCodesUpdate?.cart ?? null;
 }
 
 // ─── LEGACY HELPERS (kept as fallback) ────────────────────────────────────

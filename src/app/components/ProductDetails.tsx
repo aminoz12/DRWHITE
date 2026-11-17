@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -9,14 +9,17 @@ import {
   Truck,
   RotateCcw,
   ChevronDown,
-  Clock,
+  Leaf,
+  Star,
 } from 'lucide-react';
 import { useCartStore } from '@/lib/cartStore';
-import { useRouter } from 'next/navigation';
 import PaymentIcons from './PaymentIcons';
-import LazyVideo from './LazyVideo';
+import TrustpilotWidget from './TrustpilotWidget';
 import { formatMoney, getDiscountPercent } from '@/lib/money';
 import { getProductKind, type ProductKind } from '@/lib/productKind';
+import { productBenefits, productTagline } from '@/lib/productStyle';
+import { displayTitle, shortTitle } from '@/lib/productTitle';
+import { STATS } from '@/lib/siteConfig';
 
 // How the buyer counts this product. Liquids in a pump bottle read as
 // "bottles"; everything else — strips, sachets, tubes, jars, sets — is sold
@@ -63,9 +66,9 @@ function unitLabel(kind: ProductKind, title: string, n: number): string | null {
 const HOW_TO: Record<ProductKind, { step: string; text: string }[]> = {
   strips: [
     { step: '1. Peel & Apply:', text: 'Gently press the strip onto clean, dry teeth.' },
-    { step: '2. Wait 30-60 Minutes:', text: 'Leave the strips on while you go about your day.' },
+    { step: '2. Wait 30 Minutes:', text: 'Leave the strips on while you go about your day.' },
     { step: '3. Remove & Rinse:', text: 'Discard the strip and rinse any residue.' },
-    { step: '4. Repeat:', text: 'Use once daily. Most people use them for 7 consecutive days, then as needed for maintenance.' },
+    { step: '4. Repeat:', text: 'Use once daily for 14 days — one pack is a full treatment — then as needed for maintenance.' },
   ],
   toothpaste: [
     { step: '1. Apply:', text: 'Squeeze a pea-sized amount onto a dry toothbrush.' },
@@ -107,13 +110,13 @@ const HOW_TO: Record<ProductKind, { step: string; text: string }[]> = {
     { step: '1. Start:', text: 'Begin with the core whitening product in your set.' },
     { step: '2. Layer:', text: 'Add the colour-correcting products (serum, foam or powder) to your daily routine.' },
     { step: '3. Follow:', text: 'Each product in the set includes its own directions — use as directed.' },
-    { step: '4. Repeat:', text: 'Stay consistent daily for 7-14 days for the full transformation.' },
+    { step: '4. Repeat:', text: 'Stay consistent daily for 14 days for the full transformation.' },
   ],
   other: [
     { step: '1. Follow:', text: 'Use as directed on the packaging.' },
     { step: '2. Be Consistent:', text: 'Use daily for best results.' },
     { step: '3. Maintain:', text: 'Continue as needed to maintain your results.' },
-    { step: '4. Combine:', text: 'Pairs perfectly with the rest of the CLINI WHITE V34 range.' },
+    { step: '4. Combine:', text: 'Pairs perfectly with the rest of the CLINIWHITE V34 range.' },
   ],
 };
 
@@ -220,46 +223,53 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
   const selectedVariant = product.variants.edges[0]?.node;
   const [activeAccordion, setActiveAccordion] = useState<string | null>('desc');
   const [added, setAdded] = useState(false);
+  const [addError, setAddError] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [activeImage, setActiveImage] = useState(0);
 
   const subscription = getSubscriptionOffer(selectedVariant);
-  // Default to the subscription when one exists — it is the cheaper option.
-  const [mode, setMode] = useState<PurchaseMode>(
-    subscription ? 'subscription' : 'onetime'
-  );
+  // Always start on one-time purchase. The subscription is offered beside it
+  // with its saving, but a recurring charge is never preselected.
+  const [mode, setMode] = useState<PurchaseMode>('onetime');
   const { addItem, isLoading } = useCartStore();
-  const router = useRouter();
+
+  // The mobile buy bar shows only while the main button is off screen, so the
+  // shopper always has exactly one visible way to buy.
+  const buyButtonRef = useRef<HTMLButtonElement>(null);
+  const [buyButtonVisible, setBuyButtonVisible] = useState(true);
+  useEffect(() => {
+    const el = buyButtonRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([entry]) => setBuyButtonVisible(entry.isIntersecting));
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const images = product.images.edges.map(e => e.node);
-
-  // Reels strip: alternate a video with one of this product's images.
-  const reelItems: Array<
-    | { type: 'video'; src: string }
-    | { type: 'image'; src: string; alt: string }
-  > = [1, 2, 3, 4, 5].flatMap((id, i) => {
-    const img = images[i % Math.max(images.length, 1)];
-    return [
-      { type: 'video' as const, src: `/videos/video${id}.mp4` },
-      ...(img ? [{ type: 'image' as const, src: img.url, alt: img.altText || product.title }] : []),
-    ];
-  });
+  // Shopify alt text when it is set; otherwise a distinct description per
+  // image, so screen readers and image search never get the same label twice.
+  const altFor = (i: number) =>
+    images[i]?.altText || (i === 0 ? product.title : `${product.title} — view ${i + 1}`);
 
   const handleAddToCart = async () => {
     if (!selectedVariant?.id || !selectedVariant.availableForSale) return;
-    await addItem(
+    setAddError(false);
+    const ok = await addItem(
       selectedVariant.id,
       quantity,
       mode === 'subscription' ? subscription?.id : undefined
     );
+    if (!ok) {
+      // Shopify rejected the line (network error, variant gone, plan removed):
+      // never flash "Added" for a cart that did not change.
+      setAddError(true);
+      return;
+    }
+    // addItem opens the cart drawer, which carries checkout — the shopper
+    // stays on the product instead of being bounced to /cart.
     setAdded(true);
-    // Redirect to cart page after a short delay to show the "Added" state
-    setTimeout(() => {
-        setAdded(false);
-        router.push('/cart');
-    }, 800);
+    setTimeout(() => setAdded(false), 1800);
   };
-
-  const [activeImage, setActiveImage] = useState(0);
 
   const price = selectedVariant?.price || product.priceRange.minVariantPrice;
   const comparePrice = selectedVariant?.compareAtPrice;
@@ -271,6 +281,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
   const savings = getDiscountPercent(price.amount, comparePrice?.amount);
 
   const kind = getProductKind(product.title);
+  const available = Boolean(selectedVariant?.availableForSale);
 
   // Per-unit price for the mode the shopper picked. Subscription pricing is
   // whatever Shopify's selling plan says; one-time is the plain variant price.
@@ -291,78 +302,122 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
     ? getDiscountPercent(subscription.amount, price.amount)
     : 0;
 
+  const isSubscribing = mode === 'subscription' && Boolean(subscription);
+
+  const trustItems = [
+    { icon: Leaf, title: 'Peroxide-Free', text: 'Gentle, everyday formula' },
+    kind === 'bundle'
+      ? { icon: Truck, title: 'Free Shipping', text: 'Express delivery on sets' }
+      : { icon: Truck, title: 'Tracked Delivery', text: 'Times and cost at checkout' },
+    { icon: RotateCcw, title: '30-Day Guarantee', text: 'See return-policy terms' },
+  ];
+
   return (
-    <section className="bg-white py-8 lg:py-12 pb-28 lg:pb-12 font-sans antialiased">
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-start">
+    <section className="bg-white py-8 pb-28 lg:py-12 lg:pb-12">
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
+        <div className="grid items-start gap-8 lg:grid-cols-2 lg:gap-16">
 
           {/* LEFT: IMAGE GALLERY */}
-          <div className="space-y-3 lg:space-y-6">
-            <div className="relative aspect-square flex items-center justify-center bg-white border border-gray-100 rounded-2xl overflow-hidden">
-              <Image
-                src={images[activeImage]?.url || images[0]?.url || ''}
-                alt={images[activeImage]?.altText || product.title}
-                width={800}
-                height={800}
-                className="object-contain w-full h-full p-6"
-                priority
-              />
+          {/* min-w-0: grid items default to their content's min width, so the
+              thumbnail strip would stretch the column past a phone screen. */}
+          <div className="min-w-0 space-y-3 lg:sticky lg:top-24 lg:space-y-4">
+            <div className="relative flex aspect-square items-center justify-center overflow-hidden rounded-[1.75rem] bg-lavender">
+              {savings > 0 && (
+                <span className="tag absolute left-4 top-4 z-10 bg-violet text-white">Save {savings}%</span>
+              )}
+              {images.length > 0 ? (
+                // Multiply melts the packshot's white into the tile; lifestyle
+                // photos further along the gallery keep their true colours.
+                <Image
+                  src={images[activeImage]?.url || images[0].url}
+                  alt={altFor(images[activeImage] ? activeImage : 0)}
+                  width={800}
+                  height={800}
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className={`h-full w-full object-contain p-8 ${activeImage === 0 ? 'mix-blend-multiply' : ''}`}
+                  priority
+                />
+              ) : (
+                // A product with no Shopify image: next/image throws on an
+                // empty src, so render a placeholder instead of crashing.
+                <div className="flex h-full w-full items-center justify-center text-xs uppercase tracking-widest text-gray-400">
+                  No image
+                </div>
+              )}
             </div>
-            {/* Thumbnails: a swipeable strip on mobile so the buy box is one
-                short scroll away; a 2-up grid on desktop where there is room. */}
-            <div className="flex gap-2.5 overflow-x-auto snap-x px-0.5 py-1 -mx-0.5 scrollbar-none lg:grid lg:grid-cols-2 lg:gap-4 lg:overflow-visible lg:mx-0 lg:px-0 lg:py-0">
-              {images.slice(1, 5).map((img, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => setActiveImage(activeImage === i + 1 ? 0 : i + 1)}
-                  aria-label={`View product image ${i + 2}`}
-                  className={`relative shrink-0 snap-start w-[22%] lg:w-auto aspect-square group overflow-hidden rounded-xl border transition-all ${
-                    activeImage === i + 1 ? 'border-[#231b50] ring-2 ring-[#231b50] ring-offset-2' : 'border-gray-100 hover:border-gray-300'
-                  }`}
-                >
-                  <Image
-                    src={img.url}
-                    alt={img.altText || product.title}
-                    fill
-                    sizes="(max-width: 1024px) 25vw, 25vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                </button>
-              ))}
-            </div>
+
+            {images.length > 1 && (
+              <div className="-mx-0.5 flex gap-2.5 overflow-x-auto px-0.5 py-1 scrollbar-none">
+                {images.slice(0, 6).map((img, i) => (
+                  <button
+                    key={img.url}
+                    type="button"
+                    onClick={() => setActiveImage(i)}
+                    aria-label={`View product image ${i + 1}`}
+                    aria-pressed={activeImage === i}
+                    className={`relative aspect-square w-[22%] shrink-0 overflow-hidden rounded-2xl border bg-lavender transition-all sm:w-24 ${
+                      activeImage === i ? 'border-grape ring-2 ring-grape ring-offset-2' : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <Image src={img.url} alt="" fill sizes="96px" className="object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* RIGHT: PRODUCT INFO */}
-          <div className="flex flex-col space-y-6">
+          <div className="flex min-w-0 flex-col space-y-6">
             <div className="space-y-5">
-              <nav aria-label="Breadcrumb" className="text-[11px] font-bold uppercase tracking-widest text-gray-600">
+              <nav aria-label="Breadcrumb" className="type-eyebrow text-gray-500">
                 <ol className="flex items-center gap-2">
-                  <li><Link href="/" className="hover:text-[#231b50] transition-colors">Home</Link></li>
+                  <li><Link href="/" className="transition-colors hover:text-grape">Home</Link></li>
                   <li aria-hidden>/</li>
-                  <li><Link href="/shop" className="hover:text-[#231b50] transition-colors">Shop</Link></li>
+                  <li><Link href="/shop" className="transition-colors hover:text-grape">Shop</Link></li>
                   <li aria-hidden>/</li>
-                  <li className="text-gray-700 truncate max-w-[220px]" aria-current="page">{product.title}</li>
+                  <li className="max-w-[220px] truncate text-gray-700" aria-current="page">{shortTitle(product.title)}</li>
                 </ol>
               </nav>
-              <h1 className="font-display text-3xl lg:text-4xl font-extrabold uppercase tracking-tight text-[#1a1a1a] leading-none">
-                {product.title}
-              </h1>
+              <div>
+                <p className="type-eyebrow text-violet">{productTagline(product.title)}</p>
+                <h1 className="mt-3 text-balance font-display font-wide text-[1.75rem] font-extrabold uppercase leading-[1.04] tracking-[-0.015em] text-grape lg:text-[2.5rem]">
+                  {shortTitle(product.title)}
+                </h1>
+              </div>
+
+              <p className="flex flex-wrap items-center gap-2 text-xs text-gray-600">
+                <span className="flex gap-0.5" aria-hidden>
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-3.5 w-3.5 fill-current text-violet" />
+                  ))}
+                </span>
+                Rated {STATS.ratingLabel} by {STATS.customers} CLINIWHITE customers
+              </p>
+              {/* Live Trustpilot score — renders nothing until the account is connected. */}
+              <TrustpilotWidget template="micro" height="24px" />
 
               <div className="flex items-center gap-3 pt-1">
                 {savings > 0 && (
-                  <span className="text-sm font-bold text-red-500 line-through opacity-70">{formattedComparePrice}</span>
+                  <span className="text-sm font-bold text-gray-500 line-through">{formattedComparePrice}</span>
                 )}
-                <span className="text-3xl font-black text-black tracking-tight">{formattedPrice}</span>
-                {savings > 0 && (
-                  <span className="bg-[#21bc64] text-white text-[10px] font-black px-2 py-0.5 rounded-sm uppercase">SAVE {savings}%</span>
-                )}
+                <span className="font-display font-wide text-3xl font-extrabold tracking-[-0.02em] text-grape">{formattedPrice}</span>
               </div>
 
+              {/* KEY BENEFITS */}
+              <ul className="space-y-3">
+                {productBenefits(product.title).map((benefit) => (
+                  <li key={benefit} className="flex items-center gap-3">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-soft">
+                      <Check className="h-3.5 w-3.5 text-violet" strokeWidth={3} />
+                    </span>
+                    <span className="text-[15px] font-medium text-gray-700">{benefit}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
 
             {/* PURCHASE SECTION */}
-            <div className="space-y-6 pt-4 border-t border-gray-100">
+            <div className="space-y-6 border-t border-gray-200 pt-6">
               {/* PURCHASE MODE — only when Shopify actually has a plan */}
               {subscription && (
                 <fieldset className="space-y-3">
@@ -370,25 +425,27 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                   <div className="grid grid-cols-2 gap-3">
                     {([
                       {
-                        value: 'subscription' as const,
-                        label: subscriptionSaving > 0
-                          ? `Subscribe & Save ${subscriptionSaving}%`
-                          : 'Subscribe & Save',
-                        note: 'Monthly delivery',
-                        amount: subscription.amount,
-                      },
-                      {
                         value: 'onetime' as const,
                         label: 'One-time purchase',
                         note: 'Ships once, no commitment',
                         amount: Number(price.amount),
+                        badge: null,
+                      },
+                      {
+                        value: 'subscription' as const,
+                        label: 'Subscribe & Save',
+                        note: 'Monthly delivery',
+                        amount: subscription.amount,
+                        badge: subscriptionSaving > 0 ? `Save ${subscriptionSaving}%` : null,
                       },
                     ]).map((option) => {
                       const selected = mode === option.value;
                       return (
                         <label
                           key={option.value}
-                          className={`relative flex flex-col gap-1 sm:gap-1.5 p-2.5 sm:p-4 rounded-md border-2 cursor-pointer transition-all ${selected ? 'border-[#231b50] bg-[#F5F3FF]' : 'border-[#eee] bg-white hover:border-gray-200'}`}
+                          className={`relative flex cursor-pointer flex-col gap-1 rounded-2xl border-2 p-3 transition-all sm:gap-1.5 sm:p-4 ${
+                            selected ? 'border-grape bg-lavender' : 'border-gray-200 bg-white hover:border-gray-300'
+                          }`}
                         >
                           <input
                             type="radio"
@@ -397,31 +454,34 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                             checked={selected}
                             onChange={() => setMode(option.value)}
                           />
-                          <span className="flex items-start gap-2 min-w-0">
-                            <span className={`mt-0.5 w-4 h-4 shrink-0 rounded-full border-2 flex items-center justify-center transition-colors ${selected ? 'border-[#231b50] bg-[#231b50]' : 'border-[#ddd]'}`}>
-                              {selected && <span className="w-2 h-2 rounded-full bg-white shadow-sm" />}
+                          {option.badge && (
+                            <span className="tag absolute -top-2.5 right-2 bg-violet px-2 py-1 text-[10px] text-white">{option.badge}</span>
+                          )}
+                          <span className="flex min-w-0 items-start gap-2">
+                            <span className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${selected ? 'border-grape bg-grape' : 'border-gray-300'}`}>
+                              {selected && <span className="h-2 w-2 rounded-full bg-white shadow-sm" />}
                             </span>
-                            <span className="block font-black text-black text-[12px] sm:text-[13px] leading-tight uppercase">
+                            <span className="type-eyebrow block text-[11px] leading-tight text-grape sm:text-xs">
                               {option.label}
                             </span>
                           </span>
-                          <span className="block text-[10px] sm:text-[11px] text-gray-600 leading-tight">
-                            {option.note}
-                          </span>
-                          <span className="block font-black text-black text-sm mt-auto">
+                          <span className="block text-[10px] leading-tight text-gray-600 sm:text-[11px]">{option.note}</span>
+                          <span className="mt-auto block text-sm font-bold text-grape">
                             {formatMoney(String(option.amount), price.currencyCode)}
-                            <span className="font-normal text-gray-500 text-[11px]">
-                              {option.value === 'subscription' ? ' / month' : ''}
-                            </span>
+                            {option.value === 'subscription' && (
+                              <span className="text-[11px] font-normal text-gray-500"> / month</span>
+                            )}
                           </span>
                         </label>
                       );
                     })}
                   </div>
-                  <p className="text-[11px] text-gray-600 leading-relaxed">
-                    Subscriptions renew automatically. Skip, pause or cancel any time from
-                    your account — no fees.
-                  </p>
+                  {isSubscribing && (
+                    <p className="text-[11px] leading-relaxed text-gray-600">
+                      Subscriptions renew automatically. Skip, pause or cancel any time from
+                      your account — no fees.
+                    </p>
+                  )}
                 </fieldset>
               )}
 
@@ -430,11 +490,13 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 <legend className="sr-only">Choose how many {unitNoun(kind).toLowerCase()}s</legend>
                 {TIER_QUANTITIES.map((n) => {
                   const selected = quantity === n;
-                  const contents = unitLabel(kind, product.title, n);
+                  const contents = unitLabel(kind, displayTitle(product.title), n);
                   return (
                     <label
                       key={n}
-                      className={`group relative flex items-center justify-between p-5 rounded-md border-2 cursor-pointer transition-all ${selected ? 'border-[#231b50] bg-[#F5F3FF]' : 'border-[#eee] bg-white hover:border-gray-200'}`}
+                      className={`group relative flex cursor-pointer items-center justify-between rounded-2xl border-2 p-5 transition-all ${
+                        selected ? 'border-grape bg-lavender' : 'border-gray-200 bg-white hover:border-gray-300'
+                      }`}
                     >
                       <input
                         type="radio"
@@ -444,29 +506,17 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                         onChange={() => setQuantity(n)}
                       />
                       <div className="flex items-center gap-4">
-                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${selected ? 'border-[#231b50] bg-[#231b50]' : 'border-[#ddd]'}`}>
-                          {selected && <div className="w-2.5 h-2.5 rounded-full bg-white shadow-sm" />}
+                        <div className={`flex h-5 w-5 items-center justify-center rounded-full border-2 transition-colors ${selected ? 'border-grape bg-grape' : 'border-gray-300'}`}>
+                          {selected && <div className="h-2.5 w-2.5 rounded-full bg-white shadow-sm" />}
                         </div>
                         <div>
-                          <p className="font-black text-black text-lg leading-none uppercase">
-                            {tierLabel(kind, n)}
-                          </p>
-                          {contents && (
-                            <p className="text-[10px] font-black text-[#231b50] mt-2 uppercase">
-                              {contents}
-                            </p>
-                          )}
+                          <p className="font-display font-wide text-base font-extrabold uppercase leading-none text-grape">{tierLabel(kind, n)}</p>
+                          {contents && <p className="type-eyebrow mt-2 text-[10px] text-violet">{contents}</p>}
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-black text-black text-lg leading-none">
-                          {tierTotal(n)}
-                        </p>
-                        {n > 1 && (
-                          <p className="text-[11px] font-bold text-gray-600 mt-1">
-                            {formattedUnit} each
-                          </p>
-                        )}
+                        <p className="text-lg font-bold leading-none text-grape">{tierTotal(n)}</p>
+                        {n > 1 && <p className="mt-1 text-[11px] font-bold text-gray-600">{formattedUnit} each</p>}
                       </div>
                     </label>
                   );
@@ -476,196 +526,123 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
               {/* ADD TO CART */}
               <div className="space-y-4">
                 <button
+                  ref={buyButtonRef}
                   onClick={handleAddToCart}
-                  disabled={isLoading || !selectedVariant?.availableForSale}
-                  className={`w-full h-16 bg-[#231b50] text-white font-black text-sm tracking-[0.1em] uppercase rounded-full shadow-xl shadow-[#231b50]/10 transition-all hover:bg-[#1a1440] active:scale-[0.98] flex items-center justify-center gap-3 ${added ? 'bg-[#21bc64]' : ''
-                    }`}
+                  disabled={isLoading || !available}
+                  className={`btn-primary min-h-16 w-full text-sm ${added ? 'bg-[#1d8f50]! hover:bg-[#1d8f50]!' : ''}`}
                 >
                   {isLoading ? (
-                    <Loader2 className="w-6 h-6 animate-spin" />
+                    <Loader2 className="h-6 w-6 animate-spin" />
                   ) : added ? (
                     <>
-                      <Check className="w-6 h-6" strokeWidth={3} />
-                      Added to bag
+                      <Check className="h-6 w-6" strokeWidth={3} />
+                      Added to cart
                     </>
-                  ) : mode === 'subscription' && subscription ? (
+                  ) : !available ? (
+                    'Sold out'
+                  ) : isSubscribing ? (
                     `Subscribe — ${selectedTotal}`
                   ) : (
                     'Add to cart'
                   )}
                 </button>
+                {addError && (
+                  <p role="alert" className="text-center text-xs font-bold text-red-600">
+                    We couldn&apos;t add this to your cart. Please check your connection and try again.
+                  </p>
+                )}
 
                 {/* Payment Icons */}
                 <div className="flex flex-col items-center gap-3 py-2">
                   <PaymentIcons className="justify-center" />
-                  <div className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">Secure Checkout</div>
+                  <div className="type-eyebrow text-[10px] text-gray-500">Secure checkout</div>
                 </div>
               </div>
             </div>
 
-            {/* CHECKLIST */}
-            <div className="space-y-4 pt-4">
-              {[
-                'Product-specific directions',
-                'Secure checkout',
-                '30-day money-back guarantee'
-              ].map((text, i) => (
-                <div key={i} className="flex items-center gap-4">
-                  <Check className="w-5 h-5 text-[#231b50]" strokeWidth={4} />
-                  <span className="text-[13px] font-black text-[#333] uppercase tracking-wider">{text}</span>
+            {/* TRUST ICONS */}
+            <div className="grid grid-cols-3 gap-2 border-y border-gray-200 py-8">
+              {trustItems.map(({ icon: Icon, title, text }, i) => (
+                <div key={title} className={`flex flex-col items-center space-y-4 text-center ${i === 1 ? 'border-x border-gray-200' : ''}`}>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-lavender">
+                    <Icon className="h-6 w-6 stroke-[1.5] text-violet" />
+                  </div>
+                  <div className="space-y-1 px-2">
+                    <p className="type-eyebrow text-[10px] leading-tight text-grape">{title}</p>
+                    <p className="text-[11px] leading-tight text-gray-600">{text}</p>
+                  </div>
                 </div>
               ))}
             </div>
 
-            {/* TRUST ICONS */}
-            <div className="grid grid-cols-3 gap-2 py-8 border-y border-gray-100">
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#F5F3FF]">
-                  <Clock className="w-6 h-6 text-[#231b50] stroke-[1.5]" />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] font-black text-black uppercase leading-tight">Product Directions</p>
-                  <p className="text-[11px] text-gray-600 leading-tight">Use as shown on the pack</p>
-                </div>
-              </div>
-              <div className="flex flex-col items-center text-center space-y-4 border-x border-gray-100">
-                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#F5F3FF]">
-                  <Truck className="w-6 h-6 text-[#231b50] stroke-[1.5]" />
-                </div>
-                <div className="space-y-1 px-2">
-                  <p className="text-[10px] font-black text-black uppercase leading-tight">Worldwide Delivery</p>
-                  <p className="text-[11px] text-gray-600 leading-tight">Times and cost at checkout</p>
-                </div>
-              </div>
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#F5F3FF]">
-                  <RotateCcw className="w-6 h-6 text-[#231b50] stroke-[1.5]" />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] font-black text-black uppercase leading-tight">30-Day Guarantee</p>
-                  <p className="text-[11px] text-gray-600 leading-tight">See return-policy terms</p>
-                </div>
-              </div>
-            </div>
-
             {/* ACCORDION SECTION */}
-            <div className="pt-8 divide-y divide-gray-200">
+            <div className="divide-y divide-gray-200 pt-2">
               <Accordion title="Description" id="desc" activeId={activeAccordion} onToggle={setActiveAccordion}>
-                <div className="pb-6 text-sm leading-relaxed text-[#4a4a4a]">
-                  {product.description}
-                </div>
-              </Accordion>
-              <Accordion title="Key Benefits" id="benefits" activeId={activeAccordion} onToggle={setActiveAccordion}>
-                <ul className="pb-6 space-y-3">
-                  {['Product-specific directions', 'Designed for an at-home oral-care routine', '30-day money-back guarantee'].map((item, i) => (
-                    <li key={i} className="flex items-center gap-3 text-sm text-[#4a4a4a]">
-                      <div className="w-1 h-1 rounded-full bg-black" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
+                <div className="pb-6 text-[15px] leading-relaxed text-gray-600">{product.description}</div>
               </Accordion>
               <Accordion title="How to use" id="how" activeId={activeAccordion} onToggle={setActiveAccordion}>
-                <div className="pb-8 space-y-6 text-sm text-black">
-                  {HOW_TO[getProductKind(product.title)].map(({ step, text }) => (
-                    <div key={step} className="space-y-1">
-                      <p><span className="font-bold">{step}</span> {text}</p>
-                    </div>
+                <div className="space-y-4 pb-8 text-[15px] leading-relaxed text-gray-700">
+                  {HOW_TO[kind].map(({ step, text }) => (
+                    <p key={step}><span className="font-semibold text-grape">{step}</span> {text}</p>
                   ))}
                 </div>
               </Accordion>
               {kind === 'strips' && (
                 <Accordion title="What is PAP" id="pap" activeId={activeAccordion} onToggle={setActiveAccordion}>
-                  <div className="pb-6 text-sm leading-relaxed text-[#4a4a4a]">
-                    PAP is a peroxide-free whitening ingredient used in selected CLINI WHITE products. Check the product packaging for the exact formula and directions for use.
+                  <div className="pb-6 text-[15px] leading-relaxed text-gray-600">
+                    PAP is a peroxide-free whitening ingredient used in selected CLINIWHITE products. Check the product packaging for the exact formula and directions for use.
                   </div>
                 </Accordion>
               )}
               <Accordion title="Ingredients & Safety" id="ingredients" activeId={activeAccordion} onToggle={setActiveAccordion}>
-                <div className="pb-6 text-[11px] font-mono leading-relaxed text-[#666]">
+                <div className="pb-6 text-[15px] leading-relaxed text-gray-600">
                   Ingredients and suitability vary by product. Refer to the ingredient panel and directions on this product&apos;s packaging before use. If irritation occurs, discontinue use and consult a dental professional.
                 </div>
               </Accordion>
               <Accordion title="Guarantee & Support" id="guarantee" activeId={activeAccordion} onToggle={setActiveAccordion}>
-                <div className="pb-6 text-sm leading-relaxed text-[#4a4a4a]">
-                  We offer a 30-day money-back guarantee. If you&apos;re not satisfied with your order, review our <Link href="/policies/refund-policy" className="font-semibold underline">return-policy terms</Link> or contact our support team.
+                <div className="pb-6 text-[15px] leading-relaxed text-gray-600">
+                  Every order is covered by our 30-day money-back guarantee. If you&apos;re not satisfied, contact us within 30 days of delivery and we&apos;ll guide you through your refund — see our{' '}
+                  <Link href="/policies/refund-policy" className="font-semibold underline">refund policy</Link>.
                 </div>
               </Accordion>
             </div>
-
           </div>
         </div>
       </div>
 
-      {/* REELS SECTION */}
-      <div className="mt-12 lg:mt-20 border-t border-gray-100 pt-12 pb-10 sm:pb-16">
-        <div className="max-w-[1200px] mx-auto px-4 mb-10">
-          <h2 className="font-display text-2xl lg:text-3xl font-extrabold uppercase tracking-tight text-center">
-            CAN&apos;T STOP <span className="text-[#231b50]">SMILING</span> WITH CLINI WHITE
-          </h2>
-        </div>
-
-        <div className="relative overflow-hidden group">
-          <div className="flex w-fit animate-marquee hover:[animation-play-state:paused] py-4">
-            {/* Videos interleaved with this product's own images. The list is
-                rendered twice so the marquee loops seamlessly. */}
-            {[...reelItems, ...reelItems].map((item, i) => (
-              <div
-                key={i}
-                aria-hidden={i >= reelItems.length}
-                className={`flex-none w-[200px] sm:w-[250px] aspect-[9/16] mx-3 rounded-2xl overflow-hidden relative shadow-md ${item.type === 'video' ? 'bg-gray-100' : 'bg-[#F5F3FF]'}`}
-              >
-                {item.type === 'video' ? (
-                  <>
-                    <LazyVideo src={item.src} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-black/10 pointer-events-none" />
-                  </>
-                ) : (
-                  <Image
-                    src={item.src}
-                    alt={item.alt}
-                    fill
-                    sizes="250px"
-                    className="object-contain p-3"
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-
-          {/* Fading Edges */}
-          <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
-          <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
-        </div>
-      </div>
-
-      {/* Mobile sticky buy bar */}
-      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t border-gray-200 px-4 py-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] flex items-center gap-3">
-        <div className="flex-1 min-w-0">
-          <p className="text-[10px] font-black text-gray-600 uppercase tracking-wider truncate">
-            {mode === 'subscription' && subscription ? 'Monthly · ' : ''}
+      {/* Mobile sticky buy bar — only while the main button is off screen */}
+      <div
+        aria-hidden={buyButtonVisible}
+        inert={buyButtonVisible}
+        className={`fixed inset-x-0 bottom-0 z-40 flex items-center gap-3 border-t border-gray-200 bg-white/95 px-4 py-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] backdrop-blur transition-transform duration-300 lg:hidden ${
+          buyButtonVisible ? 'translate-y-full' : 'translate-y-0'
+        }`}
+      >
+        <div className="min-w-0 flex-1">
+          <p className="type-eyebrow truncate text-[10px] text-gray-500">
+            {isSubscribing ? 'Monthly · ' : ''}
             {tierLabel(kind, quantity)}
           </p>
-          <p className="text-lg font-black text-black leading-tight whitespace-nowrap">
+          <p className="whitespace-nowrap text-lg font-bold leading-tight text-grape">
             {selectedTotal}
-            {mode === 'subscription' && subscription && (
-              <span className="text-[11px] font-bold text-gray-500"> / month</span>
-            )}
+            {isSubscribing && <span className="text-[11px] font-bold text-gray-500"> / month</span>}
           </p>
         </div>
         <button
           onClick={handleAddToCart}
-          disabled={isLoading || !selectedVariant?.availableForSale}
-          className={`shrink-0 h-12 px-6 min-w-[150px] bg-[#231b50] text-white font-black text-xs tracking-widest uppercase rounded-full flex items-center justify-center gap-2 whitespace-nowrap transition-all active:scale-[0.98] disabled:opacity-50 ${added ? 'bg-[#21bc64]' : ''}`}
+          disabled={isLoading || !available}
+          className="btn-primary min-w-[150px] shrink-0 px-6"
         >
           {isLoading ? (
-            <Loader2 className="w-5 h-5 animate-spin" />
+            <Loader2 className="h-5 w-5 animate-spin" />
           ) : added ? (
             <>
-              <Check className="w-5 h-5" strokeWidth={3} />
+              <Check className="h-5 w-5" strokeWidth={3} />
               Added
             </>
-          ) : mode === 'subscription' && subscription ? (
+          ) : !available ? (
+            'Sold out'
+          ) : isSubscribing ? (
             'Subscribe'
           ) : (
             'Add to cart'
@@ -696,16 +673,17 @@ function Accordion({
         onClick={() => onToggle(isOpen ? null : id)}
         aria-expanded={isOpen}
         aria-controls={`accordion-panel-${id}`}
-        className="w-full py-6 flex items-center justify-between text-left group"
+        className="group flex w-full items-center justify-between py-6 text-left"
       >
-        <span className="text-[13px] font-black uppercase tracking-widest text-black group-hover:text-[#231b50] transition-colors">{title}</span>
-        <ChevronDown className={`w-4 h-4 text-black transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+        <span className="type-eyebrow text-[13px] text-grape transition-colors group-hover:text-violet">{title}</span>
+        <ChevronDown className={`h-4 w-4 text-grape transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       <div
         id={`accordion-panel-${id}`}
-        className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}
+        inert={!isOpen}
+        className={`grid transition-[grid-template-rows] duration-300 ease-out ${isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
       >
-        {children}
+        <div className="overflow-hidden">{children}</div>
       </div>
     </div>
   );

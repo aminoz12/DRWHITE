@@ -56,16 +56,22 @@ const subscribeNoop = () => () => {};
 // to the geo-detected cookie set by the middleware; changing it rewrites the
 // cookie, reprices any existing cart via Shopify buyer identity, and
 // re-renders server components in the new market.
-export default function CurrencySwitcher() {
+//
+// `initialCountry` is the pricing country the server rendered this page's
+// prices in. Pages that show prices pass it, so the server HTML never pairs a
+// "GBP £" pill with US$ prices (crawlers and AI shopping tools read that HTML
+// without running JavaScript; shoppers saw the wrong pill flash).
+export default function CurrencySwitcher({ initialCountry }: { initialCountry?: string }) {
   const router = useRouter();
   const setCartCountry = useCartStore((s) => s.setCountry);
-  // Cookie-backed country. Server snapshot is the default market so SSR HTML
-  // matches; the client reads the real cookie on hydration. Once the user
-  // picks something we hold it in state so the pill updates immediately.
+  // Cookie-backed country. The server snapshot is the country the page was
+  // priced in (default market on pages without prices); the client reads the
+  // real cookie on hydration. Once the user picks something we hold it in
+  // state so the pill updates immediately.
   const cookieCountry = useSyncExternalStore(
     subscribeNoop,
     () => marketForCountry(getClientCountry()).country,
-    () => MARKETS[0].country
+    () => marketForCountry(initialCountry ?? MARKETS[0].country).country
   );
   const [chosen, setChosen] = useState<string | null>(null);
   const country = chosen ?? cookieCountry;
@@ -110,7 +116,7 @@ export default function CurrencySwitcher() {
         className="flex items-center gap-1 sm:gap-1.5 h-8 sm:h-9 pl-1 sm:pl-1.5 pr-1.5 sm:pr-2 rounded-full border border-gray-200 bg-white hover:border-gray-400 transition-colors"
       >
         <Flag country={current.country} className="w-5 h-5 sm:w-6 sm:h-6" />
-        <span className="text-[11px] sm:text-xs font-black text-black tracking-wide whitespace-nowrap">
+        <span className="text-[11px] sm:text-xs font-bold text-grape tracking-wide whitespace-nowrap">
           {current.currency} {current.symbol}
         </span>
         <ChevronDown className={`w-3.5 h-3.5 text-black transition-transform ${open ? 'rotate-180' : ''}`} />
@@ -133,7 +139,7 @@ export default function CurrencySwitcher() {
                 >
                   <Flag country={m.country} />
                   <span className="flex-1 min-w-0">
-                    <span className="block text-xs font-black text-black">
+                    <span className="block text-xs font-bold text-grape">
                       {m.currency} {m.symbol}
                     </span>
                     <span className="block text-[11px] text-gray-500 truncate">{m.label.replace(/\s*\(.*\)$/, '')}</span>

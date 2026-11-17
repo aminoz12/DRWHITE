@@ -173,7 +173,7 @@ export const POLICIES: Policy[] = [
   {
     slug: "shipping-policy",
     title: "Shipping Policy",
-    description: `Delivery times, shipping costs and order tracking for ${BRAND_NAME}. We ship worldwide, dispatch within one business day, and send tracking on every order.`,
+    description: `Delivery times, shipping costs and order tracking for ${BRAND_NAME}. We ship worldwide, dispatch within 1–2 business days, and send tracking on every order.`,
     intro: `We ship worldwide. This policy explains our delivery times, costs, and how to track your order.`,
     sections: [
       {

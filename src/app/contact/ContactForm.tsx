@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Send, CheckCircle2, Loader2 } from 'lucide-react';
 import { CONTACT } from '@/lib/siteConfig';
 
@@ -16,7 +17,7 @@ const inputClass =
   'w-full bg-[#F8FAFC] border border-gray-200 rounded-xl px-5 py-4 text-sm text-gray-900 placeholder:text-gray-600 focus:outline-none focus:border-[#231b50] focus:bg-white focus:ring-4 focus:ring-violet-100 transition-all';
 
 const labelClass =
-  'block text-[11px] font-black uppercase tracking-widest text-gray-900 mb-2';
+  'type-eyebrow mb-2 block text-grape';
 
 export default function ContactForm() {
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
@@ -75,7 +76,7 @@ export default function ContactForm() {
           <CheckCircle2 className="w-10 h-10 text-white" />
         </div>
         <h3
-          className="font-display text-2xl md:text-3xl font-extrabold text-black mb-4 uppercase tracking-tight"
+          className="font-display font-wide text-2xl md:text-3xl font-extrabold text-grape mb-4 uppercase tracking-tight"
         >
           Message sent!
         </h3>
@@ -90,7 +91,7 @@ export default function ContactForm() {
             setFields({ name: '', email: '', order: '', topic: TOPICS[0], message: '' });
             setStatus('idle');
           }}
-          className="inline-flex items-center gap-2 text-[#231b50] font-black text-xs uppercase tracking-widest hover:gap-3 transition-all"
+          className="type-eyebrow inline-flex items-center gap-2 text-grape transition-all hover:gap-3"
         >
           Send another message
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -227,8 +228,7 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={status === 'sending'}
-        className="w-full inline-flex items-center justify-center gap-3 px-10 py-5 bg-[#231b50] text-white text-sm font-black tracking-widest uppercase rounded-full hover:bg-[#1a1440] transition-all hover:scale-[1.02] shadow-2xl shadow-violet-200 disabled:opacity-60 disabled:hover:scale-100 disabled:cursor-not-allowed"
-        style={{ fontFamily: 'var(--font-geist-sans), system-ui' }}
+        className="btn-primary min-h-14 w-full"
       >
         {status === 'sending' ? (
           <>
@@ -245,7 +245,11 @@ export default function ContactForm() {
 
       <p className="text-[11px] text-gray-600 text-center leading-relaxed">
         We typically reply within 24 hours, Monday to Friday. By submitting this form you agree
-        to our privacy policy.
+        to our{' '}
+        <Link href="/policies/privacy-policy" className="underline hover:text-[#231b50]">
+          privacy policy
+        </Link>
+        .
       </p>
     </form>
   );

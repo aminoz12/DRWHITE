@@ -1,7 +1,32 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { X, Check, Loader2 } from 'lucide-react';
+import { X } from 'lucide-react';
+import { WELCOME_OFFER } from '@/lib/siteConfig';
+import WelcomeOfferForm from './WelcomeOfferForm';
+import { useCartStore } from '@/lib/cartStore';
+import { OPEN_WELCOME_OFFER } from '@/lib/events';
+
+const DISMISSED_KEY = 'clini_white_promo_dismissed';
+
+// Storage can throw (private mode, blocked site data) — never let that break
+// the page; worst case the popup simply shows again next visit.
+function hasDismissed(): boolean {
+  try {
+    return localStorage.getItem(DISMISSED_KEY) !== null;
+  } catch {
+    return false;
+  }
+}
+function rememberDismissed() {
+  try {
+    localStorage.setItem(DISMISSED_KEY, 'true');
+  } catch {
+    // ignore
+  }
+}
+
+const OFF_LABEL = `-${WELCOME_OFFER.percentOff}%`;
 
 export default function PromoPopup() {
   const [isVisible, setIsVisible] = useState(false);
@@ -10,9 +35,12 @@ export default function PromoPopup() {
   // Number of completed scratch strokes (press → drag → release). The prize
   // only shows after the third one so the interaction feels earned.
   const [strokes, setStrokes] = useState(0);
-  const [email, setEmail] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isClaimed, setIsClaimed] = useState(false);
+  // The offer lives in a small floating "Get 10%" bubble; the dialog only opens
+  // when the shopper taps it — never on a timer over the page.
+  const [showBubble, setShowBubble] = useState(false);
+  const isApplied = useCartStore((s) => s.appliedDiscountCode === WELCOME_OFFER.code);
+  const cartOpen = useCartStore((s) => s.isOpen);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -21,15 +49,32 @@ export default function PromoPopup() {
   const strokeCount = useRef(0);
 
   useEffect(() => {
-    const hasSeenPromo = localStorage.getItem('clini_white_promo_dismissed');
-    if (!hasSeenPromo) {
-      const timer = setTimeout(() => {
-        setShouldRender(true);
-        setTimeout(() => setIsVisible(true), 50);
-      }, 2500);
+    if (!hasDismissed()) {
+      const timer = setTimeout(() => setShowBubble(true), 1500);
       return () => clearTimeout(timer);
     }
   }, []);
+
+  const openOffer = () => {
+    setShouldRender(true);
+    setTimeout(() => setIsVisible(true), 50);
+  };
+
+  // Other CTAs (e.g. the homepage welcome tile) open the same dialog.
+  useEffect(() => {
+    const open = () => {
+      setShouldRender(true);
+      setTimeout(() => setIsVisible(true), 50);
+    };
+    window.addEventListener(OPEN_WELCOME_OFFER, open);
+    return () => window.removeEventListener(OPEN_WELCOME_OFFER, open);
+  }, []);
+
+  // The bubble's own × hides the offer for good.
+  const hideBubble = () => {
+    setShowBubble(false);
+    rememberDismissed();
+  };
 
   // Initialize scratch canvas
   useEffect(() => {
@@ -146,12 +191,10 @@ export default function PromoPopup() {
     };
   }, [shouldRender, isScratched]);
 
+  // Closing the dialog keeps the bubble, so the offer is one tap away later.
   const handleDismiss = useCallback(() => {
     setIsVisible(false);
-    setTimeout(() => {
-      setShouldRender(false);
-      localStorage.setItem('clini_white_promo_dismissed', 'true');
-    }, 300);
+    setTimeout(() => setShouldRender(false), 300);
   }, []);
 
   // Escape closes the dialog; page scroll is locked while it is open.
@@ -168,18 +211,37 @@ export default function PromoPopup() {
     };
   }, [shouldRender, handleDismiss]);
 
-  const handleClaim = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-    setIsSubmitting(true);
-    await new Promise(r => setTimeout(r, 1500));
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    localStorage.setItem('clini_white_promo_dismissed', 'true');
-    setTimeout(() => handleDismiss(), 2500);
+  const handleClaimed = () => {
+    setIsClaimed(true);
+    setShowBubble(false);
+    rememberDismissed();
   };
 
-  if (!shouldRender) return null;
+  if (!shouldRender) {
+    if (!showBubble || cartOpen) return null;
+    return (
+      <div className="fixed bottom-24 left-4 z-[90] lg:bottom-6 lg:left-6">
+        <button
+          type="button"
+          onClick={openOffer}
+          aria-haspopup="dialog"
+          aria-label={`Get ${WELCOME_OFFER.percentOff}% off your first order`}
+          className="flex h-16 w-16 flex-col items-center justify-center rounded-full bg-white text-grape shadow-xl ring-1 ring-black/5 transition-transform hover:scale-105"
+        >
+          <span className="text-[11px] font-bold leading-none">Get</span>
+          <span className="text-lg font-black leading-tight">{WELCOME_OFFER.percentOff}%</span>
+        </button>
+        <button
+          type="button"
+          onClick={hideBubble}
+          aria-label="Hide the welcome offer"
+          className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-grape text-white shadow"
+        >
+          <X className="h-3 w-3" strokeWidth={3} />
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -192,45 +254,41 @@ export default function PromoPopup() {
 
       {/* my-auto + max-h keeps the panel reachable on short viewports (small
           phones, landscape) instead of overflowing past the screen edge. */}
-      <div className={`relative my-auto max-h-[92svh] w-full max-w-xl overflow-y-auto bg-white rounded-2xl shadow-2xl transition-transform duration-500 ease-out ${isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-8'}`}>
+      <div className={`relative my-auto max-h-[92svh] w-full max-w-xl overflow-y-auto rounded-2xl bg-white shadow-2xl transition-transform duration-500 ease-out ${isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-8'}`}>
         {/* Close */}
-        <button onClick={handleDismiss} className="absolute top-3 left-3 z-20 p-1.5 text-black hover:opacity-60 transition-opacity" aria-label="Close">
-          <X className="w-5 h-5" />
+        <button onClick={handleDismiss} className="absolute left-3 top-3 z-20 p-1.5 text-black transition-opacity hover:opacity-60" aria-label="Close">
+          <X className="h-5 w-5" />
         </button>
 
-        <div className="pt-9 pb-7 px-5 sm:pt-10 sm:pb-8 sm:px-8 flex flex-col items-center text-center">
+        <div className="flex flex-col items-center px-5 pb-7 pt-9 text-center sm:px-8 sm:pb-8 sm:pt-10">
           {/* Brand */}
-          <h3 className="text-black font-black text-xl tracking-tighter italic mb-2" style={{ fontFamily: 'Georgia, serif' }}>
-            CLINI WHITE
-          </h3>
+          <p className="mb-2 font-display font-wide text-xl font-black tracking-[-0.02em] text-grape">
+            CLINIWHITE
+          </p>
 
           {!isScratched ? (
             <>
-              <h2 id="promo-popup-title" className="font-display text-3xl font-extrabold text-black leading-tight mb-1">
+              <h2 id="promo-popup-title" className="mb-1 font-display font-wide text-3xl font-extrabold leading-tight text-grape">
                 Try your luck
               </h2>
-              <p className="text-base text-gray-600 mb-8">Scratch below to see what you win</p>
+              <p className="mb-8 text-base text-gray-600">Scratch below to see what you win</p>
 
               {/* Scratch card area */}
-              <div ref={containerRef} className="relative w-full max-w-[360px] aspect-[3/2] mx-auto rounded-xl overflow-hidden select-none">
+              <div ref={containerRef} className="relative mx-auto aspect-[3/2] w-full max-w-[360px] select-none overflow-hidden rounded-xl">
                 {/* Hidden prize */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-[#231b50] to-[#6d28d9]">
-                  <div className="text-white font-black text-5xl leading-none drop-shadow-lg">
-                    -10%
-                  </div>
-                  <div className="text-white/90 font-bold text-sm uppercase tracking-wider mt-1">
-                    OFFERED
-                  </div>
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-grape to-[#6d28d9]">
+                  <div className="text-5xl font-black leading-none text-white drop-shadow-lg">{OFF_LABEL}</div>
+                  <div className="mt-1 text-sm font-bold uppercase tracking-wider text-white/90">Offered</div>
                 </div>
                 {/* Scratch canvas layer */}
                 <canvas
                   ref={canvasRef}
-                  className="absolute inset-0 w-full h-full cursor-crosshair touch-none"
+                  className="absolute inset-0 h-full w-full cursor-crosshair touch-none"
                   style={{ touchAction: 'none' }}
                 />
               </div>
 
-              <p className="text-xs text-gray-600 mt-5">
+              <p className="mt-5 text-xs text-gray-600">
                 {strokes === 0
                   ? 'Scratch the purple area to reveal your prize'
                   : `${strokes} of 3 scratches — keep going!`}
@@ -240,49 +298,32 @@ export default function PromoPopup() {
               <button
                 type="button"
                 onClick={() => setIsScratched(true)}
-                className="mt-3 text-xs font-bold text-[#231b50] underline underline-offset-2 hover:opacity-70 transition-opacity"
+                className="mt-3 text-xs font-bold text-grape underline underline-offset-2 transition-opacity hover:opacity-70"
               >
                 Reveal my prize without scratching
               </button>
             </>
-          ) : !isSubmitted ? (
-            <div className="animate-in fade-in zoom-in duration-500 w-full">
-              <h2 className="text-3xl font-black text-black leading-tight mb-1">
-                Congratulations!!
-              </h2>
-              <div className="flex items-center justify-center gap-1 mb-4">
-                <span className="text-[#6d28d9] font-black text-2xl">-10%</span>
-                <span className="text-gray-600 font-bold text-sm uppercase tracking-wider">OFF</span>
-              </div>
-              <p className="text-xs text-gray-600 mb-5">Enter your email to claim your exclusive discount</p>
-
-              <form onSubmit={handleClaim} className="space-y-3 w-full max-w-xs mx-auto">
-                <input
-                  type="email"
-                  placeholder="Your email"
-                  required
-                  autoComplete="email"
-                  aria-label="Email address to claim your discount"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:border-black focus:bg-white outline-none transition-all text-sm font-medium text-center"
-                />
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full py-3.5 bg-[#231b50] text-white font-black uppercase tracking-widest text-xs rounded-lg hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-                >
-                  {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Claim'}
-                </button>
-              </form>
-            </div>
           ) : (
-            <div className="animate-in fade-in zoom-in duration-500 py-8">
-              <div className="w-16 h-16 bg-[#6d28d9] rounded-full flex items-center justify-center mx-auto mb-4">
-                <Check className="w-8 h-8 text-white" strokeWidth={3} />
-              </div>
-              <h3 className="text-xl font-black text-black mb-1">Offer Claimed!</h3>
-              <p className="text-sm text-gray-600">Check your inbox for the -10% discount code.</p>
+            <div className="w-full max-w-xs">
+              <span className="tag mb-3 bg-violet text-white">You won {OFF_LABEL}</span>
+              <h2 id="promo-popup-title" className="mb-1 text-3xl font-black leading-tight text-black">
+                {isClaimed ? `Here's your ${WELCOME_OFFER.percentOff}% off` : 'Congratulations!'}
+              </h2>
+              <p className="mb-5 text-xs text-gray-600">
+                {!isClaimed
+                  ? 'Enter your email to claim your exclusive discount'
+                  : isApplied
+                    ? 'Copy it, or just shop — it’s already in your cart.'
+                    : 'Copy it and use it at checkout.'}
+              </p>
+
+              <WelcomeOfferForm layout="stacked" onClaimed={handleClaimed} />
+
+              {isClaimed && (
+                <button type="button" onClick={handleDismiss} className="btn-primary mt-5 w-full">
+                  Start shopping
+                </button>
+              )}
             </div>
           )}
         </div>

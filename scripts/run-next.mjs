@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { spawn } from 'node:child_process';
+import { totalmem } from 'node:os';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -45,8 +46,16 @@ if (extraCaCert) {
   env.NODE_EXTRA_CA_CERTS = resolve(root, extraCaCert);
 }
 
+// Heap cap for Next and every child it spawns (Turbopack's PostCSS workers
+// inherit NODE_OPTIONS). V8 sizes each process's young generation from this
+// cap, so a fixed 8 GB on a small machine makes those workers fail to commit
+// memory and die mid-compile ("failed to receive message … os error 10054" on
+// globals.css). Scale it to the machine: ~2 GB on a 3.4 GB laptop, the full
+// 8 GB on large build machines.
 if (!env.NODE_OPTIONS?.includes('--max-old-space-size')) {
-  env.NODE_OPTIONS = `${env.NODE_OPTIONS ? `${env.NODE_OPTIONS} ` : ''}--max-old-space-size=8192`;
+  const totalMb = Math.floor(totalmem() / 1024 / 1024);
+  const heapMb = Math.max(1024, Math.min(8192, Math.floor(totalMb * 0.6)));
+  env.NODE_OPTIONS = `${env.NODE_OPTIONS ? `${env.NODE_OPTIONS} ` : ''}--max-old-space-size=${heapMb}`;
 }
 
 const nextBin = resolve(root, 'node_modules', 'next', 'dist', 'bin', 'next');

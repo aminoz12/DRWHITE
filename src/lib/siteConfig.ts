@@ -13,7 +13,7 @@
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://www.cliniwhite.com";
 
-export const BRAND_NAME = "CLINI WHITE";
+export const BRAND_NAME = "CLINIWHITE";
 
 /** Verified, self-consistent social-proof figures used across the whole site. */
 export const STATS = {
@@ -31,6 +31,35 @@ export const STATS = {
   countries: "50+",
 } as const;
 
+/**
+ * Welcome offer revealed by the scratch-card popup. The code MUST exist in
+ * Shopify admin → Discounts (percentage off, limited to one use per customer)
+ * — the popup shows it on screen and applies it to the shopper's cart, so a
+ * code missing from Shopify would be a broken promise at checkout.
+ */
+export const WELCOME_OFFER = {
+  code: "WELCOME10",
+  percentOff: 10,
+} as const;
+
+/**
+ * Trustpilot TrustBox widgets. They render nothing until the business unit ID
+ * is set (Trustpilot → Integrations → TrustBox: every snippet contains
+ * data-businessunit-id and data-template-id — copy them into the env vars).
+ */
+export const TRUSTPILOT = {
+  businessUnitId: process.env.NEXT_PUBLIC_TRUSTPILOT_BUSINESS_UNIT_ID || "",
+  /** Public review page, linked from the widget fallback. */
+  reviewUrl:
+    process.env.NEXT_PUBLIC_TRUSTPILOT_REVIEW_URL || "https://uk.trustpilot.com/review/cliniwhite.com",
+  templates: {
+    /** "Mini" TrustBox (TrustScore + stars + review count). */
+    mini: process.env.NEXT_PUBLIC_TRUSTPILOT_TEMPLATE_MINI || "53aa8807dec7e10d38f59f36",
+    /** "Micro TrustScore" one-liner, used under product titles. */
+    micro: process.env.NEXT_PUBLIC_TRUSTPILOT_TEMPLATE_MICRO || "5419b637fa0340045cd0c936",
+  },
+} as const;
+
 /** Currency the store charges in. Keep in sync with the Shopify store currency. */
 export const CURRENCY = {
   code: "GBP",
@@ -41,7 +70,7 @@ export const CURRENCY = {
 /** Registered company / legal entity behind the brand. */
 export const COMPANY = {
   legalName: "VIBZY LTD",
-  displayName: "CLINI WHITE by VIBZY LTD",
+  displayName: "CLINIWHITE by VIBZY LTD",
   addressLines: ["82a James Carter Road, Mildenhall", "United Kingdom, IP28 7DE"],
   street: "82a James Carter Road",
   city: "Mildenhall",

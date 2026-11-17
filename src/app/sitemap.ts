@@ -3,7 +3,9 @@ import { getProducts } from "@/lib/shopify";
 import { POLICIES } from "@/lib/legalContent";
 import { SITE_URL } from "@/lib/siteConfig";
 
-export const dynamic = "force-static";
+// Regenerate hourly so products added or renamed in Shopify reach the
+// sitemap without a redeploy (the product pages themselves use ISR too).
+export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const routes: MetadataRoute.Sitemap = [

@@ -3,69 +3,29 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Loader2, Star } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Loader2 } from 'lucide-react';
 import { useCartStore } from '@/lib/cartStore';
 import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
 import PaymentIcons from '@/app/components/PaymentIcons';
 import { getProducts, normalizeCheckoutUrl } from '@/lib/shopify';
 import { getClientCountry } from '@/lib/market';
-import type { ShopifyProductEdge, ShopifyProductNode } from '@/lib/shopify';
+import type { ShopifyProductEdge } from '@/lib/shopify';
 import { formatMoney } from '@/lib/money';
-
-const OFFERS = [
-  { discount: 30, text: 'EXTRA 30% OFF' },
-  { discount: 50, text: 'MEGA 50% OFF' },
-  { discount: 75, text: 'INSANE 75% OFF' },
-  { discount: 80, text: 'ALMOST FREE 80% OFF' },
-  { discount: 90, text: 'GIVEAWAY 90% OFF' },
-];
+import { shortTitle } from '@/lib/productTitle';
 
 export default function CartPage() {
-  const { items, subtotal, subtotalCurrency, totalQuantity, checkoutUrl, removeItem, updateQuantity, addItem, isLoading } = useCartStore();
+  const { items, subtotal, subtotalCurrency, totalQuantity, checkoutUrl, appliedDiscountCode, removeItem, updateQuantity, addItem, isLoading } = useCartStore();
   const [upsellProducts, setUpsellProducts] = useState<ShopifyProductEdge[]>([]);
-  const [offerIndex, setOfferIndex] = useState(0);
-  const [currentOfferProduct, setCurrentOfferProduct] = useState<ShopifyProductNode | null>(null);
-  const [isOfferLoading, setIsOfferLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState('');
 
   useEffect(() => {
     async function fetchUpsells() {
       const products = (await getProducts(getClientCountry())) as ShopifyProductEdge[];
       setUpsellProducts(products);
-      if (products.length > 0) {
-        // Pick a random product for the first offer that isn't already in the cart (ideally)
-        const randomProduct = products[Math.floor(Math.random() * products.length)];
-        setCurrentOfferProduct(randomProduct.node);
-      }
     }
     fetchUpsells();
   }, []);
-
-  const handleAddOffer = async () => {
-    if (!currentOfferProduct) return;
-    const variantId = currentOfferProduct.variants?.edges[0]?.node.id;
-    if (!variantId) return;
-
-    setIsOfferLoading(true);
-    await addItem(variantId, 1);
-    
-    // Move to next offer
-    const nextIndex = Math.min(offerIndex + 1, OFFERS.length - 1);
-    setOfferIndex(nextIndex);
-    
-    // Pick a new random product
-    const otherProducts = upsellProducts
-      .map((product) => product.node)
-      .filter((product) => product.id !== currentOfferProduct.id);
-
-    if (otherProducts.length > 0) {
-      const nextProduct = otherProducts[Math.floor(Math.random() * otherProducts.length)];
-      setCurrentOfferProduct(nextProduct);
-    }
-    
-    setIsOfferLoading(false);
-  };
 
   const handleCheckout = () => {
     if (items.length === 0 || isLoading) return;
@@ -80,8 +40,6 @@ export default function CartPage() {
     window.location.href = url;
   };
 
-  const currentOffer = OFFERS[offerIndex];
-
   return (
     <div className="min-h-screen bg-[#F7F7F7]">
       <Header />
@@ -92,7 +50,7 @@ export default function CartPage() {
           {/* LEFT: CART ITEMS */}
           <div className="lg:col-span-2 space-y-4">
             <div className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100">
-              <h1 className="text-2xl font-black uppercase tracking-tight mb-8 text-[#1a1a1a]">
+              <h1 className="type-display mb-8 text-grape">
                 Your cart <span className="text-gray-600 font-medium">({totalQuantity})</span>
               </h1>
 
@@ -104,7 +62,7 @@ export default function CartPage() {
                   <p className="text-gray-600 font-medium uppercase tracking-widest text-sm">Your cart is empty</p>
                   <Link 
                     href="/shop"
-                    className="inline-block bg-[#231b50] text-white px-8 py-4 rounded-full font-black text-sm uppercase tracking-widest hover:bg-[#1a1440] transition-all"
+                    className="btn-primary"
                   >
                     Start Shopping
                   </Link>
@@ -126,11 +84,11 @@ export default function CartPage() {
                       <div className="flex-1 flex flex-col">
                         <div className="flex justify-between items-start mb-2">
                           <div>
-                            <h3 className="font-black text-black uppercase text-sm md:text-base leading-tight">
-                              {item.title}
+                            <h3 className="text-[15px] font-semibold leading-snug text-grape md:text-base">
+                              {shortTitle(item.title)}
                             </h3>
                             {item.sellingPlanName && (
-                              <p className="text-[10px] font-black text-[#231b50] bg-[#F5F3FF] inline-block px-2 py-0.5 rounded-full mt-1 uppercase tracking-wide">
+                              <p className="tag mt-1.5 px-2 py-1 text-[10px]">
                                 ↻ {item.sellingPlanName}
                               </p>
                             )}
@@ -139,10 +97,7 @@ export default function CartPage() {
                             )}
                           </div>
                           <button
-                            onClick={() => {
-                              removeItem(item.lineId);
-                              setOfferIndex(prev => Math.max(0, prev - 1));
-                            }}
+                            onClick={() => removeItem(item.lineId)}
                             aria-label={`Remove ${item.title} from cart`}
                             className="p-2 -m-2 text-gray-600 hover:text-red-500 transition-colors"
                           >
@@ -154,23 +109,25 @@ export default function CartPage() {
                           <div className="flex items-center border border-gray-200 rounded-full overflow-hidden">
                             <button
                               onClick={() => updateQuantity(item.lineId, item.quantity - 1)}
+                              disabled={isLoading}
                               aria-label="Decrease quantity"
-                              className="px-3.5 py-3 hover:bg-gray-50 transition-colors"
+                              className="px-3.5 py-3 hover:bg-gray-50 transition-colors disabled:opacity-40"
                             >
                               <Minus className="w-3 h-3" />
                             </button>
-                            <span className="px-4 py-2 text-xs font-black min-w-[3rem] text-center">{item.quantity}</span>
+                            <span className="px-4 py-2 text-xs font-bold min-w-[3rem] text-center">{item.quantity}</span>
                             <button
                               onClick={() => updateQuantity(item.lineId, item.quantity + 1)}
+                              disabled={isLoading}
                               aria-label="Increase quantity"
-                              className="px-3.5 py-3 hover:bg-gray-50 transition-colors"
+                              className="px-3.5 py-3 hover:bg-gray-50 transition-colors disabled:opacity-40"
                             >
                               <Plus className="w-3 h-3" />
                             </button>
                           </div>
                           
                           <div className="text-right">
-                            <p className="font-black text-lg text-black">
+                            <p className="text-lg font-bold text-grape">
                               {formatMoney(item.price, item.currencyCode)}
                             </p>
                           </div>
@@ -183,21 +140,26 @@ export default function CartPage() {
             </div>
           </div>
 
-          {/* RIGHT: SUMMARY & OFFERS */}
+          {/* RIGHT: SUMMARY */}
           <div className="space-y-6">
             {/* Checkout Card */}
             <div className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100">
               <div className="flex justify-between items-baseline mb-6">
                 <span className="text-sm font-bold text-gray-600 uppercase tracking-widest">Total</span>
-                <span className="text-2xl font-black text-[#231b50]">
+                <span className="text-2xl font-bold text-grape">
                   {formatMoney(subtotal, subtotalCurrency)}
                 </span>
               </div>
+              {appliedDiscountCode && (
+                <p className="-mt-3 mb-6 text-xs font-bold text-[#231b50] bg-[#F5F3FF] rounded-lg px-3 py-2">
+                  Code {appliedDiscountCode} applied — your discount shows at checkout
+                </p>
+              )}
               
               <button 
                 onClick={handleCheckout}
                 disabled={items.length === 0 || isLoading}
-                className="w-full bg-[#231b50] text-white py-5 rounded-xl font-black text-sm uppercase tracking-widest hover:bg-[#1a1440] shadow-xl shadow-[#231b50]/20 transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2"
+                className="btn-primary min-h-14 w-full"
               >
                 {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Checkout <ArrowRight className="w-4 h-4" /></>}
               </button>
@@ -209,55 +171,13 @@ export default function CartPage() {
               
               <PaymentIcons className="mt-6 justify-center" />
             </div>
-
-            {/* Dynamic Offer Card */}
-            {currentOfferProduct && (
-              <div className="bg-white rounded-2xl overflow-hidden shadow-xl border border-violet-100 relative group">
-                <div className="bg-yellow-400 text-black text-[10px] font-black px-3 py-1 uppercase tracking-widest inline-block rounded-br-xl">
-                  Super Value
-                </div>
-                
-                <div className="p-6 bg-gradient-to-br from-pink-500 to-purple-600 text-white">
-                  <div className="flex gap-4 items-center">
-                    <div className="flex-1">
-                      <h4 className="text-2xl font-black leading-none uppercase italic mb-1">
-                        Get {currentOffer.discount}% OFF
-                      </h4>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-white/80 mb-4">
-                        Instant saving on your next item
-                      </p>
-                      
-                      <button 
-                        onClick={handleAddOffer}
-                        disabled={isOfferLoading}
-                        className="bg-white text-pink-600 px-6 py-3 rounded-full font-black text-xs uppercase tracking-widest shadow-lg hover:scale-105 transition-all active:scale-95 flex items-center gap-2"
-                      >
-                        {isOfferLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Claim Offer'}
-                      </button>
-                    </div>
-                    
-                    <div className="relative w-24 h-24 flex-shrink-0 bg-white/10 rounded-xl backdrop-blur-sm p-2">
-                        <Image 
-                            src={currentOfferProduct.images.edges[0]?.node.url} 
-                            alt={currentOfferProduct.title} 
-                            fill 
-                            className="object-contain p-2"
-                        />
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-white px-4 py-2 text-[10px] text-gray-600 font-medium uppercase text-center">
-                    *Discount applies to this product only. One use per customer.
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
         {/* BEST SELLERS SECTION */}
         <div className="mt-24">
           <div className="mb-12">
-            <h2 className="text-3xl font-black uppercase tracking-tight mb-2 text-[#1a1a1a]">Shop our best sellers</h2>
+            <h2 className="type-display mb-2 text-grape">Shop our best sellers</h2>
             <p className="text-gray-700 text-sm font-medium">Explore our range of fan-favourites</p>
           </div>
 
@@ -267,31 +187,34 @@ export default function CartPage() {
 
               return (
                 <div key={node.id} className="bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100 flex flex-col group">
-                  <div className="relative aspect-square mb-6 bg-gray-50 rounded-xl overflow-hidden">
-                    <Image
-                      src={node.images.edges[0]?.node.url}
-                      alt={node.title}
-                      fill
-                      className="object-contain p-4 group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-[10px] font-black px-2 py-1 rounded uppercase shadow-sm">
-                      Best Seller
-                    </div>
-                  </div>
+                  <Link href={`/product/${node.handle}`} className="relative aspect-square mb-6 bg-gray-50 rounded-xl overflow-hidden block">
+                    {node.images.edges[0]?.node.url ? (
+                      <Image
+                        src={node.images.edges[0].node.url}
+                        alt={node.images.edges[0].node.altText || node.title}
+                        fill
+                        sizes="(max-width: 768px) 50vw, 25vw"
+                        className="object-contain p-4 group-hover:scale-110 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-300">
+                        <ShoppingBag className="w-8 h-8" />
+                      </div>
+                    )}
+                  </Link>
 
-                  <h3 className="font-black text-black uppercase text-xs md:text-sm mb-2 line-clamp-1">{node.title}</h3>
-                  <div className="flex items-center gap-1 mb-4">
-                    {[...Array(5)].map((_, i) => <Star key={i} className="w-2.5 h-2.5 fill-[#231b50] text-[#231b50]" />)}
-                  </div>
+                  <h3 className="mb-3 line-clamp-1 text-sm font-semibold text-grape">
+                    <Link href={`/product/${node.handle}`}>{shortTitle(node.title)}</Link>
+                  </h3>
 
                   <div className="mt-auto flex items-center justify-between">
-                    <span className="font-black text-black">
+                    <span className="font-bold text-grape">
                       {formatMoney(node.priceRange.minVariantPrice.amount, node.priceRange.minVariantPrice.currencyCode)}
                     </span>
                     <button
                       onClick={() => variant?.id && addItem(variant.id, 1)}
                       disabled={!variant?.id || !variant.availableForSale || isLoading}
-                      className="bg-black text-white px-4 py-2 rounded-lg font-black text-[10px] uppercase tracking-widest hover:bg-[#231b50] transition-all active:scale-95 disabled:opacity-50"
+                      className="btn-primary min-h-9 px-4 text-[10px]"
                     >
                       {variant?.availableForSale ? 'Add' : 'Sold out'}
                     </button>
