@@ -39,30 +39,51 @@ export default async function PolicyPage({ params }: PolicyPageProps) {
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      <main id="main-content" className="py-10 sm:py-16 md:py-24 px-4">
-        <article className="max-w-3xl mx-auto">
-          <SectionHeading as="h1" align="left" eyebrow="Legal" className="mb-3" title={policy.title} />
-          <p className="text-xs text-gray-600 mb-8">Last updated: {POLICY_LAST_UPDATED}</p>
+      <main id="main-content" className="px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+        <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[14rem_1fr] lg:gap-16">
+          {/* Contents: sticks beside the text on desktop */}
+          <nav aria-label="On this page" className="hidden lg:block">
+            <div className="sticky top-[calc(var(--header-h,64px)+2rem)] transition-[top] duration-300">
+              <p className="type-eyebrow text-gray-500">On this page</p>
+              <ol className="mt-4 space-y-2.5 border-l border-gray-200">
+                {policy.sections.map((section, i) => (
+                  <li key={section.heading}>
+                    <a
+                      href={`#section-${i + 1}`}
+                      className="-ml-px block border-l border-transparent pl-4 text-sm leading-snug text-gray-600 transition-colors hover:border-grape hover:text-grape"
+                    >
+                      {section.heading}
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </nav>
 
-          <p className="text-base text-gray-700 leading-relaxed mb-10">{policy.intro}</p>
+          <article className="max-w-3xl">
+            <SectionHeading as="h1" eyebrow="Legal" className="mb-3" title={policy.title} />
+            <p className="mb-8 text-sm text-gray-600">Last updated: {POLICY_LAST_UPDATED}</p>
 
-          <div className="space-y-10">
-            {policy.sections.map((section) => (
-              <section key={section.heading}>
-                <h2 className="font-display font-wide text-lg font-extrabold text-grape uppercase tracking-wide mb-3">
-                  {section.heading}
-                </h2>
-                <div className="space-y-3">
-                  {section.body.map((paragraph, i) => (
-                    <p key={i} className="text-sm md:text-base text-gray-600 leading-relaxed">
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
-              </section>
-            ))}
-          </div>
-        </article>
+            <p className="mb-10 text-base leading-relaxed text-gray-700 md:text-lg">{policy.intro}</p>
+
+            <div className="space-y-10">
+              {policy.sections.map((section, i) => (
+                <section key={section.heading} id={`section-${i + 1}`} className="scroll-mt-28 border-t border-gray-200 pt-8">
+                  <h2 className="mb-3 font-display font-wide text-lg font-extrabold uppercase tracking-wide text-grape">
+                    {section.heading}
+                  </h2>
+                  <div className="space-y-3">
+                    {section.body.map((paragraph, j) => (
+                      <p key={j} className="text-base leading-relaxed text-gray-600 md:text-base">
+                        {paragraph}
+                      </p>
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          </article>
+        </div>
       </main>
       <Footer />
     </div>

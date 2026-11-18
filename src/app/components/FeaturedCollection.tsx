@@ -32,6 +32,8 @@ export default async function FeaturedCollection({
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
         <SectionHeading
           id="also-love-heading"
+          split
+          action={{ label: 'Shop all products', href: '/shop' }}
           eyebrow="Customer favourites"
           title={
             <>
@@ -40,8 +42,10 @@ export default async function FeaturedCollection({
           }
         />
         <div className="grid grid-cols-2 gap-x-4 gap-y-8 lg:grid-cols-4 lg:gap-8">
-          {products.map((product) => (
-            <ProductCard key={product.node.id} product={product.node} />
+          {products.map((product, i) => (
+            <div key={product.node.id} data-reveal="" style={{ '--reveal-i': i } as React.CSSProperties}>
+              <ProductCard product={product.node} />
+            </div>
           ))}
         </div>
       </div>

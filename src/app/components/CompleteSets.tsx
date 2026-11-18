@@ -25,6 +25,7 @@ export default async function CompleteSets() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           id="sets-heading"
+          split
           eyebrow="Exclusive offers"
           title={
             <>
@@ -41,9 +42,9 @@ export default async function CompleteSets() {
 
         {/* Swipe on phones (three cards would orphan one in a 2-up grid). */}
         <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 scrollbar-none sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-6 sm:overflow-visible sm:px-0 sm:pb-0">
-          {sets.map(({ node }) => (
-            <div key={node.id} className="w-[68%] shrink-0 snap-start sm:w-auto">
-              <ProductCard product={node} tile="white" />
+          {sets.map(({ node }, i) => (
+            <div key={node.id} data-reveal="" style={{ '--reveal-i': i } as React.CSSProperties} className="w-[68%] shrink-0 snap-start sm:w-auto">
+              <ProductCard product={node} />
             </div>
           ))}
         </div>
@@ -52,7 +53,7 @@ export default async function CompleteSets() {
           <Link href="/bundles" className="btn-primary">
             Shop the bundles <ArrowRight className="h-3.5 w-3.5" />
           </Link>
-          <p className="mt-5 text-[13px] text-gray-500">Free express shipping on bundles · 30-day money-back guarantee</p>
+          <p className="mt-5 text-sm text-gray-500">Free express shipping on bundles · 30-day money-back guarantee</p>
         </div>
       </div>
     </section>

@@ -5,6 +5,7 @@ import { SOCIALS, CONTACT, COMPANY, WELCOME_OFFER } from '@/lib/siteConfig';
 import WelcomeOfferForm from './WelcomeOfferForm';
 import CurrencySwitcher from './CurrencySwitcher';
 import PaymentIcons from './PaymentIcons';
+import { Eyebrow } from './SectionHeading';
 
 const InstagramIcon = () => (
   <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg">
@@ -58,11 +59,11 @@ export default function Footer({ country }: { country?: string } = {}) {
         {/* Welcome offer */}
         <div className="grid gap-8 border-b border-white/10 pb-14 lg:grid-cols-2 lg:items-end lg:gap-16">
           <div>
-            <span className="tag bg-white/10 text-lilac">Welcome offer</span>
+            <Eyebrow tone="dark">Welcome offer</Eyebrow>
             <h2 className="type-display mt-4 text-balance">
               Get {WELCOME_OFFER.percentOff}% off <span className="text-lilac">your first order</span>
             </h2>
-            <p className="mt-4 max-w-md text-[15px] leading-relaxed text-white/65">
+            <p className="mt-4 max-w-md text-base leading-relaxed text-white/65">
               Plus first access to new products and routine tips.
             </p>
           </div>
@@ -76,13 +77,13 @@ export default function Footer({ country }: { country?: string } = {}) {
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/65">
               Peroxide-free, colour-correcting oral care for a brighter-looking smile, made to fit your routine.
             </p>
-            <div className="mt-5 text-[13px] leading-relaxed text-white/55">
+            <div className="mt-5 text-sm leading-relaxed text-white/55">
               <p className="font-semibold text-white/80">{COMPANY.displayName}</p>
               {COMPANY.addressLines.map((line) => (
                 <p key={line}>{line}</p>
               ))}
             </div>
-            <a href={`mailto:${CONTACT.email}`} className="mt-3 inline-block text-[13px] text-white/80 underline underline-offset-4 hover:text-white">
+            <a href={`mailto:${CONTACT.email}`} className="mt-3 inline-block text-sm text-white/80 underline underline-offset-4 hover:text-white">
               {CONTACT.email}
             </a>
             <div className="mt-6 flex items-center gap-3">
@@ -113,7 +114,7 @@ export default function Footer({ country }: { country?: string } = {}) {
               <ul className="mt-5 space-y-3.5">
                 {col.links.map((link) => (
                   <li key={link.href}>
-                    <Link href={link.href} className="text-[15px] text-white/80 transition-colors hover:text-white">
+                    <Link href={link.href} className="text-base text-white/80 transition-colors hover:text-white">
                       {link.label}
                     </Link>
                   </li>
@@ -127,7 +128,7 @@ export default function Footer({ country }: { country?: string } = {}) {
         <div className="flex flex-col items-center justify-between gap-4 border-t border-white/10 py-6 md:flex-row">
           {/* Country / currency selector (geo-defaulted) */}
           <CurrencySwitcher initialCountry={country} />
-          <p className="text-xs text-white/50">&copy; 2026 {COMPANY.displayName}. All rights reserved.</p>
+          <p className="text-sm text-white/50">&copy; 2026 {COMPANY.displayName}. All rights reserved.</p>
           <PaymentIcons />
         </div>
       </div>

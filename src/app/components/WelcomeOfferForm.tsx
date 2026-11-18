@@ -92,7 +92,7 @@ export default function WelcomeOfferForm({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           disabled={status === 'sending'}
-          className={`min-h-12 min-w-0 flex-1 rounded-full border px-5 text-[15px] transition-colors focus:outline-none disabled:opacity-60 ${
+          className={`min-h-12 min-w-0 flex-1 rounded-full border px-5 text-base transition-colors focus:outline-none disabled:opacity-60 ${
             dark
               ? 'border-white/20 bg-white/[0.06] text-white placeholder:text-white/50 focus:border-lilac'
               : 'border-gray-300 bg-white text-gray-900 placeholder:text-gray-500 focus:border-grape'
@@ -113,11 +113,11 @@ export default function WelcomeOfferForm({
         </button>
       </div>
       {status === 'error' && (
-        <p role="alert" className={`mt-2.5 text-xs font-semibold ${dark ? 'text-red-300' : 'text-red-600'}`}>
+        <p role="alert" className={`mt-2.5 text-sm font-semibold ${dark ? 'text-red-300' : 'text-red-600'}`}>
           We couldn&apos;t save your email — please check it and try again.
         </p>
       )}
-      <p className={`mt-3 text-xs leading-relaxed ${dark ? 'text-white/50' : 'text-gray-500'}`}>
+      <p className={`mt-3 text-sm leading-relaxed ${dark ? 'text-white/50' : 'text-gray-500'}`}>
         One code per customer. By signing up you agree to receive emails from us — unsubscribe any time.
       </p>
     </form>

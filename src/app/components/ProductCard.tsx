@@ -1,13 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Check, Loader2 } from 'lucide-react';
-import { useCartStore } from '@/lib/cartStore';
+import { ArrowUpRight, Eye } from 'lucide-react';
 import { formatMoney, getDiscountPercent } from '@/lib/money';
-import { productTagline } from '@/lib/productStyle';
-import { displayTitle, shortTitle } from '@/lib/productTitle';
+import { productCardCopy } from '@/lib/productStyle';
+import { displayTitle } from '@/lib/productTitle';
+import { STATS } from '@/lib/siteConfig';
+import StoreRating from './StoreRating';
+import QuickView from './QuickView';
 
 // Merchandising badge. Only explicit tags count — never a guessed offer and
 // never a raw internal tag.
@@ -19,73 +21,70 @@ function getBadge(tags?: string[]): string | null {
   return null;
 }
 
-interface ProductCardProps {
-  /** Tile behind the packshot: tinted on white sections, white on tinted ones. */
-  tile?: 'tint' | 'white';
-  product: {
-    id: string;
-    title: string;
-    handle: string;
-    description: string;
-    tags?: string[];
-    priceRange: {
-      minVariantPrice: { amount: string; currencyCode: string };
-    };
-    compareAtPriceRange?: {
-      minVariantPrice: { amount: string; currencyCode: string };
-    };
-    images: {
-      edges: Array<{
-        node: { url: string; altText: string | null };
-      }>;
-    };
-    variants?: {
-      edges: Array<{
-        node: {
-          id: string;
-          price: { amount: string; currencyCode: string };
-          availableForSale: boolean;
-        };
-      }>;
-    };
+export interface ProductCardProduct {
+  id: string;
+  title: string;
+  handle: string;
+  description: string;
+  tags?: string[];
+  priceRange: {
+    minVariantPrice: { amount: string; currencyCode: string };
+  };
+  compareAtPriceRange?: {
+    minVariantPrice: { amount: string; currencyCode: string };
+  };
+  images: {
+    edges: Array<{
+      node: { url: string; altText: string | null };
+    }>;
+  };
+  variants?: {
+    edges: Array<{
+      node: {
+        id: string;
+        price: { amount: string; currencyCode: string };
+        availableForSale: boolean;
+      };
+    }>;
   };
 }
 
-export default function ProductCard({ product, tile = 'tint' }: ProductCardProps) {
+interface ProductCardProps {
+  product: ProductCardProduct;
+}
+
+// Editorial product card: a big packshot, the store rating, a benefit
+// headline with a line of copy, the price, and one clear "Shop …" button
+// (it carries the full product name for screen readers). Quick view (hover on
+// desktop, the eye button on touch) covers adding to the cart in place.
+//
+// No tile behind the product: the packshot's white multiplies into whatever
+// the section is (white or porcelain), so the product stands on the page. It
+// is drawn slightly larger than its frame to trim the white margin baked into
+// the photos; only that invisible margin spills past the frame.
+export default function ProductCard({ product }: ProductCardProps) {
   const image = product.images.edges[0]?.node;
+  // Second shot, revealed on hover where there is a mouse.
+  const altImage = product.images.edges[1]?.node;
   const price = product.priceRange.minVariantPrice;
   const comparePrice = product.compareAtPriceRange?.minVariantPrice;
-  const firstVariant = product.variants?.edges[0]?.node;
   const badge = getBadge(product.tags);
+  const copy = productCardCopy(product.title);
 
-  const [adding, setAdding] = useState(false);
-  const [added, setAdded] = useState(false);
-  const { addItem, isLoading } = useCartStore();
-
-  const available = Boolean(firstVariant?.id && firstVariant.availableForSale);
-  const handleAdd = async () => {
-    if (!firstVariant?.id || !available) return;
-    setAdding(true);
-    const ok = await addItem(firstVariant.id, 1);
-    setAdding(false);
-    if (!ok) return;
-    setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
-  };
+  const [quickView, setQuickView] = useState(false);
+  const closeQuickView = useCallback(() => setQuickView(false), []);
 
   const discountPercent = getDiscountPercent(price.amount, comparePrice?.amount);
   const href = `/product/${product.handle}`;
   const fullName = displayTitle(product.title);
 
-  // The card is clickable through the title link's ::after overlay; the badges
-  // and the Add to cart button sit above it (z-10) so nothing nests.
+  // The "Shop …" link stretches over the whole card through its ::after, so
+  // hovering anywhere lights the button. It must never transform (a transform
+  // would shrink that overlay to the button mid-hover), hence transform-none.
+  // Badges and quick-view buttons sit above it on z-10.
   return (
     <div className="group relative flex h-full flex-col">
-      <div
-        className={`relative aspect-square overflow-hidden rounded-[1.25rem] ${
-          tile === 'tint' ? 'bg-lavender' : 'bg-white'
-        }`}
-      >
+      <div className="relative aspect-[4/3]">
         {(badge || discountPercent > 0) && (
           <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-1.5">
             {badge && <span className="tag bg-white px-2.5 py-1.5 text-[10px] text-grape">{badge}</span>}
@@ -100,52 +99,77 @@ export default function ProductCard({ product, tile = 'tint' }: ProductCardProps
             src={image.url}
             alt={image.altText || fullName}
             fill
-            className="object-contain p-6 mix-blend-multiply transition-transform duration-500 group-hover:scale-[1.04]"
-            sizes="(max-width: 768px) 50vw, 25vw"
+            className={`scale-[1.12] object-contain mix-blend-multiply transition-[transform,opacity] duration-500 group-hover:scale-[1.18] ${
+              altImage ? '[@media(hover:hover)]:group-hover:opacity-0' : ''
+            }`}
+            sizes="(max-width: 768px) 60vw, 30vw"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-xs text-gray-600">No Image</div>
+          <div className="flex h-full w-full items-center justify-center text-sm text-gray-600">No Image</div>
         )}
+        {/* The second shot takes the packshot's place on hover (mouse only). */}
+        {altImage && (
+          <Image
+            src={altImage.url}
+            alt=""
+            fill
+            className="hidden rounded-xl object-contain opacity-0 mix-blend-multiply transition-opacity duration-500 [@media(hover:hover)]:block [@media(hover:hover)]:group-hover:opacity-100"
+            sizes="30vw"
+          />
+        )}
+
+        {/* Quick view: rises from the bottom on hover (mouse), a corner button on touch. */}
+        <button
+          type="button"
+          onClick={() => setQuickView(true)}
+          aria-label={`Quick view: ${fullName}`}
+          className="type-eyebrow absolute inset-x-3 bottom-3 z-10 hidden translate-y-3 items-center justify-center gap-2 rounded-full bg-white/95 py-3 text-[10px] text-grape opacity-0 shadow-[0_8px_20px_-10px_rgba(18,13,46,0.5)] transition-all duration-300 hover:bg-grape hover:text-white focus-visible:translate-y-0 focus-visible:opacity-100 [@media(hover:hover)]:flex [@media(hover:hover)]:group-hover:translate-y-0 [@media(hover:hover)]:group-hover:opacity-100"
+        >
+          <Eye className="h-3.5 w-3.5" /> Quick view
+        </button>
+        <button
+          type="button"
+          onClick={() => setQuickView(true)}
+          aria-label={`Quick view: ${fullName}`}
+          className="absolute bottom-3 right-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white text-grape shadow-sm active:scale-90 [@media(hover:hover)]:hidden"
+        >
+          <Eye className="h-4 w-4" />
+        </button>
       </div>
 
-      <div className="flex flex-1 flex-col px-0.5 pt-4">
-        <h3 className="line-clamp-2 text-[15px] font-semibold leading-snug text-grape sm:text-base">
-          <Link href={href} className="after:absolute after:inset-0">
-            {shortTitle(product.title)}
-          </Link>
+      <div className="flex flex-1 flex-col px-1 pt-4 sm:px-1.5 sm:pt-5">
+        <StoreRating size="xs">
+          <span className="whitespace-nowrap text-[11px] leading-none text-gray-500 sm:text-sm">
+            <strong className="font-semibold text-grape">{STATS.ratingLabel}</strong> · Store rating
+          </span>
+        </StoreRating>
+
+        <h3 className="mt-3 text-balance text-lg font-semibold leading-[1.15] tracking-[-0.02em] text-grape sm:text-[1.5rem]">
+          {copy.headline}
         </h3>
-        <p className="mt-1 text-[13px] leading-snug text-gray-500">{productTagline(product.title)}</p>
-        <div className="mt-2 flex flex-wrap items-baseline gap-x-2">
-          <span className="text-base font-bold text-grape">{formatMoney(price.amount, price.currencyCode)}</span>
+        <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-gray-600 sm:text-base">{copy.description}</p>
+
+        {/* Spacer keeps every card's price and button on one line across a row. */}
+        <div className="min-h-4 flex-1" aria-hidden />
+        <p className="mb-3 flex flex-wrap items-baseline gap-x-2">
+          <span className="text-base font-bold text-grape sm:text-lg">{formatMoney(price.amount, price.currencyCode)}</span>
           {discountPercent > 0 && (
-            <span className="text-sm text-gray-500 line-through">
+            <span className="text-sm text-gray-400 line-through">
               {formatMoney(comparePrice?.amount, comparePrice?.currencyCode || price.currencyCode)}
             </span>
           )}
-        </div>
-
-        {/* Spacer keeps every card's button on the same baseline in a row. */}
-        <div className="min-h-4 flex-1" aria-hidden />
-        <button
-          type="button"
-          onClick={handleAdd}
-          disabled={!available || isLoading}
-          aria-label={available ? `Add ${fullName} to cart` : `${fullName} is sold out`}
-          className={`btn-primary relative z-10 min-h-11 w-full px-3 text-[11px] ${added ? 'bg-[#1d8f50]! hover:bg-[#1d8f50]!' : ''}`}
+        </p>
+        <Link
+          href={href}
+          className="btn-primary min-h-12 w-full gap-1.5 whitespace-nowrap px-3 text-[10px] tracking-[0.05em] after:absolute after:inset-0 hover:transform-none! active:transform-none! group-hover:bg-[#2f2570] sm:gap-2 sm:text-xs sm:tracking-[0.08em]"
         >
-          {adding ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : added ? (
-            <>
-              <Check className="h-4 w-4" strokeWidth={3} /> Added
-            </>
-          ) : available ? (
-            'Add to cart'
-          ) : (
-            'Sold out'
-          )}
-        </button>
+          Shop {copy.name}
+          <span className="sr-only">: {fullName}</span>
+          <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+        </Link>
       </div>
+
+      {quickView && <QuickView product={product} onClose={closeQuickView} />}
     </div>
   );
 }

@@ -55,13 +55,14 @@ export default async function CompareTable() {
   // Phones get Mona Sans's narrow cut so "CLINIWHITE" fits a quarter-width column.
   const headCell =
     'type-eyebrow px-1 py-5 text-center text-[10px] leading-tight tracking-[0.04em] font-stretch-[75%] sm:px-4 sm:text-[11px] sm:tracking-[0.12em]';
-  const rowHead = 'p-3 text-[13px] font-semibold leading-snug text-grape sm:p-5 sm:text-[15px]';
+  const rowHead = 'p-3 text-sm font-semibold leading-snug text-grape sm:p-5 sm:text-base';
 
   return (
     <section aria-labelledby="compare-heading" className="bg-white py-16 sm:py-24">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           id="compare-heading"
+          align="center"
           eyebrow="The honest comparison"
           title={
             <>
@@ -79,7 +80,7 @@ export default async function CompareTable() {
           }
         />
 
-        <div className="overflow-hidden rounded-[1.75rem] border border-gray-200 bg-white">
+        <div data-reveal="" className="overflow-hidden rounded-[1.75rem] border border-gray-200 bg-white">
           <table className="w-full table-fixed border-collapse text-left [overflow-wrap:normal]">
             <caption className="sr-only">CLINIWHITE compared with peroxide strips and dentist whitening</caption>
             <colgroup>

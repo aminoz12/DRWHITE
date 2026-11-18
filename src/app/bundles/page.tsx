@@ -7,7 +7,7 @@ import BundlesGrid from './BundlesGrid';
 import GuaranteeBand from '@/app/components/GuaranteeBand';
 import SectionHeading from '@/app/components/SectionHeading';
 import Marker from '@/app/components/Marker';
-import { PiggyBank, Sparkles, Truck, BadgeCheck } from 'lucide-react';
+import { PiggyBank, Truck, BadgeCheck } from 'lucide-react';
 
 export const metadata = {
   title: 'Bundle & Save — Professional Teeth Whitening',
@@ -17,17 +17,14 @@ export const metadata = {
 
 const WHY_BUNDLE = [
   {
-    icon: PiggyBank,
     title: 'Bigger savings',
     desc: 'Each set is priced below buying its items separately.',
   },
   {
-    icon: Sparkles,
     title: 'A complete routine',
     desc: 'Products chosen to work together, from daily care to deeper whitening.',
   },
   {
-    icon: Truck,
     title: 'Free express shipping',
     desc: 'Every set ships free and fast — no minimum spend.',
   },
@@ -68,12 +65,13 @@ export default async function BundlesPage() {
       <Header country={country} />
       <main id="main-content">
         {/* Page head — compact, no hero */}
-        <section className="px-4 pb-10 pt-10 text-center sm:pt-16">
-          <div className="mx-auto max-w-3xl">
+        <section className="pb-8 pt-10 sm:pt-14">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeading
               as="h1"
-              eyebrow="Curated combinations"
-              className="mb-0"
+              eyebrow="Curated combinations"
+              split
+              className="mb-8"
               title={
                 <>
                   Bundle <Marker>&amp; save</Marker>
@@ -85,53 +83,54 @@ export default async function BundlesPage() {
                 </>
               }
             />
-
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+            <ul className="flex flex-wrap gap-x-8 gap-y-3 border-y border-gray-200 py-4">
               {perks.map(({ icon: Icon, text }) => (
-                <span
-                  key={text}
-                  className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-gray-600"
-                >
-                  <Icon className="h-4 w-4 text-grape" />
+                <li key={text} className="type-eyebrow inline-flex items-center gap-2 text-grape">
+                  <Icon className="h-4 w-4 text-violet" strokeWidth={1.75} />
                   {text}
-                </span>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         </section>
 
         {/* Bundles Grid — client component for cart */}
-        <section className="bg-white px-4 pb-10 sm:pb-16">
-          <div className="mx-auto max-w-7xl">
+        <section className="bg-white pb-16 sm:pb-24">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <BundlesGrid products={allProducts} />
           </div>
         </section>
 
-        {/* Why Bundle */}
-        <section className="bg-lavender px-4 py-14">
-          <div className="mx-auto max-w-5xl">
+        {/* Why bundle */}
+        <section aria-labelledby="why-bundle-heading" className="bg-porcelain py-16 sm:py-24">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeading
-              eyebrow="Better together"
+              id="why-bundle-heading"
+              eyebrow="Better together"
               title={
                 <>
                   Why <Marker>bundle?</Marker>
                 </>
               }
             />
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-              {WHY_BUNDLE.map(({ icon: Icon, title, desc }) => (
-                <div
+            <ol className="grid gap-x-10 md:grid-cols-3">
+              {WHY_BUNDLE.map(({ title, desc }, i) => (
+                <li
                   key={title}
-                  className="rounded-2xl border border-violet-100 bg-white p-8 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
+                  data-reveal=""
+                  style={{ '--reveal-i': i } as React.CSSProperties}
+                  className="border-t-2 border-grape py-6"
                 >
-                  <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-grape">
-                    <Icon className="h-5 w-5 text-white" />
-                  </div>
-                  <h3 className="mb-2 font-display font-wide text-sm font-extrabold uppercase tracking-wider text-grape">{title}</h3>
-                  <p className="text-xs leading-relaxed text-gray-600">{desc}</p>
-                </div>
+                  <span aria-hidden className="font-display font-wide text-sm font-extrabold text-violet">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <h3 className="mt-4 font-display font-wide text-xl font-extrabold uppercase leading-tight tracking-[-0.01em] text-grape">
+                    {title}
+                  </h3>
+                  <p className="mt-3 text-base leading-relaxed text-gray-600">{desc}</p>
+                </li>
               ))}
-            </div>
+            </ol>
           </div>
         </section>
 

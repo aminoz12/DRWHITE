@@ -5,6 +5,7 @@ import PromoPopup from "./components/PromoPopup";
 import CartDrawer from "./components/CartDrawer";
 import Analytics from "./components/Analytics";
 import RouteTracker from "./components/RouteTracker";
+import RevealObserver from "./components/RevealObserver";
 import { SOCIALS, CONTACT, COMPANY, SITE_URL } from "@/lib/siteConfig";
 
 // One variable family for the whole site: its wide cut (wdth 125) sets the
@@ -192,6 +193,7 @@ export default function RootLayout({
         {children}
         <CartDrawer />
         <PromoPopup />
+        <RevealObserver />
       </body>
     </html>
   );

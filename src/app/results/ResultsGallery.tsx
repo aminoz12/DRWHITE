@@ -1,122 +1,120 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
+import { useMemo, useState } from 'react';
 import Image from 'next/image';
-import { Star, ChevronDown, ChevronUp } from 'lucide-react';
-import { CUSTOMER_RESULTS as ALL_RESULTS } from '@/lib/results';
+import { ChevronDown, Star } from 'lucide-react';
+import { CUSTOMER_RESULTS, type CustomerResult } from '@/lib/results';
+import BeforeAfter from '@/app/components/BeforeAfter';
+
+const FILTERS = [
+  { id: 'all', label: 'All results', test: () => true },
+  { id: 'strips', label: 'Whitening strips', test: (r: CustomerResult) => /strips/i.test(r.product) },
+  { id: 'sets', label: 'Sets', test: (r: CustomerResult) => /bundle/i.test(r.product) },
+];
+
+const FIRST_PAGE = 6;
 
 export default function ResultsGallery() {
+  const [filter, setFilter] = useState('all');
   const [showAll, setShowAll] = useState(false);
 
-  const displayed = showAll ? ALL_RESULTS : ALL_RESULTS.slice(0, 4);
+  const matching = useMemo(
+    () => CUSTOMER_RESULTS.filter(FILTERS.find((f) => f.id === filter)!.test),
+    [filter]
+  );
+  const displayed = showAll ? matching : matching.slice(0, FIRST_PAGE);
 
   return (
     <div>
-      {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {displayed.map((result) => (
-          <div
-            key={result.id}
-            className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col"
-          >
-            {/* Single Result Image (Already contains before/after) */}
-            <div className="relative">
-              <div className="relative h-64 overflow-hidden">
-                <Image
-                  src={result.image}
-                  alt={`${result.name} result`}
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover"
-                />
-              </div>
+      <div role="group" aria-label="Filter results" className="-mx-4 mb-10 flex gap-1.5 overflow-x-auto px-4 pb-1 scrollbar-none sm:mx-0 sm:px-0">
+        {FILTERS.map((f) => {
+          const active = filter === f.id;
+          const count = CUSTOMER_RESULTS.filter(f.test).length;
+          return (
+            <button
+              key={f.id}
+              type="button"
+              aria-pressed={active}
+              onClick={() => {
+                setFilter(f.id);
+                setShowAll(false);
+              }}
+              className={`type-eyebrow shrink-0 rounded-full px-4 py-2.5 transition-colors ${
+                active ? 'bg-grape text-white' : 'bg-gray-100 text-gray-700 hover:bg-violet-soft hover:text-violet'
+              }`}
+            >
+              {f.label}
+              <span className={`ml-1.5 ${active ? 'text-white/60' : 'text-gray-400'}`}>{count}</span>
+            </button>
+          );
+        })}
+      </div>
 
-              {/* Shades badge */}
-              <div className="tag absolute right-3 top-3 bg-white text-grape shadow-sm">
-                +{result.shade}
-              </div>
-            </div>
+      <div key={filter} className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+        {displayed.map((result, i) => (
+          <article key={result.id} className="animate-fade-up flex flex-col" style={{ animationDelay: `${(i % FIRST_PAGE) * 50}ms` }}>
+            {result.aligned ? (
+              <BeforeAfter
+                before={result.before}
+                after={result.after}
+                alt={`${result.name}, ${result.product}`}
+                hint={i === 0}
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                className="aspect-[4/3] rounded-[1.25rem]"
+              />
+            ) : (
+              <SideBySide result={result} />
+            )}
 
-            {/* Content */}
-            <div className="p-4 flex flex-col flex-1">
-              {/* Stars */}
-              <div className="flex items-center gap-1 mb-2">
-                {[...Array(result.rating)].map((_, i) => (
-                  <Star key={i} className="w-3 h-3 text-[#231b50] fill-current" />
+            <div className="mt-5 flex items-center justify-between gap-3">
+              <span className="flex gap-0.5" aria-label={`${result.rating} out of 5 stars`}>
+                {[...Array(result.rating)].map((_, s) => (
+                  <Star key={s} className="h-4 w-4 fill-violet text-violet" aria-hidden />
                 ))}
-              </div>
-
-              {/* Review text */}
-              <p className="text-xs text-gray-700 leading-relaxed mb-3 flex-1">
-                &ldquo;{result.text}&rdquo;
-              </p>
-
-              {/* Tags */}
-              <div className="flex flex-wrap gap-1 mb-3">
-                {result.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="tag px-2 py-1 text-[10px]"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-
-              {/* Author */}
-              <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                <div>
-                  <p className="text-[13px] font-semibold text-grape">{result.name}</p>
-                  <p className="text-[10px] text-gray-600 uppercase tracking-wider">
-                    {result.product} · {result.weeks}w results
-                  </p>
-                </div>
-                <span className="text-[10px] bg-green-50 text-green-700 font-bold px-2 py-0.5 rounded-full border border-green-200">
-                  ✓ Verified
-                </span>
-              </div>
+              </span>
+              <span className="tag">+{result.shade}</span>
             </div>
-          </div>
+            <blockquote className="mt-3 flex-1 text-pretty text-[17px] font-medium leading-snug text-grape">
+              &ldquo;{result.text}&rdquo;
+            </blockquote>
+            <p className="mt-4 border-t border-gray-200 pt-4 text-sm text-gray-500">
+              <span className="font-semibold text-grape">{result.name}</span> · {result.product} · {result.weeks}{' '}
+              {result.weeks === 1 ? 'week' : 'weeks'}
+            </p>
+            <p className="type-eyebrow mt-2 text-[10px] text-gray-400">{result.tags.join(' · ')}</p>
+          </article>
         ))}
       </div>
 
-      {/* Show more */}
-      {ALL_RESULTS.length > 4 && (
-        <div className="text-center mt-10">
-          <button
-            onClick={() => setShowAll(!showAll)}
-            className="btn-secondary"
-            style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
-          >
-            {showAll ? (
-              <>SHOW LESS <ChevronUp className="w-4 h-4" /></>
-            ) : (
-              <>LOAD MORE RESULTS <ChevronDown className="w-4 h-4" /></>
-            )}
+      {matching.length > FIRST_PAGE && (
+        <div className="mt-12 text-center">
+          <button type="button" onClick={() => setShowAll(!showAll)} aria-expanded={showAll} className="btn-secondary">
+            {showAll ? 'Show fewer' : `Show all ${matching.length} results`}
+            <ChevronDown className={`h-4 w-4 transition-transform ${showAll ? 'rotate-180' : ''}`} />
           </button>
         </div>
       )}
 
-      {/* CTA strip */}
-      <div className="mt-14 bg-[#F5F3FF] rounded-2xl p-8 text-center">
-        <p
-          className="mb-2 font-display font-wide text-xl font-extrabold uppercase text-grape"
-          style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
-        >
-          See results like these for yourself
-        </p>
-        <p className="text-sm text-gray-600 mb-6">
-          30-day money-back guarantee · Free shipping on bundles · Peroxide-free formula
-        </p>
-        <Link
-          href="/shop"
-          className="btn-primary"
-          style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
-        >
-          SHOP NOW
-        </Link>
-      </div>
+      <p className="mt-10 text-center text-sm text-gray-500">
+        Photos and reviews shared by customers with their permission. Individual results may vary.
+      </p>
+    </div>
+  );
+}
+
+// Two photos taken from different angles: shown side by side, not on a slider.
+function SideBySide({ result }: { result: CustomerResult }) {
+  return (
+    <div className="grid aspect-[4/3] grid-cols-2 gap-1 overflow-hidden rounded-[1.25rem]">
+      {[
+        { src: result.before, label: 'Before' },
+        { src: result.after, label: 'After' },
+      ].map(({ src, label }) => (
+        <div key={label} className="relative">
+          <Image src={src} alt={`${label}: ${result.name}, ${result.product}`} fill sizes="(max-width: 640px) 50vw, 17vw" className="object-cover" />
+          <span className={`tag absolute bottom-3 left-3 ${label === 'Before' ? 'bg-grape/85 text-white' : 'bg-white text-grape'}`}>{label}</span>
+        </div>
+      ))}
     </div>
   );
 }

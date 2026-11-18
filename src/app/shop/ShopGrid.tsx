@@ -1,167 +1,196 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Search, ChevronDown } from 'lucide-react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { ArrowRight, ChevronDown, Search } from 'lucide-react';
 import ProductCard from '@/app/components/ProductCard';
-import { getProductKind, type ProductKind } from '@/lib/productKind';
+import { getProductKind } from '@/lib/productKind';
+import { SHOP_CATEGORIES } from '@/lib/categories';
+import type { ShopifyProductEdge } from '@/lib/shopify';
 
-interface Product {
-  node: {
-    id: string;
-    title: string;
-    handle: string;
-    description: string;
-    priceRange: {
-      minVariantPrice: {
-        amount: string;
-        currencyCode: string;
-      };
-    };
-    images: {
-      edges: Array<{
-        node: {
-          url: string;
-          altText: string | null;
-        };
-      }>;
-    };
-    variants?: {
-      edges: Array<{
-        node: {
-          id: string;
-          price: { amount: string; currencyCode: string };
-          availableForSale: boolean;
-        };
-      }>;
-    };
-  };
-}
+const ALL = { id: 'all', label: 'All' };
 
-// Shopping by goal, not by SKU — the same groups as the homepage tiles.
-const CATEGORIES: { id: string; label: string; kinds: ProductKind[] | null }[] = [
-  { id: 'all', label: 'All', kinds: null },
-  { id: 'instant', label: 'Instant brightening', kinds: ['serum', 'foam'] },
-  { id: 'everyday', label: 'Everyday care', kinds: ['toothpaste', 'powder', 'mouthwash', 'toothbrush'] },
-  { id: 'strips', label: 'Whitening strips', kinds: ['strips'] },
-  { id: 'sets', label: 'Sets', kinds: ['bundle'] },
-];
-
-export default function ShopGrid({ products }: { products: Product[] }) {
-  const [category, setCategory] = useState('all');
+export default function ShopGrid({
+  products,
+  initialCategory = 'all',
+}: {
+  products: ShopifyProductEdge[];
+  initialCategory?: string;
+}) {
+  const [category, setCategory] = useState(
+    SHOP_CATEGORIES.some((c) => c.id === initialCategory) ? initialCategory : 'all'
+  );
   const [sortBy, setSortBy] = useState('featured');
   const [inStockOnly, setInStockOnly] = useState(false);
 
   const counts = useMemo(
     () =>
-      Object.fromEntries(
-        CATEGORIES.map((c) => [
-          c.id,
-          c.kinds ? products.filter((p) => c.kinds!.includes(getProductKind(p.node.title))).length : products.length,
-        ])
-      ),
+      Object.fromEntries([
+        ['all', products.length],
+        ...SHOP_CATEGORIES.map((c) => [c.id, products.filter((p) => c.kinds.includes(getProductKind(p.node.title))).length]),
+      ]),
     [products]
   );
 
   const filteredProducts = useMemo(() => {
-    const kinds = CATEGORIES.find((c) => c.id === category)?.kinds;
+    const kinds = SHOP_CATEGORIES.find((c) => c.id === category)?.kinds;
     let result = kinds ? products.filter((p) => kinds.includes(getProductKind(p.node.title))) : [...products];
-
-    if (inStockOnly) {
-      result = result.filter((p) => p.node.variants?.edges.some((v) => v.node.availableForSale));
-    }
-
-    const priceOf = (p: Product) => parseFloat(p.node.priceRange.minVariantPrice.amount);
+    if (inStockOnly) result = result.filter((p) => p.node.variants?.edges.some((v) => v.node.availableForSale));
+    const priceOf = (p: ShopifyProductEdge) => parseFloat(p.node.priceRange.minVariantPrice.amount);
     if (sortBy === 'price-low') result.sort((a, b) => priceOf(a) - priceOf(b));
     else if (sortBy === 'price-high') result.sort((a, b) => priceOf(b) - priceOf(a));
-
     return result;
   }, [products, category, sortBy, inStockOnly]);
 
+  // Keep the address bar in step so a filtered view can be shared or reloaded.
+  const choose = (id: string) => {
+    setCategory(id);
+    const url = new URL(window.location.href);
+    if (id === 'all') url.searchParams.delete('category');
+    else url.searchParams.set('category', id);
+    window.history.replaceState(null, '', url);
+  };
+
+  const reset = () => {
+    choose('all');
+    setSortBy('featured');
+    setInStockOnly(false);
+  };
+
+  // A photo tile promoting the sets breaks up the grid on the full view.
+  const showSetsTile = category === 'all' && sortBy === 'featured' && filteredProducts.length > 4;
+
   return (
-    <div className="space-y-8">
-      {/* Category chips */}
-      <div role="group" aria-label="Filter by category" className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 scrollbar-none sm:mx-0 sm:flex-wrap sm:justify-center sm:px-0">
-        {CATEGORIES.filter((c) => counts[c.id] > 0).map((c) => {
-          const active = category === c.id;
-          return (
-            <button
-              key={c.id}
-              type="button"
-              onClick={() => setCategory(c.id)}
-              aria-pressed={active}
-              className={`type-eyebrow shrink-0 rounded-full px-4 py-2.5 transition-colors ${
-                active ? 'bg-grape text-white' : 'bg-gray-100 text-gray-700 hover:bg-violet-soft hover:text-violet'
-              }`}
-            >
-              {c.label} <span className={active ? 'text-white/70' : 'text-gray-500'}>({counts[c.id]})</span>
-            </button>
-          );
-        })}
-      </div>
+    <div>
+      {/* Filter bar: sticks under the header and slides up with it. */}
+      <div className="sticky top-[var(--header-h,64px)] z-30 -mx-4 border-y border-gray-200 bg-white/95 px-4 backdrop-blur transition-[top] duration-300 supports-[backdrop-filter]:bg-white/85 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        <div className="flex items-center gap-4 py-3">
+          <div role="group" aria-label="Filter by category" className="-my-1 flex min-w-0 flex-1 gap-1.5 overflow-x-auto py-1 scrollbar-none">
+            {[ALL, ...SHOP_CATEGORIES].filter((c) => counts[c.id] > 0).map((c) => {
+              const active = category === c.id;
+              return (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => choose(c.id)}
+                  aria-pressed={active}
+                  className={`type-eyebrow shrink-0 rounded-full px-4 py-2.5 transition-colors ${
+                    active ? 'bg-grape text-white' : 'bg-gray-100 text-gray-700 hover:bg-violet-soft hover:text-violet'
+                  }`}
+                >
+                  {c.label}
+                  <span className={`ml-1.5 ${active ? 'text-white/60' : 'text-gray-400'}`}>{counts[c.id]}</span>
+                </button>
+              );
+            })}
+          </div>
 
-      {/* Controls bar */}
-      <div className="flex items-center justify-between border-b border-gray-100 py-6">
-        <div className="flex items-center gap-3">
-          <span className="text-xs font-bold uppercase tracking-tight text-gray-900">In stock only</span>
-          <button
-            type="button"
-            onClick={() => setInStockOnly(!inStockOnly)}
-            role="switch"
-            aria-checked={inStockOnly}
-            aria-label="Show in-stock products only"
-            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${inStockOnly ? 'bg-gray-900' : 'bg-gray-200'}`}
-          >
-            <span className={`inline-block h-4 w-4 rounded-full bg-white transition duration-200 ease-in-out ${inStockOnly ? 'translate-x-6' : 'translate-x-1'}`} />
-          </button>
-        </div>
-
-        <div className="group flex cursor-pointer items-center gap-1.5">
-          <span className="type-eyebrow text-[10px] text-gray-600">Sort by</span>
-          <div className="relative flex items-center">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              aria-label="Sort products"
-              className="cursor-pointer appearance-none border-none bg-transparent py-0 pl-1 pr-6 text-[11px] font-bold uppercase tracking-tight text-grape focus:ring-0"
-            >
-              <option value="featured">Featured</option>
-              <option value="price-low">Low to High</option>
-              <option value="price-high">High to Low</option>
-            </select>
-            <ChevronDown className="pointer-events-none absolute right-0 h-3 w-3 text-black transition-transform group-hover:translate-y-0.5" />
+          <div className="hidden shrink-0 items-center gap-5 md:flex">
+            <label className="flex cursor-pointer items-center gap-2.5">
+              <span className="type-eyebrow text-[10px] text-gray-600">In stock</span>
+              <button
+                type="button"
+                onClick={() => setInStockOnly(!inStockOnly)}
+                role="switch"
+                aria-checked={inStockOnly}
+                aria-label="Show in-stock products only"
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${inStockOnly ? 'bg-grape' : 'bg-gray-200'}`}
+              >
+                <span className={`inline-block h-4 w-4 rounded-full bg-white transition duration-200 ease-in-out ${inStockOnly ? 'translate-x-6' : 'translate-x-1'}`} />
+              </button>
+            </label>
+            <SortSelect value={sortBy} onChange={setSortBy} />
           </div>
         </div>
       </div>
 
-      {/* Grid */}
+      <div className="flex items-center justify-between py-5">
+        <p className="text-sm text-gray-500" aria-live="polite">
+          {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'}
+        </p>
+        <div className="md:hidden">
+          <SortSelect value={sortBy} onChange={setSortBy} />
+        </div>
+      </div>
+
       {filteredProducts.length === 0 ? (
         <div className="rounded-3xl border-2 border-dashed border-gray-200 bg-gray-50 py-12 text-center sm:py-20">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm">
-            <Search className="h-8 w-8 text-gray-300" />
-          </div>
-          <h2 className="text-lg font-bold text-gray-900">No products found</h2>
-          <p className="mt-1 text-sm text-gray-600">Try adjusting your filters</p>
-          <button
-            onClick={() => { setCategory('all'); setSortBy('featured'); setInStockOnly(false); }}
-            className="mt-6 text-sm font-bold text-grape hover:underline"
-          >
+          <Search className="mx-auto mb-4 h-8 w-8 text-gray-300" />
+          <h2 className="text-lg font-bold text-grape">No products match</h2>
+          <p className="mt-1 text-sm text-gray-600">Try another category, or clear the filters.</p>
+          <button onClick={reset} className="btn-secondary mt-6">
             Clear all filters
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-x-3 gap-y-8 md:grid-cols-3 lg:grid-cols-4">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.node.id} product={product.node} />
+        // Keyed on the filters so the new set of cards fades up together.
+        <div key={`${category}-${sortBy}-${inStockOnly}`} className="grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-6 md:grid-cols-3 lg:grid-cols-4">
+          {filteredProducts.map((product, i) => (
+            <FragmentWithTile key={product.node.id} showTile={showSetsTile && i === 3}>
+              <div className="animate-fade-up" style={{ animationDelay: `${Math.min(i, 8) * 45}ms` }}>
+                <ProductCard product={product.node} />
+              </div>
+            </FragmentWithTile>
           ))}
         </div>
       )}
-
-      {/* Results count */}
-      <div className="border-t border-gray-100 pt-10 text-center">
-        <p className="text-xs font-medium uppercase tracking-widest text-gray-600" aria-live="polite">
-          Showing {filteredProducts.length} of {products.length} Products
-        </p>
-      </div>
     </div>
+  );
+}
+
+function SortSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  return (
+    <label className="flex items-center gap-1.5">
+      <span className="type-eyebrow text-[10px] text-gray-600">Sort</span>
+      <span className="relative flex items-center">
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          aria-label="Sort products"
+          className="type-eyebrow cursor-pointer appearance-none bg-transparent py-1 pl-1 pr-5 text-[11px] text-grape focus:outline-none"
+        >
+          <option value="featured">Featured</option>
+          <option value="price-low">Price: low to high</option>
+          <option value="price-high">Price: high to low</option>
+        </select>
+        <ChevronDown className="pointer-events-none absolute right-0 h-3.5 w-3.5 text-grape" />
+      </span>
+    </label>
+  );
+}
+
+// Renders the sets tile just before a product when asked to.
+function FragmentWithTile({ showTile, children }: { showTile: boolean; children: React.ReactNode }) {
+  return (
+    <>
+      {showTile && <SetsTile />}
+      {children}
+    </>
+  );
+}
+
+function SetsTile() {
+  return (
+    <Link
+      href="/bundles"
+      className="animate-fade-up group relative isolate col-span-2 flex min-h-64 flex-col justify-end overflow-hidden rounded-[1.25rem] bg-grape p-5 md:col-span-1 md:min-h-0"
+    >
+      <Image
+        src="/images/reviews/5.webp"
+        alt=""
+        fill
+        sizes="(max-width: 768px) 100vw, 25vw"
+        className="-z-10 object-cover transition-transform duration-700 group-hover:scale-105"
+      />
+      <span aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-t from-grape-deep/90 via-grape-deep/30 to-transparent" />
+      <span className="type-eyebrow text-lilac">Bundle &amp; save</span>
+      <span className="mt-2 block font-display font-wide text-2xl font-extrabold uppercase leading-[1.02] tracking-[-0.015em] text-white">
+        The whole routine in one box
+      </span>
+      <span className="type-eyebrow mt-4 inline-flex items-center gap-2 text-white">
+        Shop the sets <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+      </span>
+    </Link>
   );
 }

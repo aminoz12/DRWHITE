@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import {
   Check,
@@ -10,10 +9,11 @@ import {
   RotateCcw,
   ChevronDown,
   Leaf,
-  Star,
 } from 'lucide-react';
 import { useCartStore } from '@/lib/cartStore';
 import PaymentIcons from './PaymentIcons';
+import ProductGallery from './ProductGallery';
+import StoreRating from './StoreRating';
 import TrustpilotWidget from './TrustpilotWidget';
 import { formatMoney, getDiscountPercent } from '@/lib/money';
 import { getProductKind, type ProductKind } from '@/lib/productKind';
@@ -225,7 +225,6 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
   const [added, setAdded] = useState(false);
   const [addError, setAddError] = useState(false);
   const [quantity, setQuantity] = useState(1);
-  const [activeImage, setActiveImage] = useState(0);
 
   const subscription = getSubscriptionOffer(selectedVariant);
   // Always start on one-time purchase. The subscription is offered beside it
@@ -246,11 +245,6 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
   }, []);
 
   const images = product.images.edges.map(e => e.node);
-  // Shopify alt text when it is set; otherwise a distinct description per
-  // image, so screen readers and image search never get the same label twice.
-  const altFor = (i: number) =>
-    images[i]?.altText || (i === 0 ? product.title : `${product.title} — view ${i + 1}`);
-
   const handleAddToCart = async () => {
     if (!selectedVariant?.id || !selectedVariant.availableForSale) return;
     setAddError(false);
@@ -317,53 +311,15 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
       <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
         <div className="grid items-start gap-8 lg:grid-cols-2 lg:gap-16">
 
-          {/* LEFT: IMAGE GALLERY */}
+          {/* LEFT: IMAGE GALLERY — sticks below the header on desktop. */}
           {/* min-w-0: grid items default to their content's min width, so the
-              thumbnail strip would stretch the column past a phone screen. */}
-          <div className="min-w-0 space-y-3 lg:sticky lg:top-24 lg:space-y-4">
-            <div className="relative flex aspect-square items-center justify-center overflow-hidden rounded-[1.75rem] bg-lavender">
-              {savings > 0 && (
-                <span className="tag absolute left-4 top-4 z-10 bg-violet text-white">Save {savings}%</span>
-              )}
-              {images.length > 0 ? (
-                // Multiply melts the packshot's white into the tile; lifestyle
-                // photos further along the gallery keep their true colours.
-                <Image
-                  src={images[activeImage]?.url || images[0].url}
-                  alt={altFor(images[activeImage] ? activeImage : 0)}
-                  width={800}
-                  height={800}
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  className={`h-full w-full object-contain p-8 ${activeImage === 0 ? 'mix-blend-multiply' : ''}`}
-                  priority
-                />
-              ) : (
-                // A product with no Shopify image: next/image throws on an
-                // empty src, so render a placeholder instead of crashing.
-                <div className="flex h-full w-full items-center justify-center text-xs uppercase tracking-widest text-gray-400">
-                  No image
-                </div>
-              )}
-            </div>
-
-            {images.length > 1 && (
-              <div className="-mx-0.5 flex gap-2.5 overflow-x-auto px-0.5 py-1 scrollbar-none">
-                {images.slice(0, 6).map((img, i) => (
-                  <button
-                    key={img.url}
-                    type="button"
-                    onClick={() => setActiveImage(i)}
-                    aria-label={`View product image ${i + 1}`}
-                    aria-pressed={activeImage === i}
-                    className={`relative aspect-square w-[22%] shrink-0 overflow-hidden rounded-2xl border bg-lavender transition-all sm:w-24 ${
-                      activeImage === i ? 'border-grape ring-2 ring-grape ring-offset-2' : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <Image src={img.url} alt="" fill sizes="96px" className="object-cover" />
-                  </button>
-                ))}
-              </div>
-            )}
+              photo strip would stretch the column past a phone screen. */}
+          <div className="min-w-0 transition-[top] duration-300 lg:sticky lg:top-[calc(var(--header-h,64px)+1.5rem)]">
+            <ProductGallery
+              images={images}
+              title={product.title}
+              badge={savings > 0 ? `Save ${savings}%` : undefined}
+            />
           </div>
 
           {/* RIGHT: PRODUCT INFO */}
@@ -385,14 +341,11 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 </h1>
               </div>
 
-              <p className="flex flex-wrap items-center gap-2 text-xs text-gray-600">
-                <span className="flex gap-0.5" aria-hidden>
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-3.5 w-3.5 fill-current text-violet" />
-                  ))}
+              <StoreRating>
+                <span className="text-sm text-gray-600">
+                  Rated <strong className="font-semibold text-grape">{STATS.ratingLabel}</strong> by {STATS.customers} CLINIWHITE customers
                 </span>
-                Rated {STATS.ratingLabel} by {STATS.customers} CLINIWHITE customers
-              </p>
+              </StoreRating>
               {/* Live Trustpilot score — renders nothing until the account is connected. */}
               <TrustpilotWidget template="micro" height="24px" />
 
@@ -410,7 +363,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-soft">
                       <Check className="h-3.5 w-3.5 text-violet" strokeWidth={3} />
                     </span>
-                    <span className="text-[15px] font-medium text-gray-700">{benefit}</span>
+                    <span className="text-base font-medium text-gray-700">{benefit}</span>
                   </li>
                 ))}
               </ul>
@@ -560,28 +513,24 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
               </div>
             </div>
 
-            {/* TRUST ICONS */}
-            <div className="grid grid-cols-3 gap-2 border-y border-gray-200 py-8">
-              {trustItems.map(({ icon: Icon, title, text }, i) => (
-                <div key={title} className={`flex flex-col items-center space-y-4 text-center ${i === 1 ? 'border-x border-gray-200' : ''}`}>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-lavender">
-                    <Icon className="h-6 w-6 stroke-[1.5] text-violet" />
-                  </div>
-                  <div className="space-y-1 px-2">
-                    <p className="type-eyebrow text-[10px] leading-tight text-grape">{title}</p>
-                    <p className="text-[11px] leading-tight text-gray-600">{text}</p>
-                  </div>
-                </div>
+            {/* TRUST — a ruled list, read at a glance */}
+            <ul className="divide-y divide-gray-200 border-y border-gray-200">
+              {trustItems.map(({ icon: Icon, title, text }) => (
+                <li key={title} className="flex items-center gap-4 py-4">
+                  <Icon className="h-5 w-5 shrink-0 text-violet" strokeWidth={1.75} aria-hidden />
+                  <span className="type-eyebrow w-36 shrink-0 text-grape">{title}</span>
+                  <span className="text-sm leading-snug text-gray-600">{text}</span>
+                </li>
               ))}
-            </div>
+            </ul>
 
             {/* ACCORDION SECTION */}
             <div className="divide-y divide-gray-200 pt-2">
               <Accordion title="Description" id="desc" activeId={activeAccordion} onToggle={setActiveAccordion}>
-                <div className="pb-6 text-[15px] leading-relaxed text-gray-600">{product.description}</div>
+                <div className="pb-6 text-base leading-relaxed text-gray-600">{product.description}</div>
               </Accordion>
               <Accordion title="How to use" id="how" activeId={activeAccordion} onToggle={setActiveAccordion}>
-                <div className="space-y-4 pb-8 text-[15px] leading-relaxed text-gray-700">
+                <div className="space-y-4 pb-8 text-base leading-relaxed text-gray-700">
                   {HOW_TO[kind].map(({ step, text }) => (
                     <p key={step}><span className="font-semibold text-grape">{step}</span> {text}</p>
                   ))}
@@ -589,18 +538,18 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
               </Accordion>
               {kind === 'strips' && (
                 <Accordion title="What is PAP" id="pap" activeId={activeAccordion} onToggle={setActiveAccordion}>
-                  <div className="pb-6 text-[15px] leading-relaxed text-gray-600">
+                  <div className="pb-6 text-base leading-relaxed text-gray-600">
                     PAP is a peroxide-free whitening ingredient used in selected CLINIWHITE products. Check the product packaging for the exact formula and directions for use.
                   </div>
                 </Accordion>
               )}
               <Accordion title="Ingredients & Safety" id="ingredients" activeId={activeAccordion} onToggle={setActiveAccordion}>
-                <div className="pb-6 text-[15px] leading-relaxed text-gray-600">
+                <div className="pb-6 text-base leading-relaxed text-gray-600">
                   Ingredients and suitability vary by product. Refer to the ingredient panel and directions on this product&apos;s packaging before use. If irritation occurs, discontinue use and consult a dental professional.
                 </div>
               </Accordion>
               <Accordion title="Guarantee & Support" id="guarantee" activeId={activeAccordion} onToggle={setActiveAccordion}>
-                <div className="pb-6 text-[15px] leading-relaxed text-gray-600">
+                <div className="pb-6 text-base leading-relaxed text-gray-600">
                   Every order is covered by our 30-day money-back guarantee. If you&apos;re not satisfied, contact us within 30 days of delivery and we&apos;ll guide you through your refund — see our{' '}
                   <Link href="/policies/refund-policy" className="font-semibold underline">refund policy</Link>.
                 </div>

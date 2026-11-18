@@ -51,6 +51,8 @@ export default async function ShopTheRange() {
         <SectionHeading
           id="range-heading"
           eyebrow="Customer favourites"
+          split
+          className="mb-8 sm:mb-10"
           title={
             <>
               Shop the <Marker>range</Marker>

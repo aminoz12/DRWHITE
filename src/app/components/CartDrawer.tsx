@@ -1,11 +1,13 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { X, ShoppingBag, Plus, Minus, Trash2, ArrowRight, Loader2, Truck } from 'lucide-react';
 import { useCartStore } from '@/lib/cartStore';
-import { normalizeCheckoutUrl } from '@/lib/shopify';
+import { getProducts, normalizeCheckoutUrl, type ShopifyProductEdge } from '@/lib/shopify';
+import { getClientCountry } from '@/lib/market';
+import { SHOP_CATEGORIES } from '@/lib/categories';
 import { formatMoney } from '@/lib/money';
 import { getProductKind } from '@/lib/productKind';
 import { shortTitle } from '@/lib/productTitle';
@@ -23,7 +25,21 @@ export default function CartDrawer() {
     appliedDiscountCode,
     removeItem,
     updateQuantity,
+    addItem,
   } = useCartStore();
+
+  // The catalogue, fetched the first time the drawer opens, for suggestions.
+  const [catalogue, setCatalogue] = useState<ShopifyProductEdge[] | null>(null);
+  useEffect(() => {
+    if (!isOpen || catalogue) return;
+    let cancelled = false;
+    getProducts(getClientCountry())
+      .then((products) => !cancelled && setCatalogue(products as ShopifyProductEdge[]))
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, catalogue]);
 
   const drawerRef = useRef<HTMLDivElement>(null);
 
@@ -63,6 +79,13 @@ export default function CartDrawer() {
 
   // Bundles ship free (shipping policy); nudge single-item carts towards one.
   const hasBundle = items.some((item) => getProductKind(item.title) === 'bundle');
+
+  // Two in-stock products that aren't in the cart yet, everyday items first.
+  const inCart = new Set(items.map((item) => item.title));
+  const suggestions = (catalogue ?? [])
+    .filter(({ node }) => !inCart.has(node.title) && node.variants?.edges[0]?.node.availableForSale)
+    .sort((a, b) => Number(getProductKind(a.node.title) === 'bundle') - Number(getProductKind(b.node.title) === 'bundle'))
+    .slice(0, 2);
 
   return (
     <>
@@ -142,29 +165,36 @@ export default function CartDrawer() {
         {/* Items */}
         <div className="flex-1 overflow-y-auto">
           {items.length === 0 ? (
-            <div className="flex h-full flex-col items-center justify-center gap-6 px-8 text-center">
-              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-lavender">
-                <ShoppingBag className="h-9 w-9 text-grape" />
-              </div>
-              <div>
-                <p className="mb-2 font-display font-wide text-xl font-extrabold uppercase text-grape">YOUR CART IS EMPTY</p>
-                <p className="text-sm text-gray-600">Discover our whitening collection.</p>
-              </div>
-              <Link href="/shop" onClick={closeCart} className="btn-primary">
-                Shop now <ArrowRight className="h-4 w-4" />
+            <div className="px-6 py-8">
+              <p className="font-display font-wide text-xl font-extrabold uppercase text-grape">Your cart is empty</p>
+              <p className="mt-2 text-sm text-gray-600">Start with a goal:</p>
+              <ul className="mt-5 grid grid-cols-2 gap-3">
+                {SHOP_CATEGORIES.map((c) => (
+                  <li key={c.id}>
+                    <Link href={`/shop?category=${c.id}`} onClick={closeCart} className="group block">
+                      <span className="relative block aspect-[4/3] overflow-hidden rounded-xl bg-lavender">
+                        <Image src={c.image} alt="" fill sizes="200px" className="object-cover transition-transform duration-500 group-hover:scale-105" />
+                      </span>
+                      <span className="type-eyebrow mt-2 block text-[10px] text-grape group-hover:text-violet">{c.label}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              <Link href="/shop" onClick={closeCart} className="btn-primary mt-8 w-full">
+                Shop all products <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
           ) : (
             <ul className="divide-y divide-gray-100 px-6">
               {items.map((item) => (
                 <li key={item.lineId} className="flex gap-4 py-5">
-                  <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-gray-100">
+                  <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-lavender">
                     {item.imageUrl ? (
                       <Image
                         src={item.imageUrl}
                         alt={item.imageAlt || item.title}
                         fill
-                        className="object-cover"
+                        className="object-contain p-1.5 mix-blend-multiply"
                         sizes="80px"
                       />
                     ) : (
@@ -175,7 +205,7 @@ export default function CartDrawer() {
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[15px] font-semibold text-grape">{shortTitle(item.title)}</p>
+                    <p className="truncate text-base font-semibold text-grape">{shortTitle(item.title)}</p>
                     {item.sellingPlanName && (
                       <p className="tag mt-1 px-2 py-1 text-[10px]">
                         ↻ {item.sellingPlanName}
@@ -218,6 +248,40 @@ export default function CartDrawer() {
               ))}
             </ul>
           )}
+
+          {items.length > 0 && suggestions.length > 0 && (
+            <div className="border-t border-gray-100 px-6 py-5">
+              <p className="type-eyebrow text-gray-500">Complete your routine</p>
+              <ul className="mt-3 space-y-3">
+                {suggestions.map(({ node }) => {
+                  const variant = node.variants?.edges[0]?.node;
+                  const img = node.images.edges[0]?.node;
+                  return (
+                    <li key={node.id} className="flex items-center gap-3">
+                      <Link href={`/product/${node.handle}`} onClick={closeCart} className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-lavender">
+                        {img && <Image src={img.url} alt="" fill sizes="56px" className="object-contain p-1 mix-blend-multiply" />}
+                      </Link>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold text-grape">{shortTitle(node.title)}</p>
+                        <p className="text-sm text-gray-600">
+                          {formatMoney(node.priceRange.minVariantPrice.amount, node.priceRange.minVariantPrice.currencyCode)}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => variant && addItem(variant.id, 1)}
+                        disabled={isLoading || !variant}
+                        aria-label={`Add ${shortTitle(node.title)} to cart`}
+                        className="btn-secondary min-h-9 shrink-0 px-4 text-[10px]"
+                      >
+                        <Plus className="h-3 w-3" /> Add
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
         </div>
 
         {/* Footer */}
@@ -232,7 +296,7 @@ export default function CartDrawer() {
               <span className="text-sm text-gray-600">Subtotal</span>
               <span className="text-xl font-bold text-grape">{formatMoney(subtotal, subtotalCurrency)}</span>
             </div>
-            <p className="text-xs text-gray-600">Shipping and taxes calculated at checkout</p>
+            <p className="text-sm text-gray-600">Shipping and taxes calculated at checkout</p>
 
             <button onClick={handleCheckout} disabled={!checkoutUrl || isLoading} className="btn-primary w-full min-h-14 text-sm">
               {isLoading ? (

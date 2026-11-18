@@ -309,7 +309,7 @@ export default function PromoPopup() {
               <h2 id="promo-popup-title" className="mb-1 text-3xl font-black leading-tight text-black">
                 {isClaimed ? `Here's your ${WELCOME_OFFER.percentOff}% off` : 'Congratulations!'}
               </h2>
-              <p className="mb-5 text-xs text-gray-600">
+              <p className="mb-5 text-sm text-gray-600">
                 {!isClaimed
                   ? 'Enter your email to claim your exclusive discount'
                   : isApplied

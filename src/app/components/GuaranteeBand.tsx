@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowRight, Lock, Truck, MessageCircle } from 'lucide-react';
 import { CONTACT } from '@/lib/siteConfig';
+import { Eyebrow } from './SectionHeading';
 
 const PROMISES = [
   { icon: Truck, text: 'Tracked delivery on every order' },
@@ -9,7 +10,9 @@ const PROMISES = [
 ];
 
 // Wording mirrors the refund policy exactly — no "risk-free" or "no questions".
-export default function GuaranteeBand() {
+// `promises`: the small delivery/checkout/support row. The homepage turns it
+// off because its trust strip, directly above, already says the same.
+export default function GuaranteeBand({ promises = true }: { promises?: boolean } = {}) {
   return (
     <section aria-labelledby="guarantee-heading" className="overflow-hidden bg-grape text-white">
       <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-[auto_1fr] lg:gap-20 lg:px-8">
@@ -22,7 +25,7 @@ export default function GuaranteeBand() {
         </div>
 
         <div>
-          <span className="tag bg-white/10 text-lilac">Our promise</span>
+          <Eyebrow tone="dark">Our promise</Eyebrow>
           <h2 id="guarantee-heading" className="type-display mt-4 text-balance">
             Not happy? <span className="block text-lilac">We&apos;ll make it right.</span>
           </h2>
@@ -38,14 +41,16 @@ export default function GuaranteeBand() {
             Read the refund policy <ArrowRight className="h-3.5 w-3.5" />
           </Link>
 
-          <ul className="mt-10 grid gap-4 border-t border-white/15 pt-8 sm:grid-cols-3">
-            {PROMISES.map(({ icon: Icon, text }) => (
-              <li key={text} className="flex items-center gap-3 text-sm text-white/85">
-                <Icon className="h-5 w-5 shrink-0 text-lilac" strokeWidth={1.75} aria-hidden />
-                <span className="min-w-0 break-words">{text}</span>
-              </li>
-            ))}
-          </ul>
+          {promises && (
+            <ul className="mt-10 grid gap-4 border-t border-white/15 pt-8 sm:grid-cols-3">
+              {PROMISES.map(({ icon: Icon, text }) => (
+                <li key={text} className="flex items-center gap-3 text-sm text-white/85">
+                  <Icon className="h-5 w-5 shrink-0 text-lilac" strokeWidth={1.75} aria-hidden />
+                  <span className="min-w-0 break-words">{text}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
     </section>

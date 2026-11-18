@@ -1,10 +1,11 @@
 import Link from 'next/link';
-import LazyVideo from './LazyVideo';
-import SectionHeading from './SectionHeading';
-import Marker from './Marker';
+import { ArrowUpRight, Star } from 'lucide-react';
+import Reels, { type Reel } from './Reels';
+import { STATS } from '@/lib/siteConfig';
+import { CUSTOMER_RESULTS } from '@/lib/results';
 
 // Each clip is labelled with the product actually shown in it.
-const REELS = [
+const REELS: Reel[] = [
   { video: '/videos/video1.mp4', product: 'V34 Whitening Strips', handle: 'v34-colour-corrector-strips-12-strip' },
   { video: '/videos/video3.mp4', product: 'V34 Purple Whitening Toothpaste', handle: 'clini-white-v34-purple-whitening-toothpaste' },
   { video: '/videos/video2.mp4', product: 'Ultimate 7-in-1 Set', handle: 'cliniwhite-ultimate-v34-whitening-bundle-complete-7-in-1' },
@@ -12,43 +13,53 @@ const REELS = [
   { video: '/videos/video5.mp4', product: 'V34 Whitening Strips', handle: 'v34-colour-corrector-strips-12-strip' },
 ];
 
+// One genuine written review fills the wall's sixth tile. A different
+// customer from the one the "Real results" section features.
+const REVIEW = CUSTOMER_RESULTS.find((r) => /coffee/i.test(r.text)) ?? CUSTOMER_RESULTS[1];
+
 export default function UgcReels() {
   return (
-    <section aria-labelledby="reels-heading" className="bg-white py-16 sm:py-24">
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
-        <SectionHeading
-          id="reels-heading"
-          eyebrow="Community"
-          title={
+    <section aria-labelledby="reels-heading" className="overflow-hidden bg-white py-16 sm:py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <Reels
+          reels={REELS}
+          intro={
             <>
-              People can&apos;t stop <Marker>sharing</Marker>
-              <br />
-              their smile journey
+              <h2
+                id="reels-heading"
+                className="max-w-md text-balance text-[clamp(2.1rem,3.6vw,3rem)] font-semibold leading-[1.08] tracking-[-0.03em] text-grape"
+              >
+                Join <span className="text-violet">{STATS.customers}</span> happy customers today
+              </h2>
+              <p className="mt-5 max-w-sm text-base leading-relaxed text-gray-600 md:text-lg">
+                Real customers, filmed on their own phones. Tap a clip to watch with sound.
+              </p>
+              <Link href="/results" className="btn-secondary mt-8">
+                Read the reviews <ArrowUpRight className="h-4 w-4" />
+              </Link>
             </>
           }
-        />
-
-        <ul className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 scrollbar-none sm:-mx-6 sm:px-6 md:gap-4 lg:mx-0 lg:grid lg:grid-cols-5 lg:overflow-visible lg:px-0 lg:pb-0">
-          {REELS.map((reel) => (
-            <li key={reel.video} className="w-[58%] shrink-0 snap-start sm:w-[36%] lg:w-auto">
-              <Link
-                href={`/product/${reel.handle}`}
-                className="group relative block aspect-[9/16] max-h-[450px] overflow-hidden rounded-[1.25rem] bg-grape-deep"
-              >
-                <LazyVideo
-                  src={reel.video}
-                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                <span className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-grape-deep/85 via-grape-deep/40 to-transparent px-4 pb-4 pt-16">
-                  <span className="block text-[13px] font-semibold leading-tight text-white">{reel.product}</span>
-                  <span className="type-eyebrow mt-1.5 block text-[10px] text-lilac transition-colors group-hover:text-white">
-                    Shop now →
+          review={
+            REVIEW && (
+              <figure className="flex h-full flex-col justify-between rounded-xl bg-lavender p-5 sm:p-6">
+                <div>
+                  <span className="flex gap-0.5" role="img" aria-label={`${REVIEW.rating} out of 5 stars`}>
+                    {[...Array(REVIEW.rating)].map((_, i) => (
+                      <Star key={i} className="h-4 w-4 fill-violet text-violet" aria-hidden />
+                    ))}
                   </span>
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+                  <blockquote className="mt-4 text-pretty text-lg font-semibold leading-snug tracking-[-0.01em] text-grape sm:text-xl">
+                    &ldquo;{REVIEW.text}&rdquo;
+                  </blockquote>
+                </div>
+                <figcaption className="text-sm text-gray-600">
+                  <span className="font-semibold text-grape">{REVIEW.name}</span> · {REVIEW.product}
+                  <span className="mt-1 block text-sm text-gray-500">Shared with permission</span>
+                </figcaption>
+              </figure>
+            )
+          }
+        />
       </div>
     </section>
   );

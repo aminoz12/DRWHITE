@@ -65,6 +65,90 @@ const BENEFITS: Record<ProductKind, string[]> = {
   ],
 };
 
+/**
+ * Card copy: a benefit-led headline, one or two plain sentences, and the short
+ * name used on the card's "Shop …" button. Everything restates what the
+ * product page already says (directions, benefits) — no new claims.
+ */
+const CARD: Record<ProductKind, { headline: string; description: string; name: string }> = {
+  serum: {
+    headline: 'Your instant brightener',
+    description: 'Purple pigments cancel yellow tones as you brush. Use it alone or over your toothpaste.',
+    name: 'Serum',
+  },
+  foam: {
+    headline: 'Your after-coffee fix',
+    description: 'A brightening foam that neutralises yellow tones in a quick brush. Ideal after coffee, tea or wine.',
+    name: 'Foam',
+  },
+  toothpaste: {
+    headline: 'Your everyday upgrade',
+    description: 'Swap it in for your usual paste: purple pigments counter yellow tones every time you brush.',
+    name: 'Toothpaste',
+  },
+  powder: {
+    headline: 'Your stain lifter',
+    description: 'A colour-correcting powder that helps lift surface stains alongside your daily routine.',
+    name: 'Powder',
+  },
+  mouthwash: {
+    headline: 'Your on-the-go boost',
+    description: 'Single sachets of colour-correcting rinse. One after brushing, wherever you are.',
+    name: 'Mouthwash',
+  },
+  strips: {
+    headline: 'Your 14-day reset',
+    description: 'Peroxide-free PAP strips: 30 minutes a day for 14 days, while you get on with yours.',
+    name: 'Strips',
+  },
+  toothbrush: {
+    headline: 'Your smarter brush',
+    description: 'A sonic toothbrush with smart brushing modes and a built-in 2-minute timer.',
+    name: 'Toothbrush',
+  },
+  bundle: {
+    headline: 'Your complete routine',
+    description: 'The V34 routine in one box, priced below buying each item, with free express shipping.',
+    name: 'the Set',
+  },
+  other: {
+    headline: 'Your colour-correcting care',
+    description: 'V34 colour-correcting care, made for an everyday routine.',
+    name: 'Now',
+  },
+};
+
+// Three sets sit side by side, so each gets its own line from its title.
+const SET_CARD: { match: RegExp; headline: string; description: string; name: string }[] = [
+  {
+    match: /ultimate|7-in-1/i,
+    headline: 'Everything, in one box',
+    description: 'The complete 7-in-1 V34 routine, shipped free with express delivery.',
+    name: 'Ultimate Set',
+  },
+  {
+    match: /essential|4-step/i,
+    headline: 'Your 4-step starter',
+    description: 'Four steps to a brighter-looking smile in one box, shipped free.',
+    name: 'Essential Kit',
+  },
+  {
+    match: /advanced/i,
+    headline: 'Your next-level routine',
+    description: 'A fuller V34 routine for daily care, shipped free with express delivery.',
+    name: 'Advanced Set',
+  },
+];
+
+export function productCardCopy(title: string): { headline: string; description: string; name: string } {
+  const kind = getProductKind(title);
+  if (kind === 'bundle') {
+    const set = SET_CARD.find((s) => s.match.test(title));
+    if (set) return set;
+  }
+  return CARD[kind];
+}
+
 export function productTagline(title: string): string {
   return TAGLINE[getProductKind(title)];
 }

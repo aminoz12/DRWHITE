@@ -14,7 +14,7 @@ const TOPICS = [
 ];
 
 const inputClass =
-  'w-full bg-[#F8FAFC] border border-gray-200 rounded-xl px-5 py-4 text-sm text-gray-900 placeholder:text-gray-600 focus:outline-none focus:border-[#231b50] focus:bg-white focus:ring-4 focus:ring-violet-100 transition-all';
+  'w-full rounded-xl border border-gray-200 bg-white px-4 py-3.5 text-base text-grape placeholder:text-gray-400 transition-colors hover:border-gray-300 focus:border-grape focus:outline-none focus:ring-2 focus:ring-violet/20';
 
 const labelClass =
   'type-eyebrow mb-2 block text-grape';
@@ -71,18 +71,14 @@ export default function ContactForm() {
 
   if (status === 'sent') {
     return (
-      <div className="text-center py-10 sm:py-16 px-6">
-        <div className="w-20 h-20 rounded-full bg-[#231b50] flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-violet-200">
-          <CheckCircle2 className="w-10 h-10 text-white" />
-        </div>
-        <h3
-          className="font-display font-wide text-2xl md:text-3xl font-extrabold text-grape mb-4 uppercase tracking-tight"
-        >
-          Message sent!
+      <div role="status" className="animate-fade-up py-6 sm:py-10">
+        <CheckCircle2 className="mb-6 h-10 w-10 text-violet" strokeWidth={1.75} />
+        <h3 className="mb-4 font-display font-wide text-2xl font-extrabold uppercase tracking-tight text-grape md:text-3xl">
+          Message sent
         </h3>
-        <p className="text-gray-600 text-sm leading-relaxed max-w-sm mx-auto mb-8">
+        <p className="mb-8 max-w-sm text-base leading-relaxed text-gray-600">
           Thanks for reaching out, {fields.name.split(' ')[0] || 'friend'}. Our team will get
-          back to you at <span className="font-bold text-[#231b50]">{fields.email}</span> within
+          back to you at <span className="font-semibold text-grape">{fields.email}</span> within
           24 hours (Mon&ndash;Fri).
         </p>
         <button
@@ -112,7 +108,7 @@ export default function ContactForm() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
           <label htmlFor="contact-name" className={labelClass}>
-            Full name <span className="text-[#231b50]">*</span>
+            Full name <span className="text-violet">*</span>
           </label>
           <input
             id="contact-name"
@@ -128,7 +124,7 @@ export default function ContactForm() {
         </div>
         <div>
           <label htmlFor="contact-email" className={labelClass}>
-            Email address <span className="text-[#231b50]">*</span>
+            Email address <span className="text-violet">*</span>
           </label>
           <input
             id="contact-email"
@@ -159,43 +155,36 @@ export default function ContactForm() {
             className={inputClass}
           />
         </div>
-        <div>
-          <label htmlFor="contact-topic" className={labelClass}>
-            Topic <span className="text-[#231b50]">*</span>
-          </label>
-          <div className="relative">
-            <select
-              id="contact-topic"
-              name="topic"
-              required
-              value={fields.topic}
-              onChange={handleChange}
-              className={`${inputClass} appearance-none pr-12 cursor-pointer`}
-            >
-              {TOPICS.map((topic) => (
-                <option key={topic} value={topic}>
-                  {topic}
-                </option>
-              ))}
-            </select>
-            <svg
-              className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600 pointer-events-none"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M6 9l6 6 6-6" />
-            </svg>
-          </div>
-        </div>
       </div>
+
+      {/* Topic: one tap instead of a dropdown */}
+      <fieldset>
+        <legend className={labelClass}>
+          What&apos;s it about? <span className="text-violet">*</span>
+        </legend>
+        <div className="flex flex-wrap gap-2">
+          {TOPICS.map((topic) => (
+            <label
+              key={topic}
+              className="cursor-pointer rounded-full border border-gray-200 px-4 py-2.5 text-sm font-semibold text-gray-700 transition-colors hover:border-grape has-[:checked]:border-grape has-[:checked]:bg-grape has-[:checked]:text-white has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-violet has-[:focus-visible]:ring-offset-2"
+            >
+              <input
+                type="radio"
+                name="topic"
+                value={topic}
+                checked={fields.topic === topic}
+                onChange={handleChange}
+                className="sr-only"
+              />
+              {topic}
+            </label>
+          ))}
+        </div>
+      </fieldset>
 
       <div>
         <label htmlFor="contact-message" className={labelClass}>
-          Your message <span className="text-[#231b50]">*</span>
+          Your message <span className="text-violet">*</span>
         </label>
         <textarea
           id="contact-message"
@@ -211,12 +200,12 @@ export default function ContactForm() {
 
       {status === 'error' && (
         <div role="alert" className="bg-red-50 border border-red-100 rounded-xl px-5 py-4">
-          <p className="text-xs text-red-600 font-bold leading-relaxed">
+          <p className="text-sm text-red-600 font-bold leading-relaxed">
             Something went wrong sending your message. Please try again, or email us directly
             at{' '}
             <a
               href={`mailto:${CONTACT.email}?subject=${encodeURIComponent(`[${fields.topic}] Contact from ${fields.name}`)}&body=${encodeURIComponent(fields.message)}`}
-              className="underline text-[#231b50]"
+              className="text-grape underline"
             >
               {CONTACT.email}
             </a>
@@ -243,10 +232,10 @@ export default function ContactForm() {
         )}
       </button>
 
-      <p className="text-[11px] text-gray-600 text-center leading-relaxed">
+      <p className="text-sm leading-relaxed text-gray-500">
         We typically reply within 24 hours, Monday to Friday. By submitting this form you agree
         to our{' '}
-        <Link href="/policies/privacy-policy" className="underline hover:text-[#231b50]">
+        <Link href="/policies/privacy-policy" className="underline hover:text-grape">
           privacy policy
         </Link>
         .

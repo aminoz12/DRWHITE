@@ -3,9 +3,11 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Geist, Poppins } from 'next/font/google';
-import { ArrowRight, Star } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { STATS } from '@/lib/siteConfig';
 import PhotoSoftEdge from './PhotoSoftEdge';
+import StoreRating from './StoreRating';
+import TrustpilotWidget from './TrustpilotWidget';
 
 // The hero photograph is 2.08:1 with the model and bottle centre-right and an
 // empty backdrop on the left. Two layouts, one <Image>:
@@ -57,16 +59,15 @@ export default function Hero() {
       <div className="relative z-10 lg:absolute lg:inset-0 lg:flex lg:items-center">
         <div className="mx-auto w-full max-w-7xl px-5 pb-12 pt-8 sm:px-6 lg:px-8 lg:py-0">
           <div className="max-w-md lg:max-w-lg">
-            {/* Star rating */}
-            <div className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1">
-              <div className="flex items-center gap-0.5">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-3.5 w-3.5 fill-[#231b50] text-[#231b50]" />
-                ))}
-              </div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#3a3852]">
-                Rated {STATS.ratingLabel} by {STATS.customers} customers
-              </span>
+            {/* Rating — the official Trustpilot TrustBox joins it once the
+                account is connected (renders nothing until then). */}
+            <div className="mb-4 flex flex-wrap items-center gap-x-3 gap-y-2">
+              <StoreRating size="md">
+                <span className="text-sm text-[#2e2a45] sm:text-[15px]">
+                  Rated <strong className="font-bold text-[#231b50]">{STATS.ratingLabel}</strong> by {STATS.customers} customers
+                </span>
+              </StoreRating>
+              <TrustpilotWidget template="micro" height="24px" />
             </div>
 
             {/* Headline */}
@@ -76,18 +77,21 @@ export default function Hero() {
               <span className="block">to you</span>
             </h1>
 
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-[#3a3852]">
+            <p className="mt-4 max-w-sm text-base leading-relaxed text-[#2e2a45] sm:text-[17px]">
               Peroxide-free whitening and colour-correcting oral care, designed to fit your routine.
             </p>
 
-            {/* CTA — full width on phones so the tap target is never cramped */}
-            <Link
-              href="/shop"
-              className="mt-6 inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-[#231b50] px-8 text-[11px] font-black uppercase tracking-widest text-white transition-opacity hover:opacity-80 sm:w-auto"
-            >
-              SHOP NOW
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
+            {/* Two ways in: the whole range, or the sets. Side by side even on
+                phones, so both offers are seen before the first scroll. */}
+            <div className="mt-7 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
+              <Link href="/shop" className="btn-primary group min-h-[3.25rem] px-4 sm:px-8">
+                Shop all
+                <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+              </Link>
+              <Link href="/bundles" className="btn-secondary min-h-[3.25rem] px-4 sm:px-8">
+                Bundle &amp; save
+              </Link>
+            </div>
           </div>
         </div>
       </div>

@@ -59,9 +59,20 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
   };
 
   if (products.length > 0) {
+    // The set with the biggest real saving gets the "Best value" marker.
+    const discountOf = ({ node }: BundleProduct) =>
+      calculateDiscount(
+        parseFloat(node.priceRange.minVariantPrice.amount),
+        parseFloat(node.compareAtPriceRange?.minVariantPrice?.amount ?? '0')
+      );
+    const bestValueId = products.reduce<BundleProduct | null>(
+      (best, p) => (discountOf(p) > (best ? discountOf(best) : 0) ? p : best),
+      null
+    )?.node.id;
+
     return (
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-        {products.map(({ node }) => {
+        {products.map(({ node }, i) => {
           const price = parseFloat(node.priceRange.minVariantPrice.amount);
           const comparePrice = node.compareAtPriceRange?.minVariantPrice?.amount
             ? parseFloat(node.compareAtPriceRange.minVariantPrice.amount)
@@ -75,22 +86,28 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
           return (
             <div
               key={node.id}
-              className="group relative flex flex-col overflow-hidden rounded-[1.75rem] border border-gray-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_60px_-35px_rgba(35,27,80,0.35)]"
+              data-reveal=""
+              style={{ '--reveal-i': i % 3 } as React.CSSProperties}
+              className={`group relative flex flex-col overflow-hidden rounded-[1.75rem] border bg-white transition-colors duration-300 ${
+                node.id === bestValueId ? 'border-grape' : 'border-gray-200 hover:border-gray-300'
+              }`}
             >
-              {discount > 0 && (
-                <span className="tag absolute left-4 top-4 z-10 bg-violet text-white">Save {discount}%</span>
-              )}
+              <div className="absolute left-6 top-6 z-10 flex flex-wrap gap-1.5">
+                {node.id === bestValueId && <span className="tag bg-grape text-white">Best value</span>}
+                {discount > 0 && <span className="tag bg-violet text-white">Save {discount}%</span>}
+              </div>
 
-              {/* Lavender tile, the same as the product cards */}
-              <Link href={`/product/${node.handle}`} className="relative block aspect-square p-3">
-                <div className="relative h-full w-full overflow-hidden rounded-[1.25rem] bg-lavender">
+              {/* No tile: the packshot stands on the card, drawn slightly
+                  larger to trim the white margin baked into the photo. */}
+              <Link href={`/product/${node.handle}`} className="relative block aspect-[4/3] p-3">
+                <div className="relative h-full w-full">
                   {image ? (
                     <Image
                       src={image.url}
                       alt={image.altText || node.title}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-contain p-6 mix-blend-multiply transition-transform duration-500 group-hover:scale-[1.04]"
+                      className="scale-[1.08] object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-[1.14]"
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center text-gray-600">
@@ -107,7 +124,7 @@ export default function BundlesGrid({ products }: { products: BundleProduct[] })
                   </Link>
                 </h3>
                 {node.description && (
-                  <p className="mb-4 line-clamp-2 text-xs text-gray-600">{node.description}</p>
+                  <p className="mb-4 line-clamp-2 text-sm text-gray-600">{node.description}</p>
                 )}
 
                 <div className="mb-5 mt-auto flex items-baseline gap-3">

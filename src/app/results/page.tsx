@@ -1,11 +1,14 @@
+import Link from 'next/link';
+import Image from 'next/image';
+import { ArrowRight } from 'lucide-react';
 import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
-import Image from 'next/image';
 import ResultsGallery from './ResultsGallery';
-import PhotoSoftEdge from '@/app/components/PhotoSoftEdge';
+import BeforeAfter from '@/app/components/BeforeAfter';
 import SectionHeading from '@/app/components/SectionHeading';
 import Marker from '@/app/components/Marker';
 import { STATS as SITE_STATS } from '@/lib/siteConfig';
+import { CUSTOMER_RESULTS } from '@/lib/results';
 
 export const metadata = {
   title: 'Real Results — Before & After Transformations',
@@ -14,7 +17,7 @@ export const metadata = {
 };
 
 // Product and customer photography — described honestly (no invented reviews,
-// names or shade claims; those belong to the verified gallery above).
+// names or shade claims; those belong to the customer gallery).
 const REAL_LIFE = [
   { src: '/images/reviews/2.webp', caption: 'V34 Whitening Strips — 14 strips, 30 minutes a day' },
   { src: '/images/reviews/5.webp', caption: 'Purple Toothpaste, Colour Corrector Serum & Pro Toothbrush' },
@@ -26,103 +29,138 @@ const REAL_LIFE = [
   { src: '/images/reviews/1.webp', caption: 'Whitening Pulling Oil — gentle daily care' },
   { src: '/images/reviews/16.webp', caption: 'V34 Colour Corrector Mouthwash — 20 sachets' },
 ];
+// Varied frames give the wall a hand-laid rhythm instead of a uniform grid.
+const FRAMES = ['aspect-[4/5]', 'aspect-square', 'aspect-[3/4]'];
 
 const STATS = [
-  { value: `${SITE_STATS.reviewsLabel}+`, label: 'Verified Reviews' },
-  { value: `${SITE_STATS.ratingLabel}★`, label: 'Average Rating' },
-  { value: SITE_STATS.wouldRecommend, label: 'Would Recommend' },
-  { value: '14 days', label: 'Avg. Visible Results' },
+  { value: SITE_STATS.reviewsLabel, label: 'Customer reviews' },
+  { value: `${SITE_STATS.ratingLabel}★`, label: 'Average rating' },
+  { value: SITE_STATS.wouldRecommend, label: 'Would recommend' },
+  { value: '14 days', label: 'Full strips routine' },
 ];
+
+const TIMELINE = [
+  { when: 'Day 1', text: 'Apply the strips for 30 minutes while you carry on with your routine.' },
+  { when: 'Week 1', text: 'Surface stains start to lift. Customers notice a visible brightening effect.' },
+  { when: 'Week 2+', text: 'Keep going for a fuller, brighter-looking result. Results vary from person to person.' },
+];
+
+const FEATURED = CUSTOMER_RESULTS.find((r) => r.aligned && /strips/i.test(r.product)) ?? CUSTOMER_RESULTS[0];
 
 export default function ResultsPage() {
   return (
     <div className="min-h-screen bg-white">
       <Header />
       <main id="main-content">
-        {/* Hero */}
-        <section className="relative bg-[#231b50] py-12 px-4 text-center overflow-hidden">
-          <Image
-            src="/hero3.webp"
-            alt=""
-            aria-hidden
-            fill
-            priority
-            className="object-cover object-top"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#231b50]/90 via-[#231b50]/60 to-[#231b50]/90" />
-
-          <div className="relative z-10 max-w-2xl mx-auto">
-            <span className="tag mb-4 bg-white/15 text-white">
-              Customer Results
-            </span>
-            <h1
-              className="font-display font-wide text-3xl md:text-4xl font-extrabold text-white mb-4 leading-none tracking-tight"
-            >
-              REAL<br />
-              <span className="text-[#DDD6FE]">RESULTS</span>
-            </h1>
-            <p className="text-white/80 text-base max-w-md mx-auto mb-8">
-              See the kind of transformations customers achieve with CLINIWHITE — real routines, real timelines.
-            </p>
-
-            {/* Stats Row */}
-            <div className="flex flex-wrap justify-center gap-6 md:gap-10">
-              {STATS.map((stat) => (
-                <div key={stat.label} className="text-center">
-                  <p className="font-display font-wide text-xl font-extrabold text-white md:text-2xl">{stat.value}</p>
-                  <p className="text-[10px] text-white/60 font-bold tracking-wider uppercase mt-0.5">
-                    {stat.label}
-                  </p>
-                </div>
-              ))}
+        {/* Intro: the proof first */}
+        <section className="pb-16 pt-10 sm:pb-24 sm:pt-14">
+          <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_1.15fr] lg:gap-16 lg:px-8">
+            <div>
+              <SectionHeading
+                as="h1"
+                eyebrow="Customer results"
+                className="mb-8"
+                title={
+                  <>
+                    Real <Marker>results</Marker>
+                  </>
+                }
+                description={
+                  <>
+                    Genuine before-and-after photos, shared by customers. <strong>Drag any photo to compare.</strong>
+                  </>
+                }
+              />
+              <dl className="grid grid-cols-2 border-t border-gray-200">
+                {STATS.map((s, i) => (
+                  // Label first for screen readers, shown under the figure.
+                  <div
+                    key={s.label}
+                    className={`flex flex-col-reverse justify-end gap-2 border-b border-gray-200 py-5 ${i % 2 === 0 ? 'border-r pr-4' : 'pl-4 sm:pl-6'}`}
+                  >
+                    <dt className="text-sm text-gray-500">{s.label}</dt>
+                    <dd className="font-display font-wide text-[clamp(1.6rem,6vw,2.5rem)] font-extrabold uppercase leading-none tracking-[-0.03em] text-grape">
+                      {s.value}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
             </div>
+
+            {FEATURED && (
+              <figure>
+                <BeforeAfter
+                  before={FEATURED.before}
+                  after={FEATURED.after}
+                  alt={`${FEATURED.name}, ${FEATURED.product}`}
+                  priority
+                  className="aspect-[3/2] rounded-[2rem]"
+                />
+                <figcaption className="mt-4 text-sm text-gray-500">
+                  <span className="font-semibold text-grape">{FEATURED.name}</span> · {FEATURED.product} · {FEATURED.weeks}{' '}
+                  {FEATURED.weeks === 1 ? 'week' : 'weeks'} · +{FEATURED.shade}
+                </figcaption>
+              </figure>
+            )}
           </div>
         </section>
 
-        {/* How It Works strip */}
-        <section className="bg-[#F5F3FF] py-10 px-4">
-          <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
-            {[
-              { step: '01', title: 'DAY 1', desc: 'Apply the strips for 30 minutes while you carry on with your routine.' },
-              { step: '02', title: 'WEEK 1', desc: 'Surface stains start to lift. Customers notice a visible brightening effect.' },
-              { step: '03', title: 'WEEK 2+', desc: 'Keep going for a fuller, brighter-looking result. Results vary from person to person.' },
-            ].map((item) => (
-              <div key={item.step} className="bg-white rounded-2xl p-6 shadow-sm border border-violet-100">
-                <span className="mb-2 block font-display font-wide text-lg font-extrabold text-violet">{item.step}</span>
-                <h3
-                  className="type-eyebrow mb-2 text-[13px] text-grape"
-                  style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+        {/* What to expect */}
+        <section aria-labelledby="timeline-heading" className="bg-porcelain py-16 sm:py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <SectionHeading
+              id="timeline-heading"
+              eyebrow="The strips routine"
+              className="mb-10"
+              title={
+                <>
+                  What to <Marker>expect</Marker>
+                </>
+              }
+            />
+            <ol className="grid border-t-2 border-grape sm:grid-cols-3">
+              {TIMELINE.map((step, i) => (
+                <li
+                  key={step.when}
+                  data-reveal=""
+                  style={{ '--reveal-i': i } as React.CSSProperties}
+                  className="relative border-b border-gray-200 py-6 sm:border-b-0 sm:pr-10"
                 >
-                  {item.title}
-                </h3>
-                <p className="text-xs text-gray-600 leading-relaxed">{item.desc}</p>
-              </div>
-            ))}
+                  <span aria-hidden className="absolute -top-[7px] left-0 h-3 w-3 rounded-full bg-violet ring-4 ring-porcelain" />
+                  <p className="font-display font-wide text-2xl font-extrabold uppercase text-grape">{step.when}</p>
+                  <p className="mt-3 max-w-xs text-base leading-relaxed text-gray-600">{step.text}</p>
+                </li>
+              ))}
+            </ol>
           </div>
         </section>
 
         {/* Gallery */}
-        <section className="py-10 sm:py-16 px-4">
-          <div className="max-w-7xl mx-auto">
+        <section aria-labelledby="gallery-heading" className="py-16 sm:py-24">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeading
-              eyebrow="Unfiltered & unedited"
-              className="mb-12"
+              id="gallery-heading"
+              eyebrow="Unfiltered & unedited"
+              split
+              className="mb-8"
               title={
                 <>
                   Customer <Marker>transformations</Marker>
                 </>
               }
+              description="Every result here comes from a customer who sent us their photos."
             />
             <ResultsGallery />
           </div>
         </section>
 
         {/* Real-life photo wall */}
-        <section className="py-10 sm:py-16 px-4 border-t-2 border-grape/10">
-          <div className="max-w-7xl mx-auto">
+        <section aria-labelledby="real-life-heading" className="border-t border-gray-200 py-16 sm:py-24">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeading
-              eyebrow="Straight from the bathroom shelf"
-              className="mb-12"
+              id="real-life-heading"
+              eyebrow="Straight from the bathroom shelf"
+              split
               title={
                 <>
                   CLINIWHITE <Marker>in real life</Marker>
@@ -135,27 +173,13 @@ export default function ResultsPage() {
               }
             />
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-5">
-              {REAL_LIFE.map(({ src, caption }) => (
-                <figure
-                  key={src}
-                  className="group relative aspect-[4/5] overflow-hidden rounded-2xl bg-[#F5F3FF] shadow-sm"
-                >
-                  <Image
-                    src={src}
-                    alt={caption}
-                    fill
-                    sizes="(max-width: 768px) 50vw, 33vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <PhotoSoftEdge />
-                  {/* z-10 keeps the caption above the soft-edge overlay, which
-                      sits on top of everything declared before it. */}
-                  <figcaption className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/75 via-black/30 to-transparent px-4 pt-10 pb-4">
-                    <span className="text-white text-xs font-bold leading-snug">
-                      {caption}
-                    </span>
-                  </figcaption>
+            <div className="columns-2 gap-4 md:columns-3 md:gap-6">
+              {REAL_LIFE.map(({ src, caption }, i) => (
+                <figure key={src} data-reveal="" style={{ '--reveal-i': i % 3 } as React.CSSProperties} className="mb-6 break-inside-avoid md:mb-8">
+                  <div className={`relative overflow-hidden rounded-2xl bg-lavender ${FRAMES[i % FRAMES.length]}`}>
+                    <Image src={src} alt={caption} fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover" />
+                  </div>
+                  <figcaption className="mt-2.5 text-sm leading-snug text-gray-600">{caption}</figcaption>
                 </figure>
               ))}
             </div>
@@ -163,23 +187,24 @@ export default function ResultsPage() {
         </section>
 
         {/* CTA */}
-        <section className="py-14 sm:py-24 px-4 text-center border-t-2 border-grape/10">
-          <div className="max-w-2xl mx-auto">
-            <h2
-              className="font-display font-wide text-3xl font-extrabold text-grape mb-4 tracking-tight"
-            >
-              READY FOR YOUR TRANSFORMATION?
-            </h2>
-            <p className="text-gray-600 text-sm mb-8 max-w-md mx-auto font-medium">
-              Join {SITE_STATS.customers} customers who have already changed their smile. 30-day money-back guarantee.
-            </p>
-            <a
-              href="/shop"
-              className="btn-primary"
-              style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
-            >
-              SHOP NOW → START YOUR JOURNEY
-            </a>
+        <section className="bg-porcelain py-16 sm:py-20">
+          <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 sm:px-6 lg:flex-row lg:items-end lg:justify-between lg:px-8">
+            <div data-reveal="">
+              <h2 className="type-display max-w-2xl text-balance text-grape">
+                Ready for your <Marker>transformation?</Marker>
+              </h2>
+              <p className="mt-4 max-w-lg text-base leading-relaxed text-gray-600 md:text-lg">
+                Join {SITE_STATS.customers} customers. Every order is covered by our 30-day money-back guarantee.
+              </p>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Link href="/shop" className="btn-primary">
+                Shop now <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link href="/bundles" className="btn-secondary">
+                See the sets
+              </Link>
+            </div>
           </div>
         </section>
       </main>

@@ -119,7 +119,7 @@ export default function FAQ({
                   className={`grid transition-[grid-template-rows] duration-300 ease-out ${open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
                 >
                   <div className="overflow-hidden">
-                    <p className="max-w-2xl pb-6 pr-12 text-[15px] leading-relaxed text-gray-600 md:text-base">{faq.answer}</p>
+                    <p className="max-w-2xl pb-6 pr-12 text-base leading-relaxed text-gray-600 md:text-base">{faq.answer}</p>
                   </div>
                 </div>
               </li>
@@ -130,7 +130,7 @@ export default function FAQ({
         {/* Support */}
         <div className="rounded-[1.75rem] bg-porcelain p-6 sm:p-8 lg:col-start-1 lg:row-start-2 lg:self-start">
           <p className="type-eyebrow text-grape">Still have questions?</p>
-          <p className="mt-2 text-[15px] leading-relaxed text-gray-600">
+          <p className="mt-2 text-base leading-relaxed text-gray-600">
             Real humans reply {CONTACT.responseTime.toLowerCase()}, {CONTACT.supportHours.replace('Monday to Friday', 'Mon–Fri')}.
           </p>
           <Link href="/contact" className="btn-secondary mt-6">

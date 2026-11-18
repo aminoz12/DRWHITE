@@ -1,9 +1,7 @@
 import Hero from "./components/Hero";
+import FreeFromBar from "./components/FreeFromBar";
 import TrustStrip from "./components/TrustStrip";
-import PromoTiles from "./components/PromoTiles";
 import ShopTheRange from "./components/ShopTheRange";
-import ResultsByNumbers from "./components/ResultsByNumbers";
-import HowV34Works from "./components/HowV34Works";
 import RealResults from "./components/RealResults";
 import CompareTable from "./components/CompareTable";
 import CompleteSets from "./components/CompleteSets";
@@ -18,8 +16,8 @@ export const metadata = {
   alternates: { canonical: '/' },
 };
 
-// Conversion order: promise → reassurance → choose → buy → understand →
-// proof → compare → upsell to sets → social proof → risk reversal → objections.
+// Conversion order: promise → choose → buy → proof → compare → upsell to sets
+// → social proof → reassurance → risk reversal → objections.
 export default async function Home() {
   const country = await getServerCountry();
   return (
@@ -27,16 +25,14 @@ export default async function Home() {
       <Header country={country} />
       <main id="main-content">
         <Hero />
-        <TrustStrip />
-        <PromoTiles />
+        <FreeFromBar />
         <ShopTheRange />
-        <HowV34Works />
-        <ResultsByNumbers />
         <RealResults />
         <CompareTable />
         <CompleteSets />
         <UgcReels />
-        <GuaranteeBand />
+        <TrustStrip />
+        <GuaranteeBand promises={false} />
         <FAQ withSchema />
       </main>
       <Footer country={country} />

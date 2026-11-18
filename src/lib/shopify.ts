@@ -248,7 +248,7 @@ export async function getProductsByCollection(handle: string, country: string = 
                 name
                 values
               }
-              images(first: 1) {
+              images(first: 2) {
                 edges {
                   node {
                     url

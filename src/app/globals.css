@@ -26,19 +26,35 @@
   --color-gray-100: #efeef4;
   --color-gray-200: #e3e1eb;
   --color-gray-300: #cbc8d8;
-  --color-gray-400: #a29fb5;
-  --color-gray-500: #6f6b88;
-  --color-gray-600: #5a5673;
-  --color-gray-700: #46425e;
+  --color-gray-400: #8e8aa5;
+  --color-gray-500: #5d5978;
+  --color-gray-600: #4a4665;
+  --color-gray-700: #3a3654;
   --color-gray-800: #2e2a45;
   --color-gray-900: #1c1833;
   --color-gray-950: #100d21;
 
   --animate-marquee: marquee 32s linear infinite;
+  --animate-fade-up: fade-up 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-bump: bump 0.45s cubic-bezier(0.3, 1.6, 0.5, 1);
+  --animate-sheet: sheet 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 
   @keyframes marquee {
     0% { transform: translateX(0%); }
     100% { transform: translateX(-50%); }
+  }
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(0.75rem); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes bump {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.35); }
+    100% { transform: scale(1); }
+  }
+  @keyframes sheet {
+    from { opacity: 0; transform: translateY(-0.5rem); }
+    to { opacity: 1; transform: none; }
   }
 }
 
@@ -52,12 +68,20 @@ body {
   color: var(--color-gray-900);
   font-family: var(--font-mona), system-ui, -apple-system, "Segoe UI", Roboto,
     Helvetica, Arial, sans-serif;
+  /* Mona Sans is variable: 450 firms up its thin regular strokes (notably on
+     Windows) so running text reads clearly without looking bold. */
+  font-weight: 450;
   /* Never allow accidental horizontal scroll on small screens. `clip` (not
      `hidden`) prevents overflow without creating a scroll container, so the
      sticky header keeps working. */
   overflow-x: clip;
   /* Long unbroken strings (URLs, product handles) wrap instead of overflowing. */
   overflow-wrap: break-word;
+}
+
+/* In-page links (FAQ, policy contents) glide; reduced motion turns it off below. */
+html {
+  scroll-behavior: smooth;
 }
 
 ::selection {
@@ -208,6 +232,21 @@ canvas {
   text-transform: uppercase;
   font-stretch: 112.5%;
   white-space: nowrap;
+}
+
+/* ─── Motion ───────────────────────────────────────────────────────────────
+   Blocks marked data-reveal fade up as they scroll into view (RevealObserver
+   arms them; without JS they simply stay visible). --reveal-i staggers
+   siblings. Put it on wrappers that have no transition of their own. */
+[data-reveal] {
+  transition:
+    opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: calc(var(--reveal-i, 0) * 80ms);
+}
+[data-reveal="hidden"] {
+  opacity: 0;
+  transform: translateY(1.25rem);
 }
 
 /* Hide scrollbars on horizontal strips while keeping them scrollable. */
