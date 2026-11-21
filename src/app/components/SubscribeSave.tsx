@@ -3,25 +3,23 @@ import Image from 'next/image';
 import { ArrowRight, CalendarCheck, CircleCheck, Tag } from 'lucide-react';
 import { getSubscriptionOffer } from '@/lib/shopify';
 import { getServerCountry } from '@/lib/market-server';
-import { formatMoney } from '@/lib/money';
-import { shortTitle } from '@/lib/productTitle';
 import { Eyebrow } from './SectionHeading';
 
-// The everyday product the example price and the button point to: a tube you
-// finish and rebuy, which is what a monthly delivery is for.
+// The everyday product the button opens: a tube you finish and rebuy, which
+// is what a monthly delivery is for.
 const EXAMPLE_HANDLE = 'clini-white-v34-purple-whitening-toothpaste';
 
 // Photo beside the copy: a transparent cut-out that stands on the lavender
-// panel, anchored to its bottom edge. It shows the same toothpaste as the
-// example price and the button.
+// panel, anchored to its bottom edge. It shows the same toothpaste the
+// button opens.
 const PHOTO = {
   src: '/images/subscribe.png',
   alt: 'A woman holding CLINIWHITE V34 Purple Whitening Toothpaste beside her face',
 };
 
-// Subscribe & Save, in the store's own terms: the percentage and the example
-// prices are read from the Shopify selling plan, so the section can't promise
-// more than checkout charges, and it disappears if the plan is switched off.
+// Subscribe & Save, in the store's own terms: the percentage is read from the
+// Shopify selling plan, so the section can't promise more than checkout
+// charges, and it disappears if the plan is switched off.
 export default async function SubscribeSave() {
   const country = await getServerCountry();
   const offer = await getSubscriptionOffer(EXAMPLE_HANDLE, country);
@@ -33,7 +31,6 @@ export default async function SubscribeSave() {
     // Same promise the product page makes beside the subscribe option.
     { icon: CircleCheck, text: 'Skip, pause or cancel any time' },
   ];
-  const example = offer.example;
 
   return (
     <section aria-labelledby="subscribe-heading" className="bg-white py-12 sm:py-16">
@@ -53,26 +50,6 @@ export default async function SubscribeSave() {
               sizes="(max-width: 1024px) 100vw, 55vw"
               className="object-contain object-bottom"
             />
-            {example && (
-              // A real monthly price, pinned top-right over the plain backdrop
-              // (top-left would cover the tube). Too cramped on small phones,
-              // which get the same price as a line under the copy instead.
-              <div className="absolute right-6 top-6 hidden w-60 rounded-2xl bg-white p-4 shadow-[0_14px_30px_-18px_rgba(18,13,46,0.55)] sm:block">
-                <p className="text-sm font-semibold leading-snug text-grape">{shortTitle(example.title)}</p>
-                <div className="mt-2 flex items-center justify-between gap-3">
-                  <p className="whitespace-nowrap text-grape">
-                    <span className="text-xl font-bold">{formatMoney(example.monthly, example.currencyCode)}</span>
-                    <span className="text-sm text-gray-500"> /month</span>
-                  </p>
-                  <span className="rounded-full bg-violet-soft px-2.5 py-1 text-[13px] font-bold leading-none text-violet">
-                    −{offer.percent}%
-                  </span>
-                </div>
-                <p className="mt-1 text-[13px] text-gray-500">
-                  One-off price <span className="line-through">{formatMoney(example.oneOff, example.currencyCode)}</span>
-                </p>
-              </div>
-            )}
           </div>
 
           <div className="flex flex-col justify-center px-6 pb-4 pt-8 sm:px-10 sm:pb-6 sm:pt-10 lg:px-12 lg:py-10">
@@ -98,18 +75,10 @@ export default async function SubscribeSave() {
               ))}
             </ul>
 
-            {example && (
-              <p className="mt-6 text-base text-gray-600 sm:hidden">
-                {shortTitle(example.title)}:{' '}
-                <strong className="font-semibold text-grape">{formatMoney(example.monthly, example.currencyCode)} a month</strong>{' '}
-                instead of <span className="line-through">{formatMoney(example.oneOff, example.currencyCode)}</span>
-              </p>
-            )}
-
             <div className="mt-6 flex flex-col gap-3 sm:mt-7 sm:flex-row sm:items-center">
               {/* Opens the product with the monthly option selected: here the
                   shopper has just chosen to subscribe. */}
-              <Link href={`/product/${example?.handle ?? EXAMPLE_HANDLE}?subscribe=1`} className="btn-primary">
+              <Link href={`/product/${offer.example?.handle ?? EXAMPLE_HANDLE}?subscribe=1`} className="btn-primary">
                 Subscribe now <ArrowRight className="h-4 w-4" />
               </Link>
               <Link href="/shop" className="type-eyebrow py-2.5 text-center text-grape underline underline-offset-4 hover:text-violet sm:ml-3">
