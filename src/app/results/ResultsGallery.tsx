@@ -81,7 +81,7 @@ export default function ResultsGallery() {
               <span className="font-semibold text-grape">{result.name}</span> · {result.product} · {result.weeks}{' '}
               {result.weeks === 1 ? 'week' : 'weeks'}
             </p>
-            <p className="type-eyebrow mt-2 text-[10px] text-gray-400">{result.tags.join(' · ')}</p>
+            <p className="type-eyebrow mt-2 text-[11px] text-gray-400">{result.tags.join(' · ')}</p>
           </article>
         ))}
       </div>

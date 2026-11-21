@@ -63,7 +63,7 @@ export default function SectionHeading({
           {action && (
             <Link
               href={action.href}
-              className={`type-eyebrow group inline-flex items-center gap-2 text-grape underline-offset-4 hover:text-violet hover:underline ${
+              className={`type-eyebrow group inline-flex items-center gap-2 py-2.5 text-grape underline-offset-4 hover:text-violet hover:underline ${
                 description ? 'mt-4' : ''
               }`}
             >

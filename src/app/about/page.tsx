@@ -171,7 +171,7 @@ export default function AboutPage() {
               <Link href="/shop" className="btn-primary bg-white text-grape shadow-none hover:bg-lavender">
                 Shop now <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link href="/results" className="type-eyebrow self-center text-white underline underline-offset-4 hover:text-lilac">
+              <Link href="/results" className="type-eyebrow self-center py-2.5 text-white underline underline-offset-4 hover:text-lilac">
                 See real results
               </Link>
             </div>

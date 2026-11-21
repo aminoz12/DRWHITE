@@ -68,7 +68,7 @@ export default function ProductGallery({
           ))}
         </div>
         {shown.length > 1 && (
-          <div className="mt-3 flex justify-center gap-1.5">
+          <div className="mt-2 flex justify-center">
             {shown.map((img, i) => (
               <button
                 key={img.url}
@@ -76,7 +76,7 @@ export default function ProductGallery({
                 aria-label={`Show image ${i + 1}`}
                 aria-current={i === active}
                 onClick={() => strip.current?.scrollTo({ left: i * strip.current.clientWidth, behavior: 'smooth' })}
-                className="flex h-6 items-center"
+                className="flex h-8 min-w-8 items-center justify-center px-1"
               >
                 <span className={`block h-1.5 rounded-full transition-all duration-300 ${i === active ? 'w-6 bg-grape' : 'w-1.5 bg-gray-300'}`} />
               </button>

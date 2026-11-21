@@ -268,7 +268,7 @@ function ReelViewer({
         </button>
 
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 pt-20">
-          <p className="type-eyebrow text-[10px] text-lilac">As seen in this clip</p>
+          <p className="type-eyebrow text-[11px] text-lilac">As seen in this clip</p>
           <p className="mt-1 text-base font-semibold text-white">{reel.product}</p>
           <Link
             href={`/product/${reel.handle}`}

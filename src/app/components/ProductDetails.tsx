@@ -217,7 +217,13 @@ interface ProductDetailsProps {
   };
 }
 
-export default function ProductDetails({ product }: ProductDetailsProps) {
+export default function ProductDetails({
+  product,
+  startWithSubscription = false,
+}: ProductDetailsProps & {
+  /** The shopper arrived from a "Subscribe now" button (?subscribe=1). */
+  startWithSubscription?: boolean;
+}) {
   // Every catalogue product ships a single Shopify variant; the buy box sells
   // multiples of it rather than distinct multi-pack variants.
   const selectedVariant = product.variants.edges[0]?.node;
@@ -227,9 +233,10 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
   const [quantity, setQuantity] = useState(1);
 
   const subscription = getSubscriptionOffer(selectedVariant);
-  // Always start on one-time purchase. The subscription is offered beside it
-  // with its saving, but a recurring charge is never preselected.
-  const [mode, setMode] = useState<PurchaseMode>('onetime');
+  // Start on one-time purchase: the subscription is offered beside it with its
+  // saving, but a recurring charge is never preselected — unless the shopper
+  // got here by pressing "Subscribe now", which is that choice made already.
+  const [mode, setMode] = useState<PurchaseMode>(startWithSubscription && subscription ? 'subscription' : 'onetime');
   const { addItem, isLoading } = useCartStore();
 
   // The mobile buy bar shows only while the main button is off screen, so the
@@ -327,9 +334,9 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             <div className="space-y-5">
               <nav aria-label="Breadcrumb" className="type-eyebrow text-gray-500">
                 <ol className="flex items-center gap-2">
-                  <li><Link href="/" className="transition-colors hover:text-grape">Home</Link></li>
+                  <li><Link href="/" className="inline-block py-2 transition-colors hover:text-grape">Home</Link></li>
                   <li aria-hidden>/</li>
-                  <li><Link href="/shop" className="transition-colors hover:text-grape">Shop</Link></li>
+                  <li><Link href="/shop" className="inline-block py-2 transition-colors hover:text-grape">Shop</Link></li>
                   <li aria-hidden>/</li>
                   <li className="max-w-[220px] truncate text-gray-700" aria-current="page">{shortTitle(product.title)}</li>
                 </ol>
@@ -375,7 +382,9 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
               {subscription && (
                 <fieldset className="space-y-3">
                   <legend className="sr-only">Choose how to buy</legend>
-                  <div className="grid grid-cols-2 gap-3">
+                  {/* Phones: two full-width rows (radio and words left, price right).
+                      Wider screens: two cards side by side. */}
+                  <div className="grid gap-3 sm:grid-cols-2">
                     {([
                       {
                         value: 'onetime' as const,
@@ -396,7 +405,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                       return (
                         <label
                           key={option.value}
-                          className={`relative flex cursor-pointer flex-col gap-1 rounded-2xl border-2 p-3 transition-all sm:gap-1.5 sm:p-4 ${
+                          className={`relative flex cursor-pointer items-center gap-3 rounded-2xl border-2 p-4 transition-all sm:flex-col sm:items-stretch sm:gap-1.5 ${
                             selected ? 'border-grape bg-lavender' : 'border-gray-200 bg-white hover:border-gray-300'
                           }`}
                         >
@@ -408,18 +417,18 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                             onChange={() => setMode(option.value)}
                           />
                           {option.badge && (
-                            <span className="tag absolute -top-2.5 right-2 bg-violet px-2 py-1 text-[10px] text-white">{option.badge}</span>
+                            <span className="tag absolute -top-2.5 right-2 bg-violet px-2 py-1 text-[11px] text-white">{option.badge}</span>
                           )}
-                          <span className="flex min-w-0 items-start gap-2">
+                          <span className="flex min-w-0 flex-1 items-start gap-2.5">
                             <span className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${selected ? 'border-grape bg-grape' : 'border-gray-300'}`}>
                               {selected && <span className="h-2 w-2 rounded-full bg-white shadow-sm" />}
                             </span>
-                            <span className="type-eyebrow block text-[11px] leading-tight text-grape sm:text-xs">
-                              {option.label}
+                            <span className="min-w-0">
+                              <span className="type-eyebrow block text-xs leading-tight text-grape">{option.label}</span>
+                              <span className="mt-1 block text-[13px] leading-snug text-gray-600">{option.note}</span>
                             </span>
                           </span>
-                          <span className="block text-[10px] leading-tight text-gray-600 sm:text-[11px]">{option.note}</span>
-                          <span className="mt-auto block text-sm font-bold text-grape">
+                          <span className="shrink-0 text-right text-base font-bold text-grape sm:mt-auto sm:text-left sm:text-sm">
                             {formatMoney(String(option.amount), price.currencyCode)}
                             {option.value === 'subscription' && (
                               <span className="text-[11px] font-normal text-gray-500"> / month</span>
@@ -464,7 +473,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                         </div>
                         <div>
                           <p className="font-display font-wide text-base font-extrabold uppercase leading-none text-grape">{tierLabel(kind, n)}</p>
-                          {contents && <p className="type-eyebrow mt-2 text-[10px] text-violet">{contents}</p>}
+                          {contents && <p className="type-eyebrow mt-2 text-[11px] text-violet">{contents}</p>}
                         </div>
                       </div>
                       <div className="text-right">
@@ -508,7 +517,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 {/* Payment Icons */}
                 <div className="flex flex-col items-center gap-3 py-2">
                   <PaymentIcons className="justify-center" />
-                  <div className="type-eyebrow text-[10px] text-gray-500">Secure checkout</div>
+                  <div className="type-eyebrow text-[11px] text-gray-500">Secure checkout</div>
                 </div>
               </div>
             </div>
@@ -568,7 +577,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         }`}
       >
         <div className="min-w-0 flex-1">
-          <p className="type-eyebrow truncate text-[10px] text-gray-500">
+          <p className="type-eyebrow truncate text-[11px] text-gray-500">
             {isSubscribing ? 'Monthly · ' : ''}
             {tierLabel(kind, quantity)}
           </p>

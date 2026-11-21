@@ -5,6 +5,7 @@ import ShopTheRange from "./components/ShopTheRange";
 import RealResults from "./components/RealResults";
 import CompareTable from "./components/CompareTable";
 import CompleteSets from "./components/CompleteSets";
+import SubscribeSave from "./components/SubscribeSave";
 import UgcReels from "./components/UgcReels";
 import GuaranteeBand from "./components/GuaranteeBand";
 import FAQ from "./components/FAQ";
@@ -17,7 +18,7 @@ export const metadata = {
 };
 
 // Conversion order: promise → choose → buy → proof → compare → upsell to sets
-// → social proof → reassurance → risk reversal → objections.
+// → subscribe → social proof → reassurance → risk reversal → objections.
 export default async function Home() {
   const country = await getServerCountry();
   return (
@@ -30,6 +31,7 @@ export default async function Home() {
         <RealResults />
         <CompareTable />
         <CompleteSets />
+        <SubscribeSave />
         <UgcReels />
         <TrustStrip />
         <GuaranteeBand promises={false} />

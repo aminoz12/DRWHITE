@@ -65,7 +65,7 @@ export default function WelcomeOfferForm({
           <span className="font-wide text-lg font-extrabold tracking-[0.14em] text-grape">
             {WELCOME_OFFER.code}
           </span>
-          <span className="type-eyebrow flex items-center gap-1.5 text-[10px] text-gray-600">
+          <span className="type-eyebrow flex items-center gap-1.5 text-[11px] text-gray-600">
             {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
             {copied ? 'Copied' : 'Copy'}
           </span>

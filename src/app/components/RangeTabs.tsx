@@ -108,7 +108,7 @@ export default function RangeTabs({ products }: { products: ShopifyProductEdge[]
                 </span>
                 <span className="whitespace-nowrap">{g.label}</span>
                 <span
-                  className={`flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold leading-none transition-colors duration-300 ${
+                  className={`flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-bold leading-none transition-colors duration-300 ${
                     selected ? 'bg-white/15 text-white' : 'bg-white text-gray-500'
                   }`}
                 >

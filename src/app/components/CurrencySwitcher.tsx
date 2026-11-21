@@ -6,6 +6,14 @@ import { ChevronDown, Check } from 'lucide-react';
 import { MARKETS, getClientCountry, setClientCountry, marketForCountry } from '@/lib/market';
 import { useCartStore } from '@/lib/cartStore';
 
+// The EU flag's 12 stars on a radius-7 ring, precomputed. Computing them with
+// Math.sin/cos at render gave the server and the browser different last
+// digits, which broke hydration.
+const EU_STARS = [
+  [12, 5], [15.5, 5.94], [18.06, 8.5], [19, 12], [18.06, 15.5], [15.5, 18.06],
+  [12, 19], [8.5, 18.06], [5.94, 15.5], [5, 12], [5.94, 8.5], [8.5, 5.94],
+] as const;
+
 // Round flag badges, inline so the header never waits on an image request.
 function Flag({ country, className = 'w-5 h-5' }: { country: string; className?: string }) {
   const common = `${className} rounded-full shrink-0 ring-1 ring-black/10`;
@@ -42,10 +50,9 @@ function Flag({ country, className = 'w-5 h-5' }: { country: string; className?:
   return (
     <svg viewBox="0 0 24 24" className={common} aria-hidden>
       <circle cx="12" cy="12" r="12" fill="#003399" />
-      {Array.from({ length: 12 }, (_, i) => {
-        const a = (i / 12) * Math.PI * 2;
-        return <circle key={i} cx={12 + Math.sin(a) * 7} cy={12 - Math.cos(a) * 7} r="1.1" fill="#FFCC00" />;
-      })}
+      {EU_STARS.map(([cx, cy], i) => (
+        <circle key={i} cx={cx} cy={cy} r="1.1" fill="#FFCC00" />
+      ))}
     </svg>
   );
 }

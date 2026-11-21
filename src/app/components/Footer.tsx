@@ -83,7 +83,7 @@ export default function Footer({ country }: { country?: string } = {}) {
                 <p key={line}>{line}</p>
               ))}
             </div>
-            <a href={`mailto:${CONTACT.email}`} className="mt-3 inline-block text-sm text-white/80 underline underline-offset-4 hover:text-white">
+            <a href={`mailto:${CONTACT.email}`} className="mt-2 inline-block py-1.5 text-sm text-white/80 underline underline-offset-4 hover:text-white">
               {CONTACT.email}
             </a>
             <div className="mt-6 flex items-center gap-3">
@@ -111,10 +111,10 @@ export default function Footer({ country }: { country?: string } = {}) {
           {COLUMNS.map((col) => (
             <nav key={col.title} aria-label={col.title}>
               <h3 className="type-eyebrow text-white/50">{col.title}</h3>
-              <ul className="mt-5 space-y-3.5">
+              <ul className="mt-4 space-y-0.5">
                 {col.links.map((link) => (
                   <li key={link.href}>
-                    <Link href={link.href} className="text-base text-white/80 transition-colors hover:text-white">
+                    <Link href={link.href} className="inline-block py-1.5 text-base text-white/80 transition-colors hover:text-white">
                       {link.label}
                     </Link>
                   </li>

@@ -29,7 +29,7 @@ export default function ResultsSpotlight({ heading }: { heading: React.ReactNode
           alt={`${result.name}, ${result.product}`}
           className="aspect-[3/2] rounded-[2rem]"
         />
-        <div className="mt-4 flex items-center justify-between gap-4">
+        <div className="mt-4 flex flex-col-reverse items-start gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
           <p className="type-eyebrow text-gray-500">
             Drag to compare · {result.weeks} {result.weeks === 1 ? 'week' : 'weeks'}
           </p>
@@ -78,7 +78,7 @@ export default function ResultsSpotlight({ heading }: { heading: React.ReactNode
             </Link>
             <Link
               href="/results"
-              className="type-eyebrow text-center text-grape underline underline-offset-4 hover:text-violet sm:ml-3"
+              className="type-eyebrow py-2.5 text-center text-grape underline underline-offset-4 hover:text-violet sm:ml-3"
             >
               See all results
             </Link>

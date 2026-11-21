@@ -36,7 +36,7 @@ export default function GuaranteeBand({ promises = true }: { promises?: boolean 
           </p>
           <Link
             href="/policies/refund-policy"
-            className="type-eyebrow mt-6 inline-flex items-center gap-1.5 text-white underline underline-offset-4 hover:text-lilac"
+            className="type-eyebrow mt-4 inline-flex items-center gap-1.5 py-2.5 text-white underline underline-offset-4 hover:text-lilac"
           >
             Read the refund policy <ArrowRight className="h-3.5 w-3.5" />
           </Link>

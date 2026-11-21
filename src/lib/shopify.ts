@@ -357,6 +357,62 @@ export async function getProduct(handle: string, country: string = DEFAULT_COUNT
   return response.data?.product;
 }
 
+/**
+ * The store's Subscribe & Save offer, read live from Shopify so the page can
+ * never promise a discount checkout won't honour. `percent` comes from the
+ * selling plan itself; `example` is one product's real monthly price beside its
+ * one-off price, in the shopper's currency. Null when no plan exists.
+ */
+export async function getSubscriptionOffer(
+  exampleHandle: string,
+  country: string = DEFAULT_COUNTRY
+): Promise<{
+  percent: number;
+  example: { title: string; handle: string; monthly: string; oneOff: string; currencyCode: string } | null;
+} | null> {
+  const query = `
+    query subscriptionOffer($handle: String!, $country: CountryCode) @inContext(country: $country) {
+      product(handle: $handle) {
+        title
+        handle
+        sellingPlanGroups(first: 1) {
+          edges { node { sellingPlans(first: 1) { edges { node {
+            priceAdjustments { adjustmentValue { ... on SellingPlanPercentagePriceAdjustment { adjustmentPercentage } } }
+          } } } } }
+        }
+        variants(first: 1) {
+          edges { node {
+            price { amount currencyCode }
+            sellingPlanAllocations(first: 1) { edges { node { priceAdjustments { price { amount } } } } }
+          } }
+        }
+      }
+    }
+  `;
+  const response = await shopifyFetch({ query, variables: { handle: exampleHandle, country } });
+  const product = response.data?.product;
+  const percent =
+    product?.sellingPlanGroups?.edges?.[0]?.node?.sellingPlans?.edges?.[0]?.node?.priceAdjustments?.[0]?.adjustmentValue
+      ?.adjustmentPercentage;
+  if (!product || typeof percent !== 'number' || percent <= 0) return null;
+
+  const variant = product.variants?.edges?.[0]?.node;
+  const monthly = variant?.sellingPlanAllocations?.edges?.[0]?.node?.priceAdjustments?.[0]?.price?.amount;
+  return {
+    percent: Math.round(percent),
+    example:
+      variant && monthly
+        ? {
+            title: product.title,
+            handle: product.handle,
+            monthly,
+            oneOff: variant.price.amount,
+            currencyCode: variant.price.currencyCode,
+          }
+        : null,
+  };
+}
+
 // ─── CART MUTATIONS ────────────────────────────────────────────────────────
 
 /** A line to add to the cart. `sellingPlanId` turns it into a subscription. */

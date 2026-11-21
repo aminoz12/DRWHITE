@@ -99,7 +99,7 @@ export default function CartPage() {
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
                         <h2 className="text-base font-semibold leading-snug text-grape sm:text-base">{shortTitle(item.title)}</h2>
-                        {item.sellingPlanName && <p className="tag mt-1.5 px-2 py-1 text-[10px]">↻ {item.sellingPlanName}</p>}
+                        {item.sellingPlanName && <p className="tag mt-1.5 px-2 py-1 text-[11px]">↻ {item.sellingPlanName}</p>}
                         {item.variantTitle && item.variantTitle !== 'Default Title' && (
                           <p className="mt-1 text-xs text-gray-600">{item.variantTitle}</p>
                         )}
@@ -133,7 +133,7 @@ export default function CartPage() {
                         onClick={() => removeItem(item.lineId)}
                         disabled={isLoading}
                         aria-label={`Remove ${item.title} from cart`}
-                        className="type-eyebrow inline-flex items-center gap-1.5 text-[10px] text-gray-500 transition-colors hover:text-red-600 disabled:opacity-40"
+                        className="type-eyebrow inline-flex items-center gap-1.5 text-[11px] text-gray-500 transition-colors hover:text-red-600 disabled:opacity-40"
                       >
                         <X className="h-3.5 w-3.5" /> Remove
                       </button>

@@ -25,6 +25,7 @@ export async function generateStaticParams() {
 
 interface ProductPageProps {
   params: Promise<{ handle: string }>;
+  searchParams: Promise<{ subscribe?: string }>;
 }
 
 function cleanDescription(text: string | undefined, fallback: string): string {
@@ -96,8 +97,9 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   };
 }
 
-export default async function ProductPage({ params }: ProductPageProps) {
+export default async function ProductPage({ params, searchParams }: ProductPageProps) {
   const { handle } = await params;
+  const { subscribe } = await searchParams;
   const country = await getServerCountry();
   const product = await getProduct(handle, country);
 
@@ -156,7 +158,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       />
       <Header country={country} />
       <main id="main-content">
-        <ProductDetails product={product} />
+        <ProductDetails product={product} startWithSubscription={subscribe === '1'} />
         <RealResults />
         <UgcReels />
         <FAQ productTitle={shortTitle(product.title)} />

@@ -143,7 +143,7 @@ export default function Header({ country }: { country?: string } = {}) {
             <span
               key={i}
               aria-hidden={i >= PERKS.length}
-              className="type-eyebrow mx-5 flex items-center gap-5 text-[10px] text-white/85 sm:text-[11px]"
+              className="type-eyebrow mx-5 flex items-center gap-5 text-[11px] text-white/85 sm:text-xs"
             >
               {perk}
               <span className="h-1 w-1 rounded-full bg-lilac" aria-hidden />
@@ -188,7 +188,7 @@ export default function Header({ country }: { country?: string } = {}) {
             </nav>
 
             {/* Centre logo */}
-            <Link href="/" aria-label="CLINIWHITE home" className="flex min-w-0 items-center lg:absolute lg:left-1/2 lg:-translate-x-1/2">
+            <Link href="/" aria-label="CLINIWHITE home" className="flex min-w-0 items-center py-2 lg:absolute lg:left-1/2 lg:-translate-x-1/2">
               <span className="whitespace-nowrap font-display font-wide text-xl font-black tracking-[-0.02em] text-grape sm:text-2xl lg:text-[1.65rem]">
                 CLINIWHITE
               </span>

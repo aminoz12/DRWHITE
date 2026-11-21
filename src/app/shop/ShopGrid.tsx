@@ -88,7 +88,7 @@ export default function ShopGrid({
 
           <div className="hidden shrink-0 items-center gap-5 md:flex">
             <label className="flex cursor-pointer items-center gap-2.5">
-              <span className="type-eyebrow text-[10px] text-gray-600">In stock</span>
+              <span className="type-eyebrow text-[11px] text-gray-600">In stock</span>
               <button
                 type="button"
                 onClick={() => setInStockOnly(!inStockOnly)}
@@ -142,13 +142,13 @@ export default function ShopGrid({
 function SortSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
     <label className="flex items-center gap-1.5">
-      <span className="type-eyebrow text-[10px] text-gray-600">Sort</span>
+      <span className="type-eyebrow text-[11px] text-gray-600">Sort</span>
       <span className="relative flex items-center">
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
           aria-label="Sort products"
-          className="type-eyebrow cursor-pointer appearance-none bg-transparent py-1 pl-1 pr-5 text-[11px] text-grape focus:outline-none"
+          className="type-eyebrow cursor-pointer appearance-none bg-transparent py-2.5 pl-1 pr-5 text-[11px] text-grape focus:outline-none"
         >
           <option value="featured">Featured</option>
           <option value="price-low">Price: low to high</option>

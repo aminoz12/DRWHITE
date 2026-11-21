@@ -175,7 +175,7 @@ export default function CartDrawer() {
                       <span className="relative block aspect-[4/3] overflow-hidden rounded-xl bg-lavender">
                         <Image src={c.image} alt="" fill sizes="200px" className="object-cover transition-transform duration-500 group-hover:scale-105" />
                       </span>
-                      <span className="type-eyebrow mt-2 block text-[10px] text-grape group-hover:text-violet">{c.label}</span>
+                      <span className="type-eyebrow mt-2 block text-[11px] text-grape group-hover:text-violet">{c.label}</span>
                     </Link>
                   </li>
                 ))}
@@ -207,7 +207,7 @@ export default function CartDrawer() {
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-base font-semibold text-grape">{shortTitle(item.title)}</p>
                     {item.sellingPlanName && (
-                      <p className="tag mt-1 px-2 py-1 text-[10px]">
+                      <p className="tag mt-1 px-2 py-1 text-[11px]">
                         ↻ {item.sellingPlanName}
                       </p>
                     )}
@@ -272,7 +272,7 @@ export default function CartDrawer() {
                         onClick={() => variant && addItem(variant.id, 1)}
                         disabled={isLoading || !variant}
                         aria-label={`Add ${shortTitle(node.title)} to cart`}
-                        className="btn-secondary min-h-9 shrink-0 px-4 text-[10px]"
+                        className="btn-secondary min-h-9 shrink-0 px-4 text-[11px]"
                       >
                         <Plus className="h-3 w-3" /> Add
                       </button>
@@ -316,15 +316,15 @@ export default function CartDrawer() {
             </button>
 
             <div className="flex items-center justify-center gap-4 border-t border-gray-100 pt-2">
-              <span className="flex items-center gap-1 text-[10px] text-gray-600">
+              <span className="flex items-center gap-1 text-[11px] text-gray-600">
                 <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
                 Secure Checkout
               </span>
-              <span className="flex items-center gap-1 text-[10px] text-gray-600">
+              <span className="flex items-center gap-1 text-[11px] text-gray-600">
                 <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
                 30-Day Returns
               </span>
-              <span className="flex items-center gap-1 text-[10px] text-gray-600">
+              <span className="flex items-center gap-1 text-[11px] text-gray-600">
                 <Truck className="h-3 w-3" />
                 Tracked Delivery
               </span>

@@ -87,9 +87,9 @@ export default function ProductCard({ product }: ProductCardProps) {
       <div className="relative aspect-[4/3]">
         {(badge || discountPercent > 0) && (
           <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-1.5">
-            {badge && <span className="tag bg-white px-2.5 py-1.5 text-[10px] text-grape">{badge}</span>}
+            {badge && <span className="tag bg-white px-2.5 py-1.5 text-[11px] text-grape">{badge}</span>}
             {discountPercent > 0 && (
-              <span className="tag bg-violet px-2.5 py-1.5 text-[10px] text-white">Save {discountPercent}%</span>
+              <span className="tag bg-violet px-2.5 py-1.5 text-[11px] text-white">Save {discountPercent}%</span>
             )}
           </div>
         )}
@@ -123,7 +123,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           type="button"
           onClick={() => setQuickView(true)}
           aria-label={`Quick view: ${fullName}`}
-          className="type-eyebrow absolute inset-x-3 bottom-3 z-10 hidden translate-y-3 items-center justify-center gap-2 rounded-full bg-white/95 py-3 text-[10px] text-grape opacity-0 shadow-[0_8px_20px_-10px_rgba(18,13,46,0.5)] transition-all duration-300 hover:bg-grape hover:text-white focus-visible:translate-y-0 focus-visible:opacity-100 [@media(hover:hover)]:flex [@media(hover:hover)]:group-hover:translate-y-0 [@media(hover:hover)]:group-hover:opacity-100"
+          className="type-eyebrow absolute inset-x-3 bottom-3 z-10 hidden translate-y-3 items-center justify-center gap-2 rounded-full bg-white/95 py-3 text-[11px] text-grape opacity-0 shadow-[0_8px_20px_-10px_rgba(18,13,46,0.5)] transition-all duration-300 hover:bg-grape hover:text-white focus-visible:translate-y-0 focus-visible:opacity-100 [@media(hover:hover)]:flex [@media(hover:hover)]:group-hover:translate-y-0 [@media(hover:hover)]:group-hover:opacity-100"
         >
           <Eye className="h-3.5 w-3.5" /> Quick view
         </button>
@@ -161,11 +161,11 @@ export default function ProductCard({ product }: ProductCardProps) {
         </p>
         <Link
           href={href}
-          className="btn-primary min-h-12 w-full gap-1.5 whitespace-nowrap px-3 text-[10px] tracking-[0.05em] after:absolute after:inset-0 hover:transform-none! active:transform-none! group-hover:bg-[#2f2570] sm:gap-2 sm:text-xs sm:tracking-[0.08em]"
+          className="btn-primary min-h-12 w-full gap-1.5 whitespace-nowrap px-2 text-[11px] tracking-[0.03em] after:absolute after:inset-0 hover:transform-none! active:transform-none! group-hover:bg-[#2f2570] sm:gap-2 sm:text-xs sm:tracking-[0.08em]"
         >
           Shop {copy.name}
           <span className="sr-only">: {fullName}</span>
-          <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          <ArrowUpRight className="hidden h-4 w-4 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 min-[400px]:block" />
         </Link>
       </div>
 
