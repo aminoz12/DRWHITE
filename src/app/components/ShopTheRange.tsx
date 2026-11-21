@@ -35,7 +35,7 @@ export default async function ShopTheRange() {
           offers: {
             '@type': 'Offer',
             price: price?.amount,
-            priceCurrency: price?.currencyCode || 'GBP',
+            priceCurrency: price?.currencyCode || 'USD',
             availability: available ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
             url: `${SITE_URL}/product/${node.handle}`,
           },

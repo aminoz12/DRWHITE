@@ -1,10 +1,14 @@
 // Market/currency handling. The visitor's pricing country lives in a cookie:
-// set on first visit by middleware from Vercel's geo header, overridable at
-// any time via the footer currency switcher. It drives Shopify @inContext
-// pricing site-wide (product pages, shop grid, cart and checkout).
+// set on first visit by the proxy from Vercel's geo header, overridable at
+// any time via the currency switcher. It drives Shopify @inContext pricing
+// site-wide (product pages, shop grid, cart and checkout).
+//
+// UK visitors price in GBP, EU visitors in EUR (or their own currency, see
+// LOCAL_CURRENCY_EU), and everyone else — US and the rest of the world — in
+// USD, the Shopify store's base currency.
 
 export const COUNTRY_COOKIE = 'cw_country';
-export const DEFAULT_COUNTRY = 'GB';
+export const DEFAULT_COUNTRY = 'US';
 
 export const EU_COUNTRIES = new Set([
   'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR',
@@ -47,8 +51,7 @@ export function normalizeCountry(code: string | null | undefined): string {
   if (!c) return DEFAULT_COUNTRY;
   if (c === 'GB' || c === 'UK') return 'GB';
   if (EU_COUNTRIES.has(c)) return c; // EU members price through the Europe market
-  if (c === 'US') return 'US';
-  return DEFAULT_COUNTRY;
+  return DEFAULT_COUNTRY; // the US and the rest of the world price in USD
 }
 
 export function marketForCountry(country: string): Market {

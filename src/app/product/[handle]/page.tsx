@@ -138,7 +138,7 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
     offers: {
       '@type': 'Offer',
       price: price?.amount,
-      priceCurrency: price?.currencyCode || 'GBP',
+      priceCurrency: price?.currencyCode || 'USD',
       availability: anyAvailable
         ? 'https://schema.org/InStock'
         : 'https://schema.org/OutOfStock',

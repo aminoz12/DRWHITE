@@ -45,12 +45,12 @@ export default async function CompareTable() {
     (min, p) => (!min || Number(p.amount) < Number(min.amount) ? p : min),
     null
   );
-  const currency = cheapest?.currencyCode || 'GBP';
+  const currency = cheapest?.currencyCode || 'USD';
   const symbol =
     // narrowSymbol: "$" rather than "US$", so "$$" reads as a price tier.
     new Intl.NumberFormat('en-GB', { style: 'currency', currency, currencyDisplay: 'narrowSymbol' })
       .formatToParts(0)
-      .find((part) => part.type === 'currency')?.value ?? '£';
+      .find((part) => part.type === 'currency')?.value ?? '$';
 
   // Phones get Mona Sans's narrow cut so "CLINIWHITE" fits a quarter-width column.
   const headCell =

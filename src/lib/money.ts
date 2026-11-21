@@ -14,6 +14,8 @@ export function formatMoney(
     return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: safeCurrency,
+      // "$13.00", not "US$13.00" (what en-GB prints for USD by default).
+      currencyDisplay: 'narrowSymbol',
     }).format(safeValue);
   } catch {
     return `${safeCurrency} ${safeValue.toFixed(2)}`;

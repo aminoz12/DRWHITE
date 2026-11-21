@@ -60,10 +60,11 @@ export const TRUSTPILOT = {
   },
 } as const;
 
-/** Currency the store charges in. Keep in sync with the Shopify store currency. */
+/** Fallback currency (the Shopify store's base currency) for any price that
+ *  arrives without one. Number formatting stays British (en-GB). */
 export const CURRENCY = {
-  code: "GBP",
-  symbol: "£",
+  code: "USD",
+  symbol: "$",
   locale: "en-GB",
 } as const;
 
