@@ -358,6 +358,44 @@ export async function getProduct(handle: string, country: string = DEFAULT_COUNT
 }
 
 /**
+ * Every product with the fields a shopping feed needs (all images, one-off
+ * price and compare-at price), priced in `country`'s market currency.
+ */
+export type CatalogProduct = Pick<ShopifyProductNode, 'id' | 'title' | 'handle' | 'description' | 'images' | 'variants'>;
+
+export async function getCatalogProducts(country: string = DEFAULT_COUNTRY): Promise<CatalogProduct[]> {
+  const query = `
+    query catalogProducts($country: CountryCode) @inContext(country: $country) {
+      products(first: 100) {
+        edges {
+          node {
+            id
+            title
+            handle
+            description
+            images(first: 10) {
+              edges { node { url altText } }
+            }
+            variants(first: 1) {
+              edges { node {
+                id
+                sku
+                availableForSale
+                price { amount currencyCode }
+                compareAtPrice { amount currencyCode }
+              } }
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  const response = await shopifyFetch({ query, variables: { country } });
+  return (response.data?.products?.edges || []).map((edge: ShopifyProductEdge) => edge.node);
+}
+
+/**
  * The store's Subscribe & Save offer, read live from Shopify so the page can
  * never promise a discount checkout won't honour. `percent` comes from the
  * selling plan itself; `example` is one product's real monthly price beside its
