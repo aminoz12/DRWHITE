@@ -94,7 +94,11 @@ export const SOCIALS = {
   instagram: "https://www.instagram.com/cliniwhite",
   tiktok: "https://www.tiktok.com/@cliniwhite",
   facebook: "https://www.facebook.com/cliniwhite",
+  pinterest: "https://www.pinterest.com/cliniwhite",
 } as const;
+
+/** Profiles shown as "follow us" icons (footer, contact page), in display order. */
+export const FOLLOW_US = ["instagram", "tiktok", "pinterest"] as const;
 
 /** Single brand action colour — the only CTA colour used site-wide. */
 export const BRAND = {

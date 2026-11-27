@@ -102,6 +102,9 @@ export const metadata: Metadata = {
   verification: {
     // google: "your-google-verification-code",
     // other: { 'msvalidate.01': 'your-bing-verification-code' },
+    other: {
+      "p:domain_verify": "6471094dab5014890941d15df1b902e2",
+    },
   },
 };
 
@@ -126,7 +129,7 @@ const organizationSchema = {
   logo: `${SITE_URL}/logo.png`,
   description: SITE_DESCRIPTION,
   email: CONTACT.email,
-  sameAs: [SOCIALS.facebook, SOCIALS.instagram, SOCIALS.tiktok],
+  sameAs: [SOCIALS.facebook, SOCIALS.instagram, SOCIALS.tiktok, SOCIALS.pinterest],
   contactPoint: {
     "@type": "ContactPoint",
     contactType: "customer support",
